@@ -1,0 +1,207 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Função para verificar se está logado
+    function loggedIn() {
+      return request.auth != null;
+    }
+    
+    // Função para verificar se é gestor da escola
+    function isGestorOfSchool(escolaId) {
+      return loggedIn() && 
+             exists(/databases/$(database)/documents/gestores/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/gestores/$(request.auth.uid)).data.escolaId == escolaId;
+    }
+    
+    // Coleção de gestores (já existente - mantém as regras atuais)
+    match /gestores/{gestorId} {
+      allow read: if loggedIn() && request.auth.uid == gestorId;
+      allow write: if loggedIn() && request.auth.uid == gestorId;
+    }
+    
+    // Coleção de escolas (V1 - nome 'escolas')
+    match /escolas/{escolaId} {
+      // Leitura pública; escrita apenas para gestor da escola
+      allow read: if true;
+      allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      
+      match /turmas/{turmaId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+      
+      match /alunos/{alunoId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      match /professores/{professorId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de ciclos
+      match /ciclos/{cicloId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de séries
+      match /series/{serieId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+      
+      // Campanhas de pesquisa
+      match /campaigns/{campaignId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+
+        // Respostas públicas das campanhas (acesso via link /p/...)
+        match /responses/{responseId} {
+          allow read: if true;
+          allow write: if true;
+        }
+      }
+      
+      match /testes_vocacionais/{testeId} {
+        allow read: if true;
+        allow write: if loggedIn();
+
+        // Respostas públicas do teste vocacional (QR Code / aluno não autenticado)
+        match /respostas/{respostaId} {
+          allow read: if true;
+          // Permitir criação/atualização mesmo sem auth (acesso público ao questionário)
+          allow write: if true;
+        }
+      }
+
+      // Resultados do módulo vocacional para usuários autenticados
+      match /MODULO_VOCACIONAL/{userId} {
+        allow read: if loggedIn();
+        allow write: if loggedIn();
+      }
+      
+      match /achados_perdidos/{itemId} {
+        allow read: if loggedIn();
+        allow write: if loggedIn();
+      }
+      
+      match /responsaveis/{responsavelId} {
+        allow read: if true;
+        allow write: if loggedIn() && request.auth.uid == responsavelId;
+      }
+      
+      match /metadata/{docId} {
+        allow read, write: if loggedIn();
+      }
+    }
+
+    // Coleção de escolas (V2 - nome 'schools')
+    match /schools/{escolaId} {
+      // Leitura pública; escrita apenas para gestor da escola
+      allow read: if true;
+      allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      
+      match /turmas/{turmaId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+      
+      match /alunos/{alunoId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      match /professores/{professorId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de ciclos
+      match /ciclos/{cicloId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de séries
+      match /series/{serieId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+      
+      match /campaigns/{campaignId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+
+        // Respostas públicas das campanhas (acesso via link /p/...)
+        match /responses/{responseId} {
+          allow read: if true;
+          allow write: if true;
+        }
+      }
+      
+      match /testes_vocacionais/{testeId} {
+        allow read: if true;
+        allow write: if loggedIn();
+
+        // Respostas públicas do teste vocacional (QR Code / aluno não autenticado)
+        match /respostas/{respostaId} {
+          allow read: if true;
+          allow write: if true;
+        }
+      }
+
+      // Resultados do módulo vocacional para usuários autenticados
+      match /MODULO_VOCACIONAL/{userId} {
+        allow read: if loggedIn();
+        allow write: if loggedIn();
+      }
+      
+      match /achados_perdidos/{itemId} {
+        allow read: if loggedIn();
+        allow write: if loggedIn();
+      }
+      
+      match /responsaveis/{responsavelId} {
+        allow read: if true;
+        allow write: if loggedIn() && request.auth.uid == responsavelId;
+      }
+      
+      match /metadata/{docId} {
+        allow read, write: if loggedIn();
+      }
+    }
+    
+    // Função auxiliar para validar campos que o responsável pode atualizar (achados)
+    function onlyUpdatesAllowedFields() {
+      let allowedFields = ['foundByOwner', 'foundByOwnerAt', 'evidence', 'fotoUrl'];
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(allowedFields);
+    }
+    
+    // Função auxiliar para validar campos que o responsável pode atualizar (responsável profile)
+    function onlyResponsavelAllowedFields() {
+      let allowedFields = ['nomeCompleto', 'telefone'];
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(allowedFields);
+    }
+    
+    // Coleções públicas (já existentes - mantém as regras atuais)
+    match /dicionario_riasec/{doc} {
+      allow read: if true;
+      allow write: if loggedIn();
+    }
+    
+    match /perguntas_riasec/{doc} {
+      allow read: if true;
+      allow write: if loggedIn();
+    }
+    
+    // Bloqueia todo o resto por padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

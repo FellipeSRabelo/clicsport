@@ -1,0 +1,85 @@
+// Firestore Rules para o módulo ClicAchados
+// Adicione estas regras ao seu firestore.rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Funções auxiliares
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function isGestorOfSchool(escolaId) {
+      return isAuthenticated() && getUserData().escolaId == escolaId && getUserData().role == 'gestor';
+    }
+    
+    function isOwnerOfItem() {
+      return isAuthenticated() && request.auth.uid == resource.data.owner;
+    }
+    
+    // Regras para achados_perdidos
+    match /escolas/{escolaId}/achados_perdidos/{itemId} {
+      
+      // Leitura: Gestor da escola OU dono do item
+      allow read: if isGestorOfSchool(escolaId) || isOwnerOfItem();
+      
+      // Criação: Qualquer usuário autenticado que pertença à escola
+      allow create: if isAuthenticated() && 
+                       getUserData().escolaId == escolaId &&
+                       request.resource.data.owner == request.auth.uid &&
+                       request.resource.data.status == 'active' &&
+                       request.resource.data.type == 'lost';
+      
+      // Atualização: Gestor (qualquer campo) OU Responsável (apenas campos específicos)
+      allow update: if isGestorOfSchool(escolaId) || 
+                       (isOwnerOfItem() && 
+                        onlyAllowedFieldsUpdated());
+    }
+    
+    // Função auxiliar para validar campos que o responsável pode atualizar
+    function onlyAllowedFieldsUpdated() {
+      let allowedFields = ['foundByOwner', 'foundByOwnerAt', 'evidence'];
+      let updatedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return updatedKeys.hasOnly(allowedFields);
+    }
+    
+    // Regras para o contador de itens
+    match /escolas/{escolaId}/metadata/itemCounter {
+      // Qualquer usuário autenticado da escola pode ler e incrementar
+      allow read, write: if isAuthenticated() && getUserData().escolaId == escolaId;
+    }
+    
+  }
+}
+
+/* 
+  NOTA IMPORTANTE:
+  
+  Estas regras são específicas para o módulo ClicAchados.
+  Você deve integrá-las ao seu arquivo firestore.rules existente,
+  não substituir completamente.
+  
+  Certifique-se de que:
+  1. As funções auxiliares (isAuthenticated, getUserData, isGestorOfSchool) 
+     não entrem em conflito com funções já existentes
+  2. A coleção 'users' está estruturada corretamente com os campos:
+     - escolaId (string)
+     - role (string: 'gestor' | 'user' | 'monitor')
+  3. Teste as regras em ambiente de desenvolvimento antes de publicar
+  
+  Para testar no Firebase Console:
+  1. Vá em Firestore > Rules
+  2. Cole as regras
+  3. Use o "Rules Playground" para simular operações
+  
+  Exemplo de teste:
+  - Authenticated as: UID do usuário
+  - Location: /escolas/escola-teste/achados_perdidos/item-123
+  - Operation: get
+  - Resultado esperado: Allow (se gestor ou dono) / Deny (caso contrário)
+*/

@@ -1,0 +1,1202 @@
+{
+  "RIA": {
+    "descricao": "O Designer Técnico. Gosta de construir coisas práticas (R) com base em análise (I) e um forte senso de estética e originalidade (A).",
+    "profissoes": [
+      "Arquiteto",
+      "Designer de Produto",
+      "Designer de Games (Level Design)",
+      "Cenógrafo",
+      "Engenheiro de Software (Front-end)"
+    ]
+  },
+  "RIS": {
+    "descricao": "O Técnico da Saúde. Foco em habilidades práticas (R) e conhecimento científico (I) para ajudar e cuidar diretamente das pessoas (S).",
+    "profissoes": [
+      "Fisioterapeuta",
+      "Veterinário (Clínico/Cirurgião)",
+      "Fonoaudiólogo",
+      "Médico (Cirurgião)",
+      "Técnico de Enfermagem"
+    ]
+  },
+  "RIE": {
+    "descricao": "O Engenheiro de Soluções. Gosta de entender como as coisas funcionam (I) para construí-las (R) e gerenciar os projetos e equipes (E).",
+    "profissoes": [
+      "Engenheiro (Mecânico, Civil, Produção)",
+      "Gerente de Obras",
+      "Piloto de Avião",
+      "Empreendedor (Indústria)",
+      "Oficial das Forças Armadas"
+    ]
+  },
+  "RIC": {
+    "descricao": "O Técnico de Precisão. Foco em tarefas práticas (R) que exigem análise (I) e extrema atenção aos detalhes e regras (C).",
+    "profissoes": [
+      "Técnico de Laboratório",
+      "Mecânico de Aeronaves",
+      "Técnico de TI (Redes/Hardware)",
+      "Eletricista Industrial",
+      "Programador (Hardware)"
+    ]
+  },
+  "RAI": {
+    "descricao": "O Artesão Meticuloso. Gosta de criar (A) objetos físicos (R) com base em um profundo entendimento dos materiais e técnicas (I).",
+    "profissoes": [
+      "Chef de Cozinha (Alta Gastronomia)",
+      "Designer de Joias",
+      "Luthier (Construtor de Instrumentos)",
+      "Marceneiro Fino / Carpinteiro",
+      "Fotógrafo (Técnico)"
+    ]
+  },
+  "RAS": {
+    "descricao": "O Criador do Bem-Estar. Foco em usar habilidades práticas (R) e criativas (A) para prover um serviço direto que ajuda as pessoas (S).",
+    "profissoes": [
+      "Designer de Interiores",
+      "Cabeleireiro / Estilista",
+      "Maquiador Profissional",
+      "Personal Trainer",
+      "Paisagista"
+    ]
+  },
+  "RAE": {
+    "descricao": "O Produtor de Experiências. Gosta de criar (A) eventos ou produtos práticos (R) e tem a visão para transformá-los em um negócio (E).",
+    "profissoes": [
+      "Chef de Cozinha (Dono de Restaurante)",
+      "Produtor de Eventos",
+      "Florista (Dono de Loja)",
+      "Tatuador (Dono de Estúdio)",
+      "Empreendedor (Setor Criativo)"
+    ]
+  },
+  "RAC": {
+    "descricao": "O Criador Detalhista. Gosta de criar (A) e construir (R), mas se destaca em tarefas que exigem precisão e organização (C).",
+    "profissoes": [
+      "Designer Gráfico (Editoração)",
+      "Confeiteiro (Decoração Fina)",
+      "Modelista (Roupas)",
+      "Desenhista Técnico (CAD)",
+      "Técnico de Restauração de Arte"
+    ]
+  },
+  "RSI": {
+    "descricao": "O Profissional do Esporte/Saúde. Gosta de ajudar pessoas (S) usando o corpo (R) e conhecimento científico (I).",
+    "profissoes": [
+      "Fisioterapeuta",
+      "Educador Físico",
+      "Nutricionista Esportivo",
+      "Terapeuta Ocupacional",
+      "Quiroprata"
+    ]
+  },
+  "RSA": {
+    "descricao": "O Educador Prático. Gosta de ensinar (S) habilidades práticas (R) de forma criativa e envolvente (A).",
+    "profissoes": [
+      "Professor (Ed. Física, Artes, Robótica)",
+      "Instrutor de Dança",
+      "Chef (Professor de Culinária)",
+      "Instrutor de Autoescola",
+      "Recreador Infantil"
+    ]
+  },
+  "RSE": {
+    "descricao": "O Líder de Campo. Gosta de estar na linha de frente (R), liderando (E) e motivando equipes (S) em ambientes práticos.",
+    "profissoes": [
+      "Técnico de Time Esportivo",
+      "Gerente de Loja (Varejo)",
+      "Mestre de Obras",
+      "Supervisor de Logística",
+      "Oficial de Polícia / Bombeiro"
+    ]
+  },
+  "RSC": {
+    "descricao": "O Protetor Organizado. Foco em ajudar (S) e proteger o público, usando habilidades práticas (R) e seguindo regras estritas (C).",
+    "profissoes": [
+      "Policial",
+      "Bombeiro",
+      "Técnico de Segurança do Trabalho",
+      "Agente de Trânsito",
+      "Comissário de Bordo"
+    ]
+  },
+  "REI": {
+    "descricao": "O Estrategista de Campo. Gosta de liderar (E) projetos práticos (R) usando dados e análise (I) para otimizar resultados.",
+    "profissoes": [
+      "Gerente de Projetos (Engenharia)",
+      "Empreendedor (Agronegócio)",
+      "Gerente de Logística",
+      "Consultor de Produção Industrial",
+      "Estrategista Militar"
+    ]
+  },
+  "REA": {
+    "descricao": "O Empreendedor Criativo-Prático. Gosta de ter ideias criativas (A), transformá-las em negócios (E) e 'colocar a mão na massa' (R).",
+    "profissoes": [
+      "Empreendedor (Food Truck, Cervejaria)",
+      "Arquiteto (Dono de Escritório)",
+      "Dono de Oficina de Customização",
+      "Produtor de Shows",
+      "Paisagista (Dono de Empresa)"
+    ]
+  },
+  "RES": {
+    "descricao": "O Líder Comunitário. Gosta de liderar (E) e organizar (R) pessoas (S) em direção a um objetivo prático.",
+    "profissoes": [
+      "Gerente de Vendas (Varejo Físico)",
+      "Político (Local)",
+      "Supervisor de Equipe (Ex: Telemarketing)",
+      "Gerente de Restaurante",
+      "Corretor de Imóveis (Líder)"
+    ]
+  },
+  "REC": {
+    "descricao": "O Gerente de Operações. Gosta de liderar (E) processos práticos (R) de forma organizada e eficiente, seguindo as regras (C).",
+    "profissoes": [
+      "Gerente de Logística / Estoque",
+      "Supervisor de Produção",
+      "Dono de Franquia",
+      "Administrador de Fazenda",
+      "Gerente de Compras / Suprimentos"
+    ]
+  },
+  "RCI": {
+    "descricao": "O Especialista em Qualidade. Foco em garantir que as regras (C) e a qualidade (I) sejam aplicadas em processos práticos (R).",
+    "profissoes": [
+      "Controlador de Qualidade (Indústria)",
+      "Técnico em Edificações",
+      "Inspetor de Segurança",
+      "Técnico em Geologia (Coleta)",
+      "Operador de Máquinas (CNC)"
+    ]
+  },
+  "RCA": {
+    "descricao": "O Artesão de Precisão. Gosta de construir (R) coisas bonitas (A), mas com foco extremo em regras, medidas e organização (C).",
+    "profissoes": [
+      "Joalheiro / Relojoeiro",
+      "Marceneiro (Móveis Planejados)",
+      "Costureiro / Alfaiate",
+      "Padeiro / Confeiteiro",
+      "Desenhista (Projetista)"
+    ]
+  },
+  "RCS": {
+    "descricao": "O Organizador de Pessoas. Gosta de ambientes práticos (R) e organizados (C), ajudando pessoas (S) a seguir os processos.",
+    "profissoes": [
+      "Assistente Administrativo (Obras)",
+      "Técnico de Enfermagem (Instrumentador)",
+      "Agente de Viagens (Logística)",
+      "Almoxarife (Hospitalar)",
+      "Carteiro"
+    ]
+  },
+  "RCE": {
+    "descricao": "O Supervisor de Eficiência. Foco em garantir que os processos (C) e as equipes (E) operem com máxima eficiência prática (R).",
+    "profissoes": [
+      "Gerente de Estoque / Almoxarifado",
+      "Administrador (Transportadora)",
+      "Supervisor de Chão de Fábrica",
+      "Gerente de Compras",
+      "Empreendedor (Varejo)"
+    ]
+  },
+  "IRA": {
+    "descricao": "O Cientista Criativo. Gosta de pesquisar (I) e entender o mundo físico (R), mas com um foco em inovação e design (A).",
+    "profissoes": [
+      "Arquiteto",
+      "Designer de Produto (P&D)",
+      "Biólogo (Ilustrador Científico)",
+      "Programador (Visualização de Dados)",
+      "Pesquisador (Novos Materiais)"
+    ]
+  },
+  "IRS": {
+    "descricao": "O Cientista da Saúde. Foco em pesquisa científica (I) e habilidades práticas (R) para diagnosticar e tratar pacientes (S).",
+    "profissoes": [
+      "Médico (Clínico Geral, Patologista)",
+      "Fisioterapeuta",
+      "Veterinário",
+      "Farmacêutico (Pesquisa)",
+      "Quiroprata"
+    ]
+  },
+  "IRE": {
+    "descricao": "O Inovador Tecnológico. Gosta de pesquisar (I) e criar tecnologias (R) para transformá-las em negócios e produtos (E).",
+    "profissoes": [
+      "Engenheiro (Computação, Elétrica)",
+      "Empreendedor (Startup de Tech)",
+      "Cientista de Dados (Líder)",
+      "Arquiteto de Software",
+      "Pesquisador (Chefe de P&D)"
+    ]
+  },
+  "IRC": {
+    "descricao": "O Analista de Laboratório. Foco em pesquisa (I) e procedimentos práticos (R) que exigem precisão absoluta e organização (C).",
+    "profissoes": [
+      "Analista de Laboratório Clínico",
+      "Químico Industrial",
+      "Engenheiro de Software (Testes/QA)",
+      "Geólogo (Análise de Amostras)",
+      "Técnico de Qualidade (Fábrica)"
+    ]
+  },
+  "IAR": {
+    "descricao": "O Pesquisador de Campo (Criativo). Gosta de investigar (I) temas criativos (A) que se manifestam no mundo físico (R).",
+    "profissoes": [
+      "Antropólogo",
+      "Arqueólogo",
+      "Fotógrafo (Documental/Natureza)",
+      "Designer de Games (Mecânicas)",
+      "Historiador de Arte (Restauro)"
+    ]
+  },
+  "IAS": {
+    "descricao": "O Pesquisador Humano-Criativo. Foco em entender o mundo e as pessoas (I) de formas novas (A), com o objetivo de ajudar (S).",
+    "profissoes": [
+      "Psicólogo / Terapeuta",
+      "Designer de UX/UI",
+      "Professor Universitário (Humanas/Artes)",
+      "Jornalista Investigativo",
+      "Sociólogo"
+    ]
+  },
+  "IAE": {
+    "descricao": "O Estrategista Criativo. Gosta de analisar (I) e ter ideias originais (A) para criar novos negócios ou estratégias de mercado (E).",
+    "profissoes": [
+      "Estrategista de Marketing",
+      "Arquiteto (Dono de Escritório)",
+      "Designer (Dono de Estúdio)",
+      "Desenvolvedor de Jogos (Indie)",
+      "Publicitário (Planejamento)"
+    ]
+  },
+  "IAC": {
+    "descricao": "O Arquiteto da Informação. Gosta de analisar (I) e organizar (C) informações de forma clara, lógica e esteticamente agradável (A).",
+    "profissoes": [
+      "Designer de UX/UI (Foco em Arq. Info.)",
+      "Programador (Front-end)",
+      "Editor de Texto Técnico",
+      "Curador de Museu",
+      "Analista de Conteúdo (SEO)"
+    ]
+  },
+  "ISR": {
+    "descricao": "O Terapeuta Corporal. Gosta de entender (I) o corpo humano (R) para poder ajudar (S) na recuperação e bem-estar dos pacientes.",
+    "profissoes": [
+      "Fisioterapeuta",
+      "Médico (Ortopedista)",
+      "Educador Físico (Foco em Saúde)",
+      "Terapeuta Ocupacional",
+      "Nutricionista"
+    ]
+  },
+  "ISA": {
+    "descricao": "O Conselheiro Analítico. Gosta de entender (I) a mente humana (A) para poder ajudar (S) as pessoas a se expressarem e resolverem problemas.",
+    "profissoes": [
+      "Psicólogo (Clínico)",
+      "Professor (História, Filosofia)",
+      "Jornalista (Cultural)",
+      "Terapeuta Artístico",
+      "Assistente Social (Pesquisa)"
+    ]
+  },
+  "ISE": {
+    "descricao": "O Consultor de Pessoas. Gosta de analisar (I) sistemas e pessoas (S) para criar negócios ou estratégias que melhorem o desempenho.",
+    "profissoes": [
+      "Psicólogo (Organizacional)",
+      "Consultor de RH",
+      "Empreendedor (EdTech, Startup Social)",
+      "Diretor de Escola (Foco Pedagógico)",
+      "Analista Político"
+    ]
+  },
+  "ISC": {
+    "descricao": "O Pesquisador Social Metódico. Gosta de pesquisar (I) o comportamento humano (S) usando métodos rigorosos e organizados (C).",
+    "profissoes": [
+      "Pesquisador de Mercado (Quantitativo)",
+      "Bibliotecário",
+      "Assistente Social (Governo)",
+      "Pedagogo (Coordenação)",
+      "Analista de Políticas Públicas"
+    ]
+  },
+  "IER": {
+    "descricao": "O Empreendedor Tech. Gosta de liderar (E) negócios baseados em pesquisa científica (I) e produtos tecnológicos/físicos (R).",
+    "profissoes": [
+      "Empreendedor (Hardware, IoT)",
+      "CEO de Startup (Engenharia)",
+      "Gerente de Produto (Tech)",
+      "Arquiteto de Soluções (TI)",
+      "Engenheiro (Vendas Técnicas)"
+    ]
+  },
+  "IEA": {
+    "descricao": "O Estrategista de Inovação. Gosta de analisar (I) o mercado, ter ideias criativas (A) e transformá-las em negócios (E).",
+    "profissoes": [
+      "Analista de Tendências (Marketing)",
+      "Consultor de Inovação",
+      "Empreendedor (Mídia, Publicidade)",
+      "Gerente de Produto (Foco em UX)",
+      "Investidor (Venture Capital)"
+    ]
+  },
+  "IES": {
+    "descricao": "O Consultor Estratégico. Gosta de analisar (I) problemas complexos e liderar (E) equipes (S) para resolvê-los.",
+    "profissoes": [
+      "Advogado (Corporativo)",
+      "Consultor de Gestão",
+      "Economista",
+      "Analista de Negócios (Líder)",
+      "Empreendedor (Setor Social)"
+    ]
+  },
+  "IEC": {
+    "descricao": "O Analista de Risco. Gosta de analisar (I) dados e finanças (C) para tomar decisões estratégicas de negócio (E).",
+    "profissoes": [
+      "Analista de Mercado Financeiro",
+      "Advogado (Tributário)",
+      "Auditor (Sênior)",
+      "Analista de Business Intelligence (BI)",
+      "Atuário (Seguros)"
+    ]
+  },
+  "ICR": {
+    "descricao": "O Programador (Back-end). Foco em construir sistemas lógicos (I) de forma organizada (C) que rodam em máquinas (R).",
+    "profissoes": [
+      "Desenvolvedor (Back-end)",
+      "Administrador de Banco de Dados (DBA)",
+      "Analista de Sistemas",
+      "Engenheiro de Redes",
+      "Técnico de Qualidade (Software)"
+    ]
+  },
+  "ICA": {
+    "descricao": "O Arquiteto da Informação. Gosta de analisar (I) e organizar (C) informações de forma clara, lógica e esteticamente agradável (A).",
+    "profissoes": [
+      "Designer de UX/UI (Foco em Arq. Info.)",
+      "Programador (Front-end)",
+      "Editor de Texto Técnico",
+      "Bibliotecário (Digital)",
+      "Analista de SEO"
+    ]
+  },
+  "ICS": {
+    "descricao": "O Analista de Processos (Humanos). Gosta de analisar (I) e organizar (C) sistemas para ajudar pessoas (S) a trabalharem melhor.",
+    "profissoes": [
+      "Analista de RH (Dados)",
+      "Bibliotecário",
+      "Coordenador Pedagógico",
+      "Analista de Suporte (Nível 2)",
+      "Pesquisador de Mercado"
+    ]
+  },
+  "ICE": {
+    "descricao": "O Estrategista Financeiro. Gosta de analisar (I) dados e regras (C) para tomar decisões de negócio e investimento (E).",
+    "profissoes": [
+      "Analista Financeiro (Investment Banking)",
+      "Controlador / Controller",
+      "Analista de Business Intelligence (BI)",
+      "Advogado (Fusões e Aquisições)",
+      "Economista (Mercado)"
+    ]
+  },
+  "ARI": {
+    "descricao": "O Designer Funcional. Gosta de criar (A) coisas bonitas (R), mas com um profundo entendimento técnico e analítico (I) de como elas funcionam.",
+    "profissoes": [
+      "Arquiteto",
+      "Designer de Produto",
+      "Designer de Games (Mecânicas)",
+      "Chef de Cozinha (Alta Gastronomia)",
+      "Fotógrafo (Técnico)"
+    ]
+  },
+  "ARS": {
+    "descricao": "O Criador do Bem-Estar. Gosta de usar a criatividade (A) e habilidades manuais (R) para ajudar diretamente as pessoas (S).",
+    "profissoes": [
+      "Designer de Interiores",
+      "Terapeuta Ocupacional (com artes)",
+      "Cabeleireiro / Estilista",
+      "Professor de Artes (Prático)",
+      "Paisagista"
+    ]
+  },
+  "ARE": {
+    "descricao": "O Empreendedor Criativo-Prático. Gosta de ter ideias criativas (A), transformá-las em negócios (E) e 'colocar a mão na massa' (R).",
+    "profissoes": [
+      "Empreendedor (Food Truck, Cervejaria)",
+      "Arquiteto (Dono de Escritório)",
+      "Dono de Oficina de Customização",
+      "Produtor de Shows",
+      "Paisagista (Dono de Empresa)"
+    ]
+  },
+  "ARC": {
+    "descricao": "O Artesão de Precisão. Gosta de criar (A) e construir (R), mas com foco extremo em regras, medidas e organização (C).",
+    "profissoes": [
+      "Joalheiro / Relojoeiro",
+      "Marceneiro (Móveis Planejados)",
+      "Costureiro / Alfaiate",
+      "Padeiro / Confeiteiro",
+      "Desenhista (Projetista)"
+    ]
+  },
+  "AIR": {
+    "descricao": "O Pesquisador de Campo (Criativo). Gosta de investigar (I) temas criativos (A) que se manifestam no mundo físico (R).",
+    "profissoes": [
+      "Antropólogo",
+      "Arqueólogo",
+      "Fotógrafo (Documental/Natureza)",
+      "Designer de Games (Mecânicas)",
+      "Historiador de Arte (Restauro)"
+    ]
+  },
+  "AIS": {
+    "descricao": "O Pesquisador Humano-Criativo. Gosta de entender (I) o mundo e as pessoas (S) de formas novas e criativas (A).",
+    "profissoes": [
+      "Psicólogo / Terapeuta",
+      "Designer de UX/UI",
+      "Professor Universitário (Humanas/Artes)",
+      "Jornalista Investigativo",
+      "Sociólogo"
+    ]
+  },
+  "AIE": {
+    "descricao": "O Estrategista Criativo. Gosta de analisar (I) e ter ideias originais (A) para criar novos negócios ou estratégias de mercado (E).",
+    "profissoes": [
+      "Estrategista de Marketing",
+      "Arquiteto (Dono de Escritório)",
+      "Designer (Dono de Estúdio)",
+      "Desenvolvedor de Jogos (Indie)",
+      "Publicitário (Planejamento)"
+    ]
+  },
+  "AIC": {
+    "descricao": "O Arquiteto da Informação. Gosta de analisar (I) e organizar (C) informações de forma clara, lógica e esteticamente agradável (A).",
+    "profissoes": [
+      "Designer de UX/UI (Foco em Arq. Info.)",
+      "Programador (Front-end)",
+      "Editor de Texto Técnico",
+      "Bibliotecário (Digital)",
+      "Analista de SEO"
+    ]
+  },
+  "ASR": {
+    "descricao": "O Terapeuta Prático-Criativo. Gosta de ajudar pessoas (S) usando formas de expressão criativas (A) e práticas (R).",
+    "profissoes": [
+      "Terapeuta Ocupacional",
+      "Arteterapeuta",
+      "Professor de Artes (Ed. Infantil)",
+      "Designer de Interiores (Residencial)",
+      "Chef de Cozinha (Professor)"
+    ]
+  },
+  "ASI": {
+    "descricao": "O Comunicador Sensível. Gosta de ajudar (S) e entender (I) as pessoas, usando a criatividade (A) para se expressar e conectar.",
+    "profissoes": [
+      "Psicólogo (Clínico)",
+      "Professor (História, Filosofia)",
+      "Jornalista (Cultural)",
+      "Terapeuta Artístico",
+      "Roteirista"
+    ]
+  },
+  "ASE": {
+    "descricao": "O Produtor Cultural. Gosta de liderar (E) projetos criativos (A) que envolvem e impactam pessoas (S) e a comunidade.",
+    "profissoes": [
+      "Produtor de Eventos (Culturais)",
+      "Empreendedor (ONG, Setor Criativo)",
+      "Relações Públicas (Moda, Arte)",
+      "Diretor de Teatro",
+      "Gerente de Marketing (Causas)"
+    ]
+  },
+  "ASC": {
+    "descricao": "O Educador Organizado. Gosta de ajudar (S) e ensinar (A), mas prefere ambientes estruturados e com regras claras (C).",
+    "profissoes": [
+      "Professor (Ensino Fundamental)",
+      "Coordenador Pedagógico (Artes)",
+      "Bibliotecário (Seção Infantil)",
+      "Designer Instrucional",
+      "Assistente Editorial"
+    ]
+  },
+  "AER": {
+    "descricao": "O Empreendedor do 'Mão na Massa'. Gosta de liderar (E) negócios onde ele mesmo cria (A) e executa (R) o produto final.",
+    "profissoes": [
+      "Dono de Restaurante (Chef)",
+      "Dono de Estúdio (Tatuagem, Fotografia)",
+      "Empreendedor (Moda, Marcenaria)",
+      "Produtor Musical (Dono de Estúdio)",
+      "Arquiteto (Dono de Escritório)"
+    ]
+  },
+  "AEI": {
+    "descricao": "O Estrategista de Marca. Gosta de liderar (E) negócios criativos (A), usando análise de dados e tendências (I) para inovar.",
+    "profissoes": [
+      "Diretor de Marketing",
+      "Publicitário (Diretor de Criação)",
+      "Empreendedor (Mídia, Startup Criativa)",
+      "Gerente de Marca (Brand Manager)",
+      "Consultor de Inovação"
+    ]
+  },
+  "AES": {
+    "descricao": "O Influenciador/Líder Criativo. Gosta de liderar (E) e inspirar pessoas (S) através de sua criatividade e visão (A).",
+    "profissoes": [
+      "Criador de Conteúdo (Influencer)",
+      "Diretor de Arte (Publicidade)",
+      "Empreendedor Social (ONG Cultural)",
+      "Relações Públicas (Líder)",
+      "Produtor Cultural"
+    ]
+  },
+  "AEC": {
+    "descricao": "O Gerente de Indústria Criativa. Gosta de liderar (E) negócios criativos (A), mas com foco em organização, finanças e processos (C).",
+    "profissoes": [
+      "Produtor Executivo (Cinema, Música)",
+      "Dono de Galeria de Arte",
+      "Gerente de E-commerce (Moda)",
+      "Editor-Chefe (Revista, Editora)",
+      "Gerente de Projetos (Agência)"
+    ]
+  },
+  "ACR": {
+    "descricao": "O Designer de Precisão. Gosta de criar (A) e organizar (C) projetos que serão executados no mundo real (R) com exatidão.",
+    "profissoes": [
+      "Designer Gráfico (Editoração, Embalagem)",
+      "Desenhista Técnico (CAD)",
+      "Modelista (Roupas)",
+      "Confeiteiro (Decoração Fina)",
+      "Web Designer (Foco em Layout)"
+    ]
+  },
+  "ACI": {
+    "descricao": "O Web Designer / Desenvolvedor. Gosta de criar layouts (A) organizados (C) e que funcionam perfeitamente (I).",
+    "profissoes": [
+      "Web Designer (Full Stack)",
+      "Desenvolvedor Front-End",
+      "Editor de Vídeo / Motion Designer",
+      "Revisor de Texto Técnico",
+      "Designer de UX (Foco em UI)"
+    ]
+  },
+  "ACS": {
+    "descricao": "O Educador Metódico. Gosta de ambientes criativos (A) e organizados (C) onde possa ensinar e ajudar pessoas (S).",
+    "profissoes": [
+      "Professor de Artes (Ensino Básico)",
+      "Designer Instrucional",
+      "Bibliotecário (Escolar)",
+      "Secretário Escolar (Setor Criativo)",
+      "Coordenador de Eventos (ONG)"
+    ]
+  },
+  "ACE": {
+    "descricao": "O Gerente de Projetos Criativos. Gosta de organizar (C) e liderar (E) equipes para entregar projetos criativos (A) dentro do prazo e orçamento.",
+    "profissoes": [
+      "Gerente de Projetos (Agência de Pub.)",
+      "Produtor Gráfico",
+      "Editor-Chefe",
+      "Gerente de E-commerce",
+      "Coordenador de Marketing (Foco em Ops)"
+    ]
+  },
+  "SRI": {
+    "descricao": "O Terapeuta Corporal/Científico. Gosta de ajudar pessoas (S) usando conhecimento científico (I) e habilidades práticas (R).",
+    "profissoes": [
+      "Fisioterapeuta",
+      "Médico (Clínico Geral)",
+      "Educador Físico (Personal Trainer)",
+      "Nutricionista",
+      "Terapeuta Ocupacional"
+    ]
+  },
+  "SRA": {
+    "descricao": "O Educador Prático-Criativo. Gosta de ensinar (S) habilidades práticas (R) de forma envolvente e criativa (A).",
+    "profissoes": [
+      "Professor (Ed. Física, Artes, Infantil)",
+      "Instrutor de Dança",
+      "Chef (Professor de Culinária)",
+      "Arteterapeuta",
+      "Recreador"
+    ]
+  },
+  "SRE": {
+    "descricao": "O Líder de Equipa Prática. Gosta de liderar (E) e motivar pessoas (S) em ambientes práticos e 'mão na massa' (R).",
+    "profissoes": [
+      "Gerente de Loja (Varejo)",
+      "Técnico de Time Esportivo",
+      "Supervisor de Atendimento ao Cliente",
+      "Gerente de Restaurante",
+      "Coordenador de Campo (ONGs)"
+    ]
+  },
+  "SRC": {
+    "descricao": "O Protetor Organizado. Foco em ajudar (S) e proteger o público, usando habilidades práticas (R) e seguindo regras estritas (C).",
+    "profissoes": [
+      "Policial",
+      "Bombeiro",
+      "Técnico de Segurança do Trabalho",
+      "Agente de Trânsito",
+      "Comissário de Bordo / Aeromoça"
+    ]
+  },
+  "SIR": {
+    "descricao": "O Profissional da Saúde. Foco em ajudar pessoas (S) usando conhecimento científico (I) e habilidades práticas (R).",
+    "profissoes": [
+      "Médico (Cirurgião)",
+      "Fisioterapeuta",
+      "Enfermeiro",
+      "Veterinário",
+      "Fonoaudiólogo"
+    ]
+  },
+  "SIA": {
+    "descricao": "O Conselheiro Analítico. Gosta de entender (I) a mente humana (A) para poder ajudar (S) as pessoas a se expressarem e resolverem problemas.",
+    "profissoes": [
+      "Psicólogo (Clínico)",
+      "Professor (História, Filosofia)",
+      "Jornalista (Cultural)",
+      "Terapeuta Artístico",
+      "Assistente Social (Pesquisa)"
+    ]
+  },
+  "SIE": {
+    "descricao": "O Consultor de Pessoas. Gosta de analisar (I) sistemas e pessoas (S) para criar negócios ou estratégias que melhorem o desempenho.",
+    "profissoes": [
+      "Psicólogo (Organizacional)",
+      "Consultor de RH",
+      "Empreendedor (EdTech, Startup Social)",
+      "Diretor de Escola (Foco Pedagógico)",
+      "Analista Político"
+    ]
+  },
+  "SIC": {
+    "descricao": "O Pesquisador Social Metódico. Gosta de pesquisar (I) o comportamento humano (S) usando métodos rigorosos e organizados (C).",
+    "profissoes": [
+      "Pesquisador de Mercado (Quantitativo)",
+      "Bibliotecário",
+      "Assistente Social (Governo)",
+      "Pedagogo (Coordenação)",
+      "Analista de Políticas Públicas"
+    ]
+  },
+  "SAR": {
+    "descricao": "O Terapeuta Expressivo. Gosta de ajudar pessoas (S) a se conectarem consigo mesmas através da criatividade (A) e do corpo (R).",
+    "profissoes": [
+      "Arteterapeuta",
+      "Terapeuta Ocupacional",
+      "Professor de Teatro / Dança",
+      "Instrutor de Yoga",
+      "Recreador (Foco em Artes)"
+    ]
+  },
+  "SAI": {
+    "descricao": "O Comunicador Sensível. Gosta de ajudar (S) e entender (I) as pessoas, usando a criatividade (A) para se expressar e conectar.",
+    "profissoes": [
+      "Psicólogo (Clínico)",
+      "Professor (História, Filosofia)",
+      "Jornalista (Cultural)",
+      "Terapeuta Artístico",
+      "Roteirista"
+    ]
+  },
+  "SAE": {
+    "descricao": "O Produtor Cultural / Influenciador. Gosta de liderar (E) projetos criativos (A) que envolvem e impactam pessoas (S) e a comunidade.",
+    "profissoes": [
+      "Produtor de Eventos (Culturais)",
+      "Empreendedor (ONG, Setor Criativo)",
+      "Relações Públicas (Moda, Arte)",
+      "Diretor de Teatro",
+      "Criador de Conteúdo (Influencer)"
+    ]
+  },
+  "SAC": {
+    "descricao": "O Educador Organizado. Gosta de ajudar (S) e ensinar (A), mas prefere ambientes estruturados e com regras claras (C).",
+    "profissoes": [
+      "Professor (Ensino Fundamental)",
+      "Coordenador Pedagógico (Artes)",
+      "Bibliotecário (Seção Infantil)",
+      "Designer Instrucional",
+      "Assistente Editorial"
+    ]
+  },
+  "SER": {
+    "descricao": "O Líder de Campo (Varejo/Serviços). Gosta de liderar (E) equipas (S) em ambientes práticos (R) e de contacto direto com o cliente.",
+    "profissoes": [
+      "Gerente de Vendas (Varejo)",
+      "Dono de Restaurante / Café",
+      "Gerente de Hotelaria",
+      "Coordenador de Equipa (Ex: Telemarketing)",
+      "Corretor de Imóveis (Líder)"
+    ]
+  },
+  "SEI": {
+    "descricao": "O Estrategista de Capital Humano. Gosta de liderar (E) e desenvolver pessoas (S) usando análise e dados (I) para melhorar a performance.",
+    "profissoes": [
+      "Diretor de Recursos Humanos",
+      "Consultor de Gestão",
+      "Advogado (Corporativo)",
+      "Diretor de Escola",
+      "Psicólogo Organizacional (Líder)"
+    ]
+  },
+  "SEA": {
+    "descricao": "O Líder Criativo / Porta-Voz. Gosta de liderar (E) pessoas (S) usando carisma e criatividade (A) para comunicar uma visão.",
+    "profissoes": [
+      "Relações Públicas (Diretor)",
+      "Político",
+      "Diretor de Arte (Agência)",
+      "Criador de Conteúdo (Líder)",
+      "Diretor de Marketing (Varejo)"
+    ]
+  },
+  "SEC": {
+    "descricao": "O Administrador / Gestor. Foco em liderar (E) equipas (S) de forma organizada, seguindo processos e regras claras (C).",
+    "profissoes": [
+      "Gerente Administrativo",
+      "Diretor de Escola",
+      "Gerente de Contas (Banco)",
+      "Gerente de RH (Operações)",
+      "Administrador Público"
+    ]
+  },
+  "SCR": {
+    "descricao": "O Assistente de Saúde Organizado. Gosta de ajudar pessoas (S) em ambientes práticos (R) e que exigem organização e rotina (C).",
+    "profissoes": [
+      "Técnico de Enfermagem",
+      "Secretário Clínico / Hospitalar",
+      "Farmacêutico (Atendimento)",
+      "Agente de Viagens",
+      "Comissário de Bordo / Aeromoça"
+    ]
+  },
+  "SCI": {
+    "descricao": "O Guardião do Conhecimento. Gosta de ajudar pessoas (S) a encontrar informações (I) em sistemas organizados (C).",
+    "profissoes": [
+      "Bibliotecário",
+      "Coordenador Pedagógico",
+      "Analista de Suporte Técnico",
+      "Assistente Social (Administrativo)",
+      "Historiador / Arquivista"
+    ]
+  },
+  "SCA": {
+    "descricao": "O Professor Metódico. Gosta de ensinar (S) de forma organizada (C) e com materiais criativos (A) em ambientes estruturados.",
+    "profissoes": [
+      "Professor (Ensino Básico)",
+      "Designer Instrucional",
+      "Coordenador de Eventos (Escolar)",
+      "Bibliotecário (Escolar)",
+      "Secretário Editorial"
+    ]
+  },
+  "SCE": {
+    "descricao": "O Gerente de Pessoas e Processos. Gosta de liderar (E) equipas (S) garantindo que as regras e a ordem (C) sejam seguidas.",
+    "profissoes": [
+      "Gerente de RH (Administrativo)",
+      "Gerente de Contas (Banco)",
+      "Gerente Administrativo",
+      "Diretor de Escola (Administrativo)",
+      "Supervisor de Atendimento"
+    ]
+  },
+  "ERI": {
+    "descricao": "O Estrategista de Campo. Gosta de liderar (E) projetos práticos (R) usando dados e análise (I) para otimizar resultados.",
+    "profissoes": [
+      "Gerente de Projetos (Engenharia)",
+      "Empreendedor (Agronegócio)",
+      "Gerente de Logística",
+      "Consultor de Produção Industrial",
+      "Estrategista Militar"
+    ]
+  },
+  "ERA": {
+    "descricao": "O Empreendedor Criativo-Prático. Gosta de ter ideias criativas (A), transformá-las em negócios (E) e 'colocar a mão na massa' (R).",
+    "profissoes": [
+      "Empreendedor (Food Truck, Cervejaria)",
+      "Arquiteto (Dono de Escritório)",
+      "Dono de Oficina de Customização",
+      "Produtor de Shows",
+      "Paisagista (Dono de Empresa)"
+    ]
+  },
+  "ERS": {
+    "descricao": "O Líder Comunitário / de Varejo. Gosta de liderar (E) e organizar (R) pessoas (S) em direção a um objetivo prático.",
+    "profissoes": [
+      "Gerente de Vendas (Varejo Físico)",
+      "Político (Local)",
+      "Supervisor de Equipe (Serviços)",
+      "Gerente de Restaurante",
+      "Corretor de Imóveis (Líder)"
+    ]
+  },
+  "ERC": {
+    "descricao": "O Gerente de Operações. Gosta de liderar (E) processos práticos (R) de forma organizada e eficiente, seguindo as regras (C).",
+    "profissoes": [
+      "Gerente de Logística / Estoque",
+      "Supervisor de Produção",
+      "Dono de Franquia",
+      "Administrador de Fazenda",
+      "Gerente de Compras / Suprimentos"
+    ]
+  },
+  "EIR": {
+    "descricao": "O Empreendedor Tech (Hardware). Gosta de liderar (E) negócios baseados em pesquisa científica (I) e produtos tecnológicos/físicos (R).",
+    "profissoes": [
+      "Empreendedor (Hardware, IoT)",
+      "CEO de Startup (Engenharia)",
+      "Gerente de Produto (Tech)",
+      "Arquiteto de Soluções (TI)",
+      "Engenheiro (Vendas Técnicas)"
+    ]
+  },
+  "EIA": {
+    "descricao": "O Estrategista de Inovação. Gosta de analisar (I) o mercado, ter ideias criativas (A) e transformá-las em negócios (E).",
+    "profissoes": [
+      "Analista de Tendências (Marketing)",
+      "Consultor de Inovação",
+      "Empreendedor (Mídia, Publicidade)",
+      "Gerente de Produto (Foco em UX)",
+      "Investidor (Venture Capital)"
+    ]
+  },
+  "EIS": {
+    "descricao": "O Consultor Estratégico. Gosta de analisar (I) problemas complexos e liderar (E) equipes (S) para resolvê-los.",
+    "profissoes": [
+      "Advogado (Corporativo)",
+      "Consultor de Gestão",
+      "Economista",
+      "Analista de Negócios (Líder)",
+      "Empreendedor (Setor Social)"
+    ]
+  },
+  "EIC": {
+    "descricao": "O Analista de Risco / Financeiro. Gosta de analisar (I) dados e finanças (C) para tomar decisões estratégicas de negócio (E).",
+    "profissoes": [
+      "Analista de Mercado Financeiro",
+      "Advogado (Tributário)",
+      "Auditor (Líder)",
+      "Analista de Business Intelligence (BI)",
+      "Atuário (Seguros)"
+    ]
+  },
+  "EAR": {
+    "descricao": "O Empreendedor do 'Mão na Massa'. Gosta de liderar (E) negócios onde ele mesmo cria (A) e executa (R) o produto final.",
+    "profissoes": [
+      "Dono de Restaurante (Chef)",
+      "Dono de Estúdio (Tatuagem, Fotografia)",
+      "Empreendedor (Moda, Marcenaria)",
+      "Produtor Musical (Dono de Estúdio)",
+      "Arquiteto (Dono de Escritório)"
+    ]
+  },
+  "EAI": {
+    "descricao": "O Estrategista de Marca. Gosta de liderar (E) negócios criativos (A), usando análise de dados e tendências (I) para inovar.",
+    "profissoes": [
+      "Diretor de Marketing",
+      "Publicitário (Diretor de Criação)",
+      "Empreendedor (Mídia, Startup Criativa)",
+      "Gerente de Marca (Brand Manager)",
+      "Consultor de Inovação"
+    ]
+  },
+  "EAS": {
+    "descricao": "O Influenciador / Líder Criativo. Gosta de liderar (E) e inspirar pessoas (S) através de sua criatividade e visão (A).",
+    "profissoes": [
+      "Criador de Conteúdo (Influencer)",
+      "Diretor de Arte (Publicidade)",
+      "Empreendedor Social (ONG Cultural)",
+      "Relações Públicas (Líder)",
+      "Produtor Cultural"
+    ]
+  },
+  "EAC": {
+    "descricao": "O Gerente de Indústria Criativa. Gosta de liderar (E) negócios criativos (A), mas com foco em organização, finanças e processos (C).",
+    "profissoes": [
+      "Produtor Executivo (Cinema, Música)",
+      "Dono de Galeria de Arte",
+      "Gerente de E-commerce (Moda)",
+      "Editor-Chefe (Revista, Editora)",
+      "Gerente de Projetos (Agência)"
+    ]
+  },
+  "ESR": {
+    "descricao": "O Líder de Varejo/Serviços. Gosta de liderar (E) equipes (S) em ambientes práticos (R) e de contato direto com o cliente.",
+    "profissoes": [
+      "Gerente de Vendas (Varejo)",
+      "Dono de Restaurante / Café",
+      "Gerente de Hotelaria",
+      "Coordenador de Equipe (Ex: Telemarketing)",
+      "Corretor de Imóveis (Líder)"
+    ]
+  },
+  "ESI": {
+    "descricao": "O Estrategista de Capital Humano. Gosta de liderar (E) e desenvolver pessoas (S) usando análise e dados (I) para melhorar a performance.",
+    "profissoes": [
+      "Diretor de Recursos Humanos",
+      "Consultor de Gestão",
+      "Advogado (Corporativo)",
+      "Diretor de Escola",
+      "Psicólogo Organizacional (Líder)"
+    ]
+  },
+  "ESA": {
+    "descricao": "O Líder Criativo / Porta-Voz. Gosta de liderar (E) pessoas (S) usando carisma e criatividade (A) para comunicar uma visão.",
+    "profissoes": [
+      "Relações Públicas (Diretor)",
+      "Político",
+      "Diretor de Arte (Agência)",
+      "Criador de Conteúdo (Líder)",
+      "Diretor de Marketing (Varejo)"
+    ]
+  },
+  "ESC": {
+    "descricao": "O Administrador / Gestor. Foco em liderar (E) equipes (S) de forma organizada, seguindo processos e regras claras (C).",
+    "profissoes": [
+      "Gerente Administrativo",
+      "Diretor de Escola",
+      "Gerente de Contas (Banco)",
+      "Gerente de RH (Operações)",
+      "Administrador Público"
+    ]
+  },
+  "ECR": {
+    "descricao": "O Gerente de Operações Eficientes. Gosta de liderar (E) processos práticos (R) de forma organizada e eficiente, seguindo as regras (C).",
+    "profissoes": [
+      "Gerente de Logística / Estoque",
+      "Supervisor de Produção",
+      "Dono de Franquia",
+      "Administrador de Fazenda",
+      "Gerente de Compras / Suprimentos"
+    ]
+  },
+  "ECI": {
+    "descricao": "O Estrategista Financeiro / de Dados. Gosta de analisar (I) dados e regras (C) para tomar decisões de negócio e investimento (E).",
+    "profissoes": [
+      "Analista Financeiro (Investment Banking)",
+      "Controlador / Controller",
+      "Analista de Business Intelligence (BI)",
+      "Advogado (Fusões e Aquisições)",
+      "Economista (Mercado)"
+    ]
+  },
+  "ECA": {
+    "descricao": "O Gerente de Projetos Criativos. Gosta de organizar (C) e liderar (E) equipes para entregar projetos criativos (A) dentro do prazo e orçamento.",
+    "profissoes": [
+      "Gerente de Projetos (Agência de Pub.)",
+      "Produtor Gráfico",
+      "Editor-Chefe",
+      "Gerente de E-commerce",
+      "Coordenador de Marketing (Foco em Ops)"
+    ]
+  },
+  "ECS": {
+    "descricao": "O Gerente de Pessoas e Processos. Gosta de liderar (E) equipes (S) garantindo que as regras e a ordem (C) sejam seguidas.",
+    "profissoes": [
+      "Gerente de RH (Administrativo)",
+      "Gerente de Contas (Banco)",
+      "Gerente Administrativo",
+      "Diretor de Escola (Administrativo)",
+      "Supervisor de Atendimento"
+    ]
+  },
+  "CRI": {
+    "descricao": "O Técnico de Precisão (Analítico). Foco em organizar (C) tarefas práticas (R) que exigem análise (I) e exatidão.",
+    "profissoes": [
+      "Controlador de Qualidade (Indústria)",
+      "Técnico de TI (Redes/Hardware)",
+      "Logística (Analista)",
+      "Engenheiro de Software (QA/Testes)",
+      "Técnico de Laboratório"
+    ]
+  },
+  "CRA": {
+    "descricao": "O Designer Metódico. Gosta de organizar (C) e criar (A) produtos práticos (R) com extrema atenção a detalhes e medidas.",
+    "profissoes": [
+      "Desenhista Técnico (CAD)",
+      "Designer Gráfico (Editoração, Layout)",
+      "Padeiro / Confeiteiro (Decoração)",
+      "Modelista (Roupas)",
+      "Arquiteto (Detalhes Técnicos)"
+    ]
+  },
+  "CRS": {
+    "descricao": "O Coordenador de Suporte. Gosta de organizar (C) a logística (R) para ajudar e dar suporte a pessoas (S).",
+    "profissoes": [
+      "Secretário (Clínica Médica)",
+      "Agente de Viagens",
+      "Técnico de Segurança do Trabalho",
+      "Comissário de Bordo / Aeromoça",
+      "Assistente Administrativo (Obras)"
+    ]
+  },
+  "CRE": {
+    "descricao": "O Gerente de Operações. Foco em organizar (C), liderar (E) e otimizar processos práticos (R) e logísticos.",
+    "profissoes": [
+      "Gerente de Logística / Estoque",
+      "Supervisor de Chão de Fábrica",
+      "Gerente de Compras",
+      "Dono de Franquia (Operações)",
+      "Administrador (Transportadora)"
+    ]
+  },
+  "CIR": {
+    "descricao": "O Programador (Back-end) / Analista de TI. Foco em construir sistemas lógicos (I) de forma organizada (C) que rodam em máquinas (R).",
+    "profissoes": [
+      "Desenvolvedor (Back-end)",
+      "Administrador de Banco de Dados (DBA)",
+      "Analista de Sistemas",
+      "Engenheiro de Redes",
+      "Administrador de Servidores"
+    ]
+  },
+  "CIA": {
+    "descricao": "O Arquiteto da Informação (UI/UX). Gosta de organizar (C) dados (I) de forma que sejam visualmente claros e fáceis de usar (A).",
+    "profissoes": [
+      "Designer de UI (User Interface)",
+      "Desenvolvedor Front-End",
+      "Analista de SEO",
+      "Editor (Técnico / Científico)",
+      "Arquiteto de Informação"
+    ]
+  },
+  "CIS": {
+    "descricao": "O Guardião do Conhecimento. Gosta de organizar (C) informações (I) para ajudar pessoas (S) a encontrá-las.",
+    "profissoes": [
+      "Bibliotecário",
+      "Arquivista / Historiador",
+      "Analista de RH (Dados)",
+      "Coordenador Pedagógico",
+      "Analista de Suporte Técnico (Sênior)"
+    ]
+  },
+  "CIE": {
+    "descricao": "O Estrategista Financeiro / de Dados. Gosta de analisar (I) dados e regras (C) para tomar decisões de negócio e investimento (E).",
+    "profissoes": [
+      "Analista Financeiro (Investment Banking)",
+      "Controlador / Controller",
+      "Analista de Business Intelligence (BI)",
+      "Advogado (Fusões e Aquisições)",
+      "Economista (Mercado)"
+    ]
+  },
+  "CAR": {
+    "descricao": "O Produtor Gráfico / Artesão. Gosta de organizar (C) a produção (R) de materiais criativos (A) com precisão.",
+    "profissoes": [
+      "Designer Gráfico (Produção/Fechamento)",
+      "Editor de Vídeo (Pós-produção)",
+      "Padeiro / Confeiteiro",
+      "Desenhista de Produto (CAD)",
+      "Alfaiate / Costureiro"
+    ]
+  },
+  "CAI": {
+    "descricao": "O Web Designer Detalhista. Gosta de criar layouts (A) organizados (C) e que funcionam perfeitamente (I).",
+    "profissoes": [
+      "Web Designer (Full Stack)",
+      "Desenvolvedor Front-End",
+      "Editor de Vídeo / Motion Designer",
+      "Revisor de Texto Técnico",
+      "Designer de UX (Foco em UI)"
+    ]
+  },
+  "CAS": {
+    "descricao": "O Educador / Planejador de Eventos. Gosta de organizar (C) eventos ou aulas (S) de forma criativa (A).",
+    "profissoes": [
+      "Professor (Ensino Fundamental)",
+      "Designer Instrucional",
+      "Planejador de Eventos",
+      "Coordenador Pedagógico",
+      "Bibliotecário (Escolar)"
+    ]
+  },
+  "CAE": {
+    "descricao": "O Gerente de Projetos Criativos. Gosta de organizar (C) e liderar (E) equipes para entregar projetos criativos (A) dentro do prazo e orçamento.",
+    "profissoes": [
+      "Gerente de Projetos (Agência de Pub.)",
+      "Produtor Gráfico",
+      "Editor-Chefe",
+      "Gerente de E-commerce",
+      "Coordenador de Marketing (Foco em Ops)"
+    ]
+  },
+  "CSR": {
+    "descricao": "O Assistente de Serviços. Gosta de organizar (C) rotinas (R) para ajudar e atender pessoas (S).",
+    "profissoes": [
+      "Secretário (Executivo / Clínico)",
+      "Agente de Viagens",
+      "Comissário de Bordo",
+      "Recepcionista de Hotel",
+      "Técnico Administrativo (Saúde)"
+    ]
+  },
+  "CSI": {
+    "descricao": "O Administrador do Conhecimento. Gosta de organizar (C) sistemas e dados (I) para ajudar equipes (S).",
+    "profissoes": [
+      "Bibliotecário",
+      "Coordenador Pedagógico",
+      "Analista de Suporte (Help Desk)",
+      "Administrador de Registros Acadêmicos",
+      "Pesquisador de Mercado"
+    ]
+  },
+  "CSA": {
+    "descricao": "O Professor Metódico (Artes). Gosta de ensinar (S) de forma organizada (C) e com materiais criativos (A) em ambientes estruturados.",
+    "profissoes": [
+      "Professor (Ensino Básico)",
+      "Designer Instrucional",
+      "Coordenador de Eventos (Escolar)",
+      "Bibliotecário (Escolar)",
+      "Secretário Editorial"
+    ]
+  },
+  "CSE": {
+    "descricao": "O Gerente de Pessoas e Processos. Gosta de liderar (E) equipes (S) garantindo que as regras e a ordem (C) sejam seguidas.",
+    "profissoes": [
+      "Gerente de RH (Administrativo)",
+      "Gerente de Contas (Banco)",
+      "Gerente Administrativo",
+      "Diretor de Escola (Administrativo)",
+      "Supervisor de Atendimento"
+    ]
+  },
+  "CER": {
+    "descricao": "O Gerente de Eficiência. Foco em liderar (E) e organizar (C) processos práticos (R) para máxima eficiência.",
+    "profissoes": [
+      "Gerente de Logística / Estoque",
+      "Supervisor de Produção",
+      "Gerente de Compras",
+      "Dono de Franquia (Operações)",
+      "Administrador (Transportadora)"
+    ]
+  },
+  "CEI": {
+    "descricao": "O Estrategista de Risco. Gosta de analisar (I) dados e finanças (C) para tomar decisões estratégicas de negócio (E).",
+    "profissoes": [
+      "Analista de Mercado Financeiro",
+      "Advogado (Tributário)",
+      "Auditor (Líder)",
+      "Analista de Business Intelligence (BI)",
+      "Atuário (Seguros)"
+    ]
+  },
+  "CEA": {
+    "descricao": "O Produtor Executivo. Gosta de organizar (C) as finanças e a logística (E) por trás de grandes projetos criativos (A).",
+    "profissoes": [
+      "Produtor Executivo (Cinema, Música)",
+      "Dono de Galeria de Arte",
+      "Gerente de E-commerce (Moda)",
+      "Editor-Chefe (Revista, Editora)",
+      "Gerente de Projetos (Agência)"
+    ]
+  },
+  "CES": {
+    "descricao": "O Diretor Administrativo. Gosta de liderar (E) equipes (S) garantindo que todas as regras e finanças (C) estejam em ordem.",
+    "profissoes": [
+      "Diretor Administrativo / Financeiro",
+      "Gerente de RH (Líder)",
+      "Diretor de Escola (Administrativo)",
+      "Gerente de Banco",
+      "Administrador Público (Gestor)"
+    ]
+  }
+}

@@ -1,0 +1,614 @@
+{
+  "R": [
+    {
+      "id": "R01",
+      "texto": "Gosto de usar ferramentas ou montar coisas."
+    },
+    {
+      "id": "R02",
+      "texto": "Prefiro atividades práticas a atividades teóricas."
+    },
+    {
+      "id": "R03",
+      "texto": "Tenho interesse em mexer com máquinas, eletrônicos ou equipamentos."
+    },
+    {
+      "id": "R04",
+      "texto": "Gosto de resolver problemas mexendo fisicamente nas coisas."
+    },
+    {
+      "id": "R05",
+      "texto": "Atividades ao ar livre me atraem."
+    },
+    {
+      "id": "R06",
+      "texto": "Cuidar de plantas ou de um jardim."
+    },
+    {
+      "id": "R07",
+      "texto": "Praticar esportes que exigem esforço físico e resistência."
+    },
+    {
+      "id": "R08",
+      "texto": "Fazer a manutenção da minha bicicleta ou carro."
+    },
+    {
+      "id": "R09",
+      "texto": "Trabalhar na construção ou reparo de uma casa."
+    },
+    {
+      "id": "R10",
+      "texto": "Dirigir veículos grandes ou operar equipamentos."
+    },
+    {
+      "id": "R11",
+      "texto": "Desmontar um controle de videogame ou um PC para consertar ou ver como é dentro."
+    },
+    {
+      "id": "R12",
+      "texto": "Montar um móvel novo (ex: cadeira gamer, estante) que chegou em casa."
+    },
+    {
+      "id": "R13",
+      "texto": "Cuidar de um animal de estimação (dar banho, comida, levar para passear)."
+    },
+    {
+      "id": "R14",
+      "texto": "Ter aulas de robótica ou mexer com peças (ex: Lego técnico)."
+    },
+    {
+      "id": "R15",
+      "texto": "Ajudar em uma reforma ou pintura em casa."
+    },
+    {
+      "id": "R16",
+      "texto": "Aprender a cozinhar ou fazer pães/bolos (seguindo a receita fisicamente)."
+    },
+    {
+      "id": "R17",
+      "texto": "Ter uma aula de marcenaria ou mecânica (ex: SENAI, curso técnico)."
+    },
+    {
+      "id": "R18",
+      "texto": "Entender de primeiros socorros ou como agir em uma emergência."
+    },
+    {
+      "id": "R19",
+      "texto": "Montar um skate ou ajustar o shape e os trucks."
+    },
+    {
+      "id": "R20",
+      "texto": "Praticar um esporte de precisão (ex: arco e flecha, bilhar, boliche)."
+    },
+    {
+      "id": "R21",
+      "texto": "Ajudar a carregar e montar equipamentos de som ou luz para um evento."
+    },
+    {
+      "id": "R22",
+      "texto": "Aprender a pilotar um drone e fazer manobras."
+    },
+    {
+      "id": "R23",
+      "texto": "Cuidar de um carro ou moto (lavar, encerar, checar o óleo)."
+    },
+    {
+      "id": "R24",
+      "texto": "Montar barracas ou fazer uma fogueira em um acampamento."
+    },
+    {
+      "id": "R25",
+      "texto": "Trabalhar com a terra (ex: horta da escola, jardim de casa)."
+    }
+  ],
+  "I": [
+    {
+      "id": "I01",
+      "texto": "Gosto de pesquisar e descobrir como as coisas funcionam."
+    },
+    {
+      "id": "I02",
+      "texto": "Me interesso por ciências, tecnologia ou matemática."
+    },
+    {
+      "id": "I03",
+      "texto": "Gosto de resolver enigmas, problemas e desafios lógicos."
+    },
+    {
+      "id": "I04",
+      "texto": "Ler sobre temas científicos me atrai."
+    },
+    {
+      "id": "I05",
+      "texto": "Curto entender causas e consequências."
+    },
+    {
+      "id": "I06",
+      "texto": "Fazer experimentos para testar uma teoria."
+    },
+    {
+      "id": "I07",
+      "texto": "Aprender uma linguagem de programação."
+    },
+    {
+      "id": "I08",
+      "texto": "Analisar um problema complexo parte por parte até resolvê-lo."
+    },
+    {
+      "id": "I09",
+      "texto": "Ler sobre filosofia ou teorias complexas."
+    },
+    {
+      "id": "I10",
+      "texto": "Observar detalhes que a maioria das pessoas não percebe."
+    },
+    {
+      "id": "I11",
+      "texto": "Otimizar a 'build' ou estratégia do meu personagem em um jogo."
+    },
+    {
+      "id": "I12",
+      "texto": "Aprender a programar um bot para o Discord ou criar um mod para um jogo."
+    },
+    {
+      "id": "I13",
+      "texto": "Fazer uma 'deep dive' (pesquisa funda) na internet sobre um assunto obscuro."
+    },
+    {
+      "id": "I14",
+      "texto": "Passar horas tentando 'zerar' um jogo de puzzle ou mistério (ex: escape room)."
+    },
+    {
+      "id": "I15",
+      "texto": "Preparar um projeto de feira de ciências com uma pesquisa original."
+    },
+    {
+      "id": "I16",
+      "texto": "Jogar xadrez ou outros jogos de pura estratégia (ex: RTS)."
+    },
+    {
+      "id": "I17",
+      "texto": "Assistir vídeos longos no YouTube que explicam um 'iceberg' ou um tema complexo."
+    },
+    {
+      "id": "I18",
+      "texto": "Achar o 'bug' em um código ou em uma planilha."
+    },
+    {
+      "id": "I19",
+      "texto": "Ler livros de ficção científica que exploram ideias complexas."
+    },
+    {
+      "id": "I20",
+      "texto": "Tentar entender o porquê das regras da gramática ou de uma fórmula matemática."
+    },
+    {
+      "id": "I21",
+      "texto": "Ouvir podcasts de 'true crime' ou mistério e tentar adivinhar a solução."
+    },
+    {
+      "id": "I22",
+      "texto": "Tentar prever o resultado de um experimento antes de fazê-lo."
+    },
+    {
+      "id": "I23",
+      "texto": "Ficar em silêncio por muito tempo, apenas pensando em uma ideia."
+    },
+    {
+      "id": "I24",
+      "texto": "Desvendar códigos ou mensagens criptografadas."
+    },
+    {
+      "id": "I25",
+      "texto": "Fazer perguntas 'por quê?' até chegar na raiz do problema."
+    }
+  ],
+  "A": [
+    {
+      "id": "A01",
+      "texto": "Gosto de desenhar, criar, editar vídeos ou produzir algo criativo."
+    },
+    {
+      "id": "A02",
+      "texto": "Prefiro atividades sem regras rígidas."
+    },
+    {
+      "id": "A03",
+      "texto": "Tenho interesse por música, arte, design ou escrita."
+    },
+    {
+      "id": "A04",
+      "texto": "Imaginar novas ideias é algo natural pra mim."
+    },
+    {
+      "id": "A05",
+      "texto": "Gosto de expressar minhas ideias visualmente."
+    },
+    {
+      "id": "A06",
+      "texto": "Atuar em uma peça de teatro ou dançar."
+    },
+    {
+      "id": "A07",
+      "texto": "Criar ou customizar minhas próprias roupas e estilo."
+    },
+    {
+      "id": "A08",
+      "texto": "Pensar em maneiras de fazer coisas de um jeito totalmente novo."
+    },
+    {
+      "id": "A09",
+      "texto": "Tocar em uma banda ou cantar em um coral."
+    },
+    {
+      "id": "A10",
+      "texto": "Planejar a decoração ou o design de um ambiente."
+    },
+    {
+      "id": "A11",
+      "texto": "Gravar e editar um vídeo para o TikTok, Reels ou YouTube."
+    },
+    {
+      "id": "A12",
+      "texto": "Criar 'fan art' ou desenhar meus personagens favoritos (ex: animes, games)."
+    },
+    {
+      "id": "A13",
+      "texto": "Escrever 'fanfics' (histórias de fãs) ou histórias originais."
+    },
+    {
+      "id": "A14",
+      "texto": "Criar uma playlist perfeita no Spotify para cada 'vibe'."
+    },
+    {
+      "id": "A15",
+      "texto": "Personalizar meu caderno, tênis ou roupas com um estilo único."
+    },
+    {
+      "id": "A16",
+      "texto": "Criar e desenhar um 'mundo' ou personagens originais (ex: para D&D, mangá)."
+    },
+    {
+      "id": "A17",
+      "texto": "Tirar fotos e editá-las (procurando o melhor ângulo, luz e filtro)."
+    },
+    {
+      "id": "A18",
+      "texto": "Criar a identidade visual (logo, banners) para um projeto ou time."
+    },
+    {
+      "id": "A19",
+      "texto": "Fazer cosplay ou criar fantasias (ex: para o Halloween ou eventos)."
+    },
+    {
+      "id": "A20",
+      "texto": "Escrever um diário ou bullet journal de forma criativa e decorada."
+    },
+    {
+      "id": "A21",
+      "texto": "Fazer mixagem de músicas (ser o DJ da festa)."
+    },
+    {
+      "id": "A22",
+      "texto": "Usar maquiagem como forma de expressão artística (não só social)."
+    },
+    {
+      "id": "A23",
+      "texto": "Passar horas customizando o visual de um personagem de jogo."
+    },
+    {
+      "id": "A24",
+      "texto": "Imaginar um final diferente para um filme ou livro que eu não gostei."
+    },
+    {
+      "id": "A25",
+      "texto": "Ter um trabalho onde eu não precise usar uniforme ou terno."
+    }
+  ],
+  "S": [
+    {
+      "id": "S01",
+      "texto": "Gosto de ajudar outras pessoas."
+    },
+    {
+      "id": "S02",
+      "texto": "Me sinto bem ensinando, explicando ou orientando alguém."
+    },
+    {
+      "id": "S03",
+      "texto": "Costumo ser paciente e compreensivo."
+    },
+    {
+      "id": "S04",
+      "texto": "Gosto de atividades em grupo e colaboração."
+    },
+    {
+      "id": "S05",
+      "texto": "Tenho facilidade de ouvir e entender outras pessoas."
+    },
+    {
+      "id": "S06",
+      "texto": "Fazer trabalho voluntário por uma causa em que acredito."
+    },
+    {
+      "id": "S07",
+      "texto": "Trabalhar cuidando de crianças ou idosos."
+    },
+    {
+      "id": "S08",
+      "texto": "Ajudar a resolver um conflito ou briga entre amigos."
+    },
+    {
+      "id": "S09",
+      "texto": "Entender as emoções das outras pessoas (ter empatia)."
+    },
+    {
+      "id": "S10",
+      "texto": "Ser o anfitrião de uma festa ou evento, fazendo todos se sentirem bem."
+    },
+    {
+      "id": "S11",
+      "texto": "Ser o representante de turma e defender os interesses dos colegas."
+    },
+    {
+      "id": "S12",
+      "texto": "Organizar uma campanha de arrecadação (alimentos, agasalhos) na escola."
+    },
+    {
+      "id": "S13",
+      "texto": "Ser o 'moderador' de um grupo online (Discord, WhatsApp), mantendo a paz."
+    },
+    {
+      "id": "S14",
+      "texto": "Explicar a matéria para um colega que não entendeu a aula."
+    },
+    {
+      "id": "S15",
+      "texto": "Acolher um aluno novo e apresentá-lo à turma ou ao grupo de amigos."
+    },
+    {
+      "id": "S16",
+      "texto": "Ser o 'psicólogo' do grupo, que ouve os problemas de todo mundo."
+    },
+    {
+      "id": "S17",
+      "texto": "Cuidar de crianças (ex: ser babá de um primo ou vizinho)."
+    },
+    {
+      "id": "S18",
+      "texto": "Organizar um grupo de estudos para ajudar quem está com dificuldade."
+    },
+    {
+      "id": "S19",
+      "texto": "Trabalhar em atendimento ao cliente (mesmo que em um trabalho de férias)."
+    },
+    {
+      "id": "S20",
+      "texto": "Dar aulas de reforço de graça para um colega."
+    },
+    {
+      "id": "S21",
+      "texto": "Fazer uma apresentação em grupo (e gostar da parte de interagir)."
+    },
+    {
+      "id": "S22",
+      "texto": "Trabalhar em uma ONG ou organização de caridade."
+    },
+    {
+      "id": "S23",
+      "texto": "Ser a pessoa que lembra do aniversário de todo mundo e organiza a 'vaquinha' do presente."
+    },
+    {
+      "id": "S24",
+      "texto": "Ter um trabalho onde eu possa conversar com pessoas o dia todo."
+    },
+    {
+      "id": "S25",
+      "texto": "Acalmar um amigo que está ansioso ou com raiva."
+    }
+  ],
+  "E": [
+    {
+      "id": "E01",
+      "texto": "Gosto de liderar grupos ou tomar decisões."
+    },
+    {
+      "id": "E02",
+      "texto": "Me sinto motivado quando posso convencer outras pessoas."
+    },
+    {
+      "id": "E03",
+      "texto": "Tenho interesse em negócios, vendas ou projetos."
+    },
+    {
+      "id": "E04",
+      "texto": "Gosto de assumir riscos calculados."
+    },
+    {
+      "id": "E05",
+      "texto": "Me sinto confortável falando em público."
+    },
+    {
+      "id": "E06",
+      "texto": "Vender um produto (mesmo que seja a rifa da escola)."
+    },
+    {
+      "id": "E07",
+      "texto": "Negociar para conseguir um preço melhor ou um bom acordo."
+    },
+    {
+      "id": "E08",
+      "texto": "Motivar uma equipe que está desanimada."
+    },
+    {
+      "id": "E09",
+      "texto": "Ter um trabalho onde eu possa ter status ou reconhecimento."
+    },
+    {
+      "id": "E10",
+      "texto": "Organizar um grande evento (como uma formatura) do início ao fim."
+    },
+    {
+      "id": "E11",
+      "texto": "Liderar um time em um jogo online (ex: ser o 'capitão' ou 'shot caller')."
+    },
+    {
+      "id": "E12",
+      "texto": "Vender doces (brigadeiros) ou outros itens na escola para levantar um dinheiro."
+    },
+    {
+      "id": "E13",
+      "texto": "Organizar a gincana ou a festa de formatura da turma."
+    },
+    {
+      "id": "E14",
+      "texto": "Debater em sala de aula, tentando convencer os outros do meu ponto de vista."
+    },
+    {
+      "id": "E15",
+      "texto": "Ser o presidente do grêmio estudantil."
+    },
+    {
+      "id": "E16",
+      "texto": "Criar e administrar um clan ou guilda em um jogo, recrutando membros."
+    },
+    {
+      "id": "E17",
+      "texto": "Comprar algo (ex: figurinha, skin) por um preço e tentar revender mais caro."
+    },
+    {
+      "id": "E18",
+      "texto": "Criar uma 'fan page' ou canal e ter a meta de crescê-lo (ganhar seguidores)."
+    },
+    {
+      "id": "E19",
+      "texto": "Disputar uma eleição (ex: grêmio estudantil) e fazer campanha."
+    },
+    {
+      "id": "E20",
+      "texto": "Tentar conseguir patrocinadores para o time da escola ou para um evento."
+    },
+    {
+      "id": "E21",
+      "texto": "Preferir ser o chefe a ter um chefe."
+    },
+    {
+      "id": "E22",
+      "texto": "Ter uma ideia e, em vez de fazer, convencer os outros a fazerem por mim (ou comigo)."
+    },
+    {
+      "id": "E23",
+      "texto": "Gostar de usar roupas de marca ou ter coisas que mostrem status."
+    },
+    {
+      "id": "E24",
+      "texto": "Ter um trabalho baseado em metas e comissões (ganhar pelo meu esforço)."
+    },
+    {
+      "id": "E25",
+      "texto": "Dar a palavra final em uma decisão de grupo."
+    }
+  ],
+  "C": [
+    {
+      "id": "C01",
+      "texto": "Gosto de deixar tudo organizado."
+    },
+    {
+      "id": "C02",
+      "texto": "Tenho facilidade com planilhas, dados ou documentos."
+    },
+    {
+      "id": "C03",
+      "texto": "Prefiro seguir regras claras e rotinas definidas."
+    },
+    {
+      "id": "C04",
+      "texto": "Gosto de tarefas que exigem atenção aos detalhes."
+    },
+    {
+      "id": "C05",
+      "texto": "Me sinto confortável trabalhando com números."
+    },
+    {
+      "id": "C06",
+      "texto": "Revisar um texto para achar erros de gramática ou digitação."
+    },
+    {
+      "id": "C07",
+      "texto": "Seguir leis ou regulamentos ao pé da letra."
+    },
+    {
+      "id": "C08",
+      "texto": "Fazer o controle financeiro (do meu dinheiro ou de um projeto)."
+    },
+    {
+      "id": "C09",
+      "texto": "Trabalhar em um ambiente silencioso, previsível e estável."
+    },
+    {
+      "id": "C10",
+      "texto": "Arquivar e catalogar informações ou objetos."
+    },
+    {
+      "id": "C11",
+      "texto": "Organizar meus arquivos e pastas no computador (ou nuvem) meticulosamente."
+    },
+    {
+      "id": "C12",
+      "texto": "Manter um caderno de studygram (anotações de aula perfeitamente organizadas)."
+    },
+    {
+      "id": "C13",
+      "texto": "Fazer o 'controle de caixa' de um projeto da turma ou de um trabalho de jovem aprendiz."
+    },
+    {
+      "id": "C14",
+      "texto": "Organizar os itens no inventário de um jogo (ex: Minecraft) por categoria."
+    },
+    {
+      "id": "C15",
+      "texto": "Criar e seguir uma rotina de estudos detalhada (ex: usando planilhas)."
+    },
+    {
+      "id": "C16",
+      "texto": "Ser o 'tesoureiro' da turma ou do projeto."
+    },
+    {
+      "id": "C17",
+      "texto": "Fazer uma coleção (ex: figurinhas, selos, moedas) e mantê-la perfeitamente catalogada."
+    },
+    {
+      "id": "C18",
+      "texto": "Gostar de 'farmar' e organizar os itens em um baú no Minecraft ou Stardew Valley."
+    },
+    {
+      "id": "C19",
+      "texto": "Ser a pessoa que corrige a gramática dos outros em um chat de grupo."
+    },
+    {
+      "id": "C20",
+      "texto": "Seguir uma receita ou manual de instruções exatamente como está escrito."
+    },
+    {
+      "id": "C21",
+      "texto": "Criar o cronograma de uma viagem (o que fazer, que horas, quanto custa)."
+    },
+    {
+      "id": "C22",
+      "texto": "Ter um trabalho onde tudo é previsível, sem surpresas."
+    },
+    {
+      "id": "C23",
+      "texto": "Ajudar a organizar os livros na biblioteca da escola."
+    },
+    {
+      "id": "C24",
+      "texto": "Ter uma caligrafia perfeita ou fazer anotações muito limpas."
+    },
+    {
+      "id": "C25",
+      "texto": "Gostar mais da parte de 'arrumar a planilha de pontos' do que de jogar o jogo."
+    }
+  ]
+}
