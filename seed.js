@@ -33,47 +33,8 @@ admin.initializeApp({
 const db = admin.firestore();
 const auth = admin.auth();
 
-// --- 2. CARREGAR DADOS DOS JSONS ---
-
-// Carregar o Dicionário de 120 Combinações
-function findFirstExistingFile(candidates) {
-  for (const c of candidates) {
-    if (fs.existsSync(c)) return c;
-  }
-  return null;
-}
-
-const dicionarioCandidates = [
-  'dicionario_riasec.json',
-  'dicionario_riaseac.json',
-  'dicionario.riasec.json',
-  'dicionario.json',
-];
-const perguntasCandidates = [
-  'perguntas_riasec.json',
-  'perguntas.riasec.json',
-  'perguntas.json',
-];
-
-const dicionarioPath = findFirstExistingFile(dicionarioCandidates);
-if (!dicionarioPath) {
-  console.error('❌ Arquivo de dicionário não encontrado. Procure por:', dicionarioCandidates.join(', '));
-  process.exit(1);
-}
-const perguntasPath = findFirstExistingFile(perguntasCandidates);
-if (!perguntasPath) {
-  console.error('❌ Arquivo de perguntas não encontrado. Procure por:', perguntasCandidates.join(', '));
-  process.exit(1);
-}
-
-console.log('Usando arquivos:', dicionarioPath, ',', perguntasPath);
-
-const dicionarioRaw = fs.readFileSync(dicionarioPath, 'utf8');
-const dicionario = JSON.parse(dicionarioRaw);
-
-// Carregar as 150 Perguntas
-const perguntasRaw = fs.readFileSync(perguntasPath, 'utf8');
-const perguntas = JSON.parse(perguntasRaw);
+// --- 2. NÃO HÁ CARREGAMENTO DE DADOS JSON ADICIONAL ---
+// O módulo vocacional foi removido nesta versão
 
 // --- 3. POPULAR FUNÇÕES ---
 
@@ -130,28 +91,8 @@ async function seedDatabase() {
   });
   console.log(`✅ Gestor '${TEST_GESTOR_EMAIL}' vinculado à escola.`);
 
-  // C. POPULAR MÓDULO VOCACIONAL
 
-  // 1. Dicionário RIASEC (Coleção 'dicionario_riasec')
-  const dicionarioRef = db.collection('dicionario_riasec');
-  for (const [codigo, data] of Object.entries(dicionario)) {
-    await dicionarioRef.doc(codigo).set(data);
-  }
-  console.log(`✅ ${Object.keys(dicionario).length} combinações RIASEC inseridas no dicionário.`);
-
-  // 2. Banco de Perguntas (Coleção 'perguntas_riasec')
-  const perguntasRef = db.collection('perguntas_riasec');
-  for (const [perfil, lista] of Object.entries(perguntas)) {
-    for (const pergunta of lista) {
-        await perguntasRef.doc(pergunta.id).set({
-            texto: pergunta.texto,
-            perfil: perfil
-        });
-    }
-  }
-  console.log(`✅ ${Object.keys(perguntas).reduce((count, key) => count + perguntas[key].length, 0)} perguntas inseridas.`);
-  
-  // D. CRIAÇÃO DE ALUNOS DE TESTE
+  // C. CRIAÇÃO DE ALUNOS DE TESTE
   await db.collection('escolas').doc(TEST_ESCOLA_ID).collection('alunos').doc(alunoUser.uid).set({
     matricula: '123456',
     nome: 'Aluno Teste ClicHub',
