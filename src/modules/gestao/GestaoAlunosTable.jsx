@@ -23,8 +23,8 @@ const GestaoAlunosTable = () => {
     const [turmas, setTurmas] = useState([]);
     const [professores, setProfessores] = useState([]);
     const [refreshTrigger, setRefreshTrigger] = useState(0); // Gatilho de refresh
-    const [ciclos, setCiclos] = useState([]);
-    const [series, setSeries] = useState([]);
+    const [unidades, setUnidades] = useState([]);
+    const [modalidades, setModalidades] = useState([]);
 
     // Função que lista os alunos em tempo real
     useEffect(() => {
@@ -69,7 +69,7 @@ const GestaoAlunosTable = () => {
         return () => { try { if (cleanupPromise && typeof cleanupPromise.then === 'function') { cleanupPromise.then(unsub => { if (typeof unsub === 'function') unsub(); }); } } catch (e) { /* noop */ } };
     }, [escolaId, refreshTrigger]); 
     
-    // Função que lista as turmas, ciclos, séries e professores
+    // Função que lista as turmas, unidades, modalidades e professores
     useEffect(() => {
         const fetchMasters = async () => {
             if (!escolaId) return;
@@ -77,13 +77,13 @@ const GestaoAlunosTable = () => {
             const turmasSnap = await getDocs(collection(db, 'escolas', escolaId, 'turmas'));
             setTurmas(turmasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             
-            // Ciclos
-            const ciclosSnap = await getDocs(collection(db, 'escolas', escolaId, 'ciclos'));
-            setCiclos(ciclosSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            // Unidades
+            const unidadesSnap = await getDocs(collection(db, 'escolas', escolaId, 'unidades'));
+            setUnidades(unidadesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             
-            // Séries
-            const seriesSnap = await getDocs(collection(db, 'escolas', escolaId, 'series'));
-            setSeries(seriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            // Modalidades
+            const modalidadesSnap = await getDocs(collection(db, 'escolas', escolaId, 'modalidades'));
+            setModalidades(modalidadesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             
             // Professores
             const profSnap = await getDocs(collection(db, 'escolas', escolaId, 'professores'));
@@ -112,21 +112,21 @@ const GestaoAlunosTable = () => {
 
 
     return (
-        <div className="bg-white p-4 rounded-xl">
+        <div className="bg-white p-3 rounded-lg">
             {/* Botões de Ação */}
-            <div className="flex justify-end space-x-3 mb-6">
+            <div className="flex justify-end space-x-2 mb-4">
                 <button
                     onClick={() => setIsUploadModalOpen(true)}
-                    className="flex items-center px-4 py-2 bg-clic-primary text-clic-secondary font-semibold rounded-lg shadow-md hover:bg-yellow-400 transition"
+                    className="flex items-center px-3 py-1.5 text-sm bg-clic-primary text-clic-secondary font-semibold rounded-md shadow-md hover:bg-yellow-400 transition"
                 >
-                    <FontAwesomeIcon icon={faFileImport} className="mr-2" />
+                    <FontAwesomeIcon icon={faFileImport} className="mr-1.5 text-xs" />
                     Importar Planilha
                 </button>
                 <button
                     onClick={handleAddAluno}
-                    className="flex items-center px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
+                    className="flex items-center px-3 py-1.5 text-sm bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 transition"
                 >
-                    <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                    <FontAwesomeIcon icon={faPlus} className="mr-1.5 text-xs" />
                     Novo Aluno
                 </button>
             </div>
@@ -136,35 +136,35 @@ const GestaoAlunosTable = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matrícula</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ciclo</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Série</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turma</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ano</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Matrícula</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unidade</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Modalidade</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Turma</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ano</th>
+                            <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {alunos.length === 0 ? (
                             <tr>
-                                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">Nenhum aluno cadastrado. Use a importação para começar!</td>
+                                <td colSpan="7" className="px-3 py-3 text-center text-sm text-gray-500">Nenhum aluno cadastrado. Use a importação para começar!</td>
                             </tr>
                         ) : (
                             alunos.map((aluno) => (
                                 <tr key={aluno.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-clic-secondary">{aluno.matricula}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{aluno.nome_aluno || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{aluno.ciclo || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{aluno.serie || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{aluno.nome_turma || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{aluno.ano_turma || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-center space-x-3">
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-clic-secondary">{aluno.matricula}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{aluno.nome_aluno || '-'}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.unidade || '-'}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.modalidade || '-'}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.nome_turma || '-'}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.ano_turma || '-'}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium text-center space-x-2">
                                         <button onClick={() => handleEditAluno(aluno)} className="text-clic-primary hover:text-yellow-600">
-                                            <FontAwesomeIcon icon={faEdit} />
+                                            <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                         </button>
                                         <button onClick={() => handleDeleteAluno(aluno)} className="text-red-500 hover:text-red-700">
-                                            <FontAwesomeIcon icon={faTrash} />
+                                            <FontAwesomeIcon icon={faTrash} className="text-sm" />
                                         </button>
                                     </td>
                                 </tr>
@@ -194,8 +194,8 @@ const GestaoAlunosTable = () => {
             {isAddAlunoModalOpen && (
                 <AddAlunoModal
                     escolaId={escolaId}
-                    ciclos={ciclos}
-                    series={series}
+                    unidades={unidades}
+                    modalidades={modalidades}
                     turmas={turmas}
                     onClose={() => setIsAddAlunoModalOpen(false)}
                     onSave={() => {
@@ -210,8 +210,8 @@ const GestaoAlunosTable = () => {
                 <EditAlunoModal
                     aluno={selectedAluno}
                     escolaId={escolaId}
-                    ciclos={ciclos}
-                    series={series}
+                    unidades={unidades}
+                    modalidades={modalidades}
                     turmas={turmas}
                     onClose={() => {
                         setIsEditModalOpen(false);
@@ -230,13 +230,13 @@ const GestaoAlunosTable = () => {
 };
 
 // Componente Modal de Adição de Novo Aluno
-const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) => {
+const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSave }) => {
     const [formData, setFormData] = useState({
         nome_aluno: '',
         matricula: '',
         ano_turma: new Date().getFullYear().toString(),
-        ciclo: '',
-        serie: '',
+        unidade: '',
+        modalidade: '',
         nome_turma: '',
         dataNascimento: '',
         nomePai: '',
@@ -285,8 +285,8 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                 nome_aluno: formData.nome_aluno,
                 matricula: formData.matricula,
                 ano_turma: formData.ano_turma,
-                ciclo: formData.ciclo || null,
-                serie: formData.serie || null,
+                unidade: formData.unidade || null,
+                modalidade: formData.modalidade || null,
                 nome_turma: formData.nome_turma || null,
                 dataNascimento: formData.dataNascimento || null,
                 nomePai: formData.nomePai || null,
@@ -319,11 +319,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
     };
 
     return (
-        <Modal title="Adicionar Novo Aluno" onClose={onClose}>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <Modal title="Adicionar Novo Aluno" onClose={onClose} maxWidth="max-w-4xl">
+            <form onSubmit={handleSubmit} className="space-y-3">
                 {/* Nome do Aluno */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                         Nome do Aluno<span className="text-red-500">*</span>
                     </label>
                     <input
@@ -331,14 +331,14 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                         value={formData.nome_aluno}
                         onChange={(e) => handleChange('nome_aluno', e.target.value)}
                         placeholder="Ex: João Silva"
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                         required
                     />
                 </div>
 
                 {/* Matrícula */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                         Nº da Matrícula<span className="text-red-500">*</span>
                     </label>
                     <input
@@ -346,21 +346,21 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                         value={formData.matricula}
                         onChange={(e) => handleChange('matricula', e.target.value)}
                         placeholder="Ex: 1520"
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                         required
                     />
                 </div>
 
-                {/* Ano Letivo e Ciclo */}
+                {/* Ano Letivo e Unidade */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                             Ano Letivo<span className="text-red-500">*</span>
                         </label>
                         <select
                             value={formData.ano_turma}
                             onChange={(e) => handleChange('ano_turma', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             {anosLetivos.map(ano => (
@@ -370,61 +370,70 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Ciclo<span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Unidade<span className="text-red-500">*</span>
                         </label>
                         <select
-                            value={formData.ciclo}
-                            onChange={(e) => handleChange('ciclo', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            value={formData.unidade}
+                            onChange={(e) => handleChange('unidade', e.target.value)}
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
-                            {ciclos.map(ciclo => (
-                                <option key={ciclo.id} value={ciclo.name}>{ciclo.name}</option>
+                            {unidades.map(unidade => (
+                                <option key={unidade.id} value={unidade.id}>{unidade.name}</option>
                             ))}
                         </select>
                     </div>
                 </div>
 
-                {/* Série e Turma */}
+                {/* Modalidade e Turma */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Série<span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Modalidade<span className="text-red-500">*</span>
                         </label>
                         <select
-                            value={formData.serie}
-                            onChange={(e) => handleChange('serie', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            value={formData.modalidade}
+                            onChange={(e) => handleChange('modalidade', e.target.value)}
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
-                            {series
-                                .filter(s => !formData.ciclo || s.cycleName === formData.ciclo)
-                                .map(serie => (
-                                    <option key={serie.id} value={serie.name}>{serie.name}</option>
+                            {modalidades
+                                .filter(m => !formData.unidade || m.unidadeId === formData.unidade)
+                                .map(modalidade => (
+                                    <option key={modalidade.id} value={modalidade.id}>{modalidade.name}</option>
                                 ))
                             }
                         </select>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                             Turma<span className="text-red-500">*</span>
                         </label>
                         <select
                             value={formData.nome_turma}
                             onChange={(e) => handleChange('nome_turma', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
                             {turmas
-                                .filter(t => (!formData.ciclo || t.cycle === formData.ciclo) && (!formData.serie || t.series === formData.serie))
-                                .map(turma => (
-                                    <option key={turma.id} value={turma.name}>{turma.name}</option>
-                                ))
+                                .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
+                                .map(turma => {
+                                    const diasTexto = turma.diasSemana && turma.diasSemana.length > 0 
+                                        ? turma.diasSemana.join(', ') 
+                                        : '';
+                                    const horario = turma.horaInicio && turma.horaTermino 
+                                        ? `${turma.horaInicio} às ${turma.horaTermino}` 
+                                        : '';
+                                    const label = [turma.name, diasTexto, horario].filter(Boolean).join(' | ');
+                                    return (
+                                        <option key={turma.id} value={turma.name}>{label}</option>
+                                    );
+                                })
                             }
                         </select>
                     </div>
@@ -432,14 +441,14 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
 
                 {/* Data de Nascimento */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                         Data de Nascimento
                     </label>
                     <input
                         type="date"
                         value={formData.dataNascimento}
                         onChange={(e) => handleChange('dataNascimento', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                     />
                 </div>
 
@@ -448,7 +457,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Filiação</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nome do Pai
                             </label>
                             <input
@@ -456,11 +465,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.nomePai}
                                 onChange={(e) => handleChange('nomePai', e.target.value)}
                                 placeholder="Nome completo"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Celular do Pai
                             </label>
                             <input
@@ -468,7 +477,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.celularPai}
                                 onChange={(e) => handleChange('celularPai', e.target.value)}
                                 placeholder="(00) 00000-0000"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -477,7 +486,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                 {/* Filiação - Mãe */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                             Nome da Mãe
                         </label>
                         <input
@@ -485,11 +494,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                             value={formData.nomeMae}
                             onChange={(e) => handleChange('nomeMae', e.target.value)}
                             placeholder="Nome completo"
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                             Celular da Mãe
                         </label>
                         <input
@@ -497,7 +506,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                             value={formData.celularMae}
                             onChange={(e) => handleChange('celularMae', e.target.value)}
                             placeholder="(00) 00000-0000"
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                         />
                     </div>
                 </div>
@@ -509,7 +518,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     {/* Nome e CPF */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nome Responsável
                             </label>
                             <input
@@ -517,11 +526,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelNome}
                                 onChange={(e) => handleChange('responsavelNome', e.target.value)}
                                 placeholder="Nome completo"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 CPF
                             </label>
                             <input
@@ -529,7 +538,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelCPF}
                                 onChange={(e) => handleChange('responsavelCPF', e.target.value)}
                                 placeholder="000.000.000-00"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -537,7 +546,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     {/* CEP e UF */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 CEP
                             </label>
                             <input
@@ -545,17 +554,17 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelCEP}
                                 onChange={(e) => handleChange('responsavelCEP', e.target.value)}
                                 placeholder="00000-000"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Estado (UF)
                             </label>
                             <select
                                 value={formData.responsavelUF}
                                 onChange={(e) => handleChange('responsavelUF', e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             >
                                 <option value="">Selecione</option>
                                 <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
@@ -574,7 +583,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     {/* Endereço, Número, Complemento */}
                     <div className="grid grid-cols-3 gap-4 mb-4">
                         <div className="col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Endereço
                             </label>
                             <input
@@ -582,11 +591,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelEndereco}
                                 onChange={(e) => handleChange('responsavelEndereco', e.target.value)}
                                 placeholder="Rua, avenida, etc"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nº
                             </label>
                             <input
@@ -594,7 +603,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelNumero}
                                 onChange={(e) => handleChange('responsavelNumero', e.target.value)}
                                 placeholder="123"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -602,7 +611,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     {/* Complemento e Bairro */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Complemento
                             </label>
                             <input
@@ -610,11 +619,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelComplemento}
                                 onChange={(e) => handleChange('responsavelComplemento', e.target.value)}
                                 placeholder="Apto, sala, etc"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Bairro
                             </label>
                             <input
@@ -622,7 +631,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelBairro}
                                 onChange={(e) => handleChange('responsavelBairro', e.target.value)}
                                 placeholder="Nome do bairro"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -630,7 +639,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     {/* Cidade, Email, Telefone */}
                     <div className="grid grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Cidade
                             </label>
                             <input
@@ -638,11 +647,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelCidade}
                                 onChange={(e) => handleChange('responsavelCidade', e.target.value)}
                                 placeholder="Nome da cidade"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 E-mail
                             </label>
                             <input
@@ -650,11 +659,11 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelEmail}
                                 onChange={(e) => handleChange('responsavelEmail', e.target.value)}
                                 placeholder="email@exemplo.com"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Telefone
                             </label>
                             <input
@@ -662,7 +671,7 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                                 value={formData.responsavelTelefone}
                                 onChange={(e) => handleChange('responsavelTelefone', e.target.value)}
                                 placeholder="(00) 00000-0000"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -673,14 +682,14 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
+                        className="px-6 py-1 text-sm bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition disabled:bg-gray-400"
+                        className="px-6 py-1 text-sm bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition disabled:bg-gray-400"
                     >
                         {saving ? 'Adicionando...' : 'Adicionar Aluno'}
                     </button>
@@ -691,13 +700,13 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
 };
 
 // Componente Modal de Edição de Aluno
-const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSave }) => {
+const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClose, onSave }) => {
     const [formData, setFormData] = useState({
         nome_aluno: aluno.nome_aluno || '',
         matricula: aluno.matricula || '',
         ano_turma: aluno.ano_turma || '',
-        ciclo: aluno.ciclo || '',
-        serie: aluno.serie || '',
+        unidade: aluno.unidade || '',
+        modalidade: aluno.modalidade || '',
         nome_turma: aluno.nome_turma || '',
         dataNascimento: aluno.dataNascimento || '',
         nomePai: aluno.nomePai || '',
@@ -757,7 +766,7 @@ const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSa
     };
 
     return (
-        <Modal title="Editar Aluno" onClose={onClose}>
+        <Modal title="Editar Aluno" onClose={onClose} maxWidth="max-w-4xl">
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Nome do Aluno */}
                 <div>
@@ -808,39 +817,39 @@ const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSa
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Ciclo<span className="text-red-500">*</span>
+                            Unidade<span className="text-red-500">*</span>
                         </label>
                         <select
-                            value={formData.ciclo}
-                            onChange={(e) => handleChange('ciclo', e.target.value)}
+                            value={formData.unidade}
+                            onChange={(e) => handleChange('unidade', e.target.value)}
                             className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
-                            {ciclos.map(ciclo => (
-                                <option key={ciclo.id} value={ciclo.name}>{ciclo.name}</option>
+                            {unidades.map(unidade => (
+                                <option key={unidade.id} value={unidade.id}>{unidade.name}</option>
                             ))}
                         </select>
                     </div>
                 </div>
 
-                {/* Série e Turma */}
+                {/* Modalidade e Turma */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Série<span className="text-red-500">*</span>
+                            Modalidade<span className="text-red-500">*</span>
                         </label>
                         <select
-                            value={formData.serie}
-                            onChange={(e) => handleChange('serie', e.target.value)}
+                            value={formData.modalidade}
+                            onChange={(e) => handleChange('modalidade', e.target.value)}
                             className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
-                            {series
-                                .filter(s => !formData.ciclo || s.cycleName === formData.ciclo)
-                                .map(serie => (
-                                    <option key={serie.id} value={serie.name}>{serie.name}</option>
+                            {modalidades
+                                .filter(m => !formData.unidade || m.unidadeId === formData.unidade)
+                                .map(modalidade => (
+                                    <option key={modalidade.id} value={modalidade.id}>{modalidade.name}</option>
                                 ))
                             }
                         </select>
@@ -858,10 +867,19 @@ const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSa
                         >
                             <option value="">Selecione</option>
                             {turmas
-                                .filter(t => (!formData.ciclo || t.cycle === formData.ciclo) && (!formData.serie || t.series === formData.serie))
-                                .map(turma => (
-                                    <option key={turma.id} value={turma.name}>{turma.name}</option>
-                                ))
+                                .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
+                                .map(turma => {
+                                    const diasTexto = turma.diasSemana && turma.diasSemana.length > 0 
+                                        ? turma.diasSemana.join(', ') 
+                                        : '';
+                                    const horario = turma.horaInicio && turma.horaTermino 
+                                        ? `${turma.horaInicio} às ${turma.horaTermino}` 
+                                        : '';
+                                    const label = [turma.name, diasTexto, horario].filter(Boolean).join(' | ');
+                                    return (
+                                        <option key={turma.id} value={turma.name}>{label}</option>
+                                    );
+                                })
                             }
                         </select>
                     </div>

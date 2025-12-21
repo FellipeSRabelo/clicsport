@@ -35,7 +35,6 @@ const Gestao = () => {
 
     return (
         <div className="min-h-full">
-            <h1 className="text-4xl font-extrabold text-clic-secondary mb-6">Gestão Escolar</h1>
             
             {/* Navegação por Tabs */}
             <div className="flex border-b border-gray-200 mb-6 bg-white rounded-t-xl shadow-md">
@@ -43,7 +42,7 @@ const Gestao = () => {
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex-1 px-6 py-3 text-lg font-semibold whitespace-nowrap transition duration-200 flex items-center justify-center ${
+                        className={`flex-1 px-6 py-3 text-sm font-semibold whitespace-nowrap transition duration-200 flex items-center justify-center ${
                             activeTab === tab.id
                                 ? 'border-b-4 border-clic-primary text-clic-secondary'
                                 : 'text-gray-500 hover:text-clic-secondary/80'

@@ -149,8 +149,8 @@ const GestaoProfessores = () => {
             <div className="flex justify-end space-x-3 mb-6">
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
-                >
+                    className="flex items-center px-3 py-1.5 text-sm bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 transition">
+                
                     <FontAwesomeIcon icon={faPlus} className="mr-2" />
                     Novo Professor
                 </button>

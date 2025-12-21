@@ -32,20 +32,20 @@ const MenuLateral = ({ isCompact = false }) => {
 
   return (
     <div className={`flex flex-col h-full bg-clic-secondary text-white shadow-xl transition-all duration-300 ${
-      isCompact ? 'w-20 p-2' : 'w-64 p-4'
+      isCompact ? 'w-16 p-2' : 'w-52 p-3'
     }`}>
       
       {/* Header do Menu */}
       {!isCompact && (
-        <div className="text-center py-4 border-b border-gray-700">
-          <div className="text-3xl font-extrabold text-clic-primary">ClicSport</div>
-          <p className="text-[18px] font-bold mt-1 text-gray-300">{escolaLoading ? 'Carregando...' : (escolaNome || (escolaId === 'escola-teste' ? 'Teste' : escolaId))}</p>
+        <div className="text-center py-3 border-b border-gray-700">
+          <div className="text-2xl font-extrabold text-clic-primary">ClicSport</div>
+          <p className="text-sm font-bold mt-1 text-gray-300">{escolaLoading ? 'Carregando...' : (escolaNome || (escolaId === 'escola-teste' ? 'Teste' : escolaId))}</p>
         </div>
       )}
 
       {/* Navegação Principal */}
       <nav className={`flex-grow transition-all duration-300 ${
-        isCompact ? 'mt-4 space-y-3' : 'mt-6 space-y-2'
+        isCompact ? 'mt-3 space-y-2' : 'mt-4 space-y-1.5'
       }`}>
         {menuItems.map((item) => {
           const hasSubmenu = Array.isArray(item.submenu) && item.submenu.length > 0;
@@ -59,35 +59,35 @@ const MenuLateral = ({ isCompact = false }) => {
                   onClick={() => setExpandedMenu(expandedMenu === item.name ? null : item.name)}
                   title={isCompact ? item.name : ''}
                   className={`flex items-center justify-between rounded-lg transition duration-200 w-full ${
-                    isCompact ? 'p-3 justify-center' : 'p-3'
+                    isCompact ? 'p-2 justify-center' : 'p-2'
                   } bg-transparent focus:outline-none focus:ring-0 ${
                     isExpanded ? 'bg-clic-primary text-clic-primary font-bold' : 'hover:bg-gray-700 text-gray-300'
                   }`}
                 >
                   <div className="flex items-center">
-                    <FontAwesomeIcon icon={item.icon} className={`w-5 h-5 ${
-                      !isCompact ? 'mr-3' : ''
+                    <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 ${
+                      !isCompact ? 'mr-2' : ''
                     }`} />
-                    {!isCompact && <span className="text-sm">{item.name}</span>}
+                    {!isCompact && <span className="text-xs">{item.name}</span>}
                   </div>
                   {!isCompact && (
                     <FontAwesomeIcon 
                       icon={faChevronDown} 
-                      className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                     />
                   )}
                 </button>
 
                 {/* Submenu */}
                 {!isCompact && isExpanded && (
-                  <div className="ml-4 mt-2 space-y-1 border-l border-gray-600 pl-2">
+                  <div className="ml-3 mt-1 space-y-1 border-l border-gray-600 pl-2">
                     {item.submenu.map((subitem) => (
                       <NavLink
                         key={subitem.path}
                         to={subitem.path}
                         end
                         className={({ isActive }) =>
-                          `block text-sm p-2 rounded transition duration-200 ${
+                          `block text-xs p-1.5 rounded transition duration-200 ${
                             isActive ? 'bg-clic-primary text-clic-secondary font-bold' : 'hover:bg-gray-700 text-gray-300'
                           }`
                         }
@@ -108,16 +108,16 @@ const MenuLateral = ({ isCompact = false }) => {
                 title={isCompact ? item.name : ''}
                 className={({ isActive }) =>
                   `flex items-center rounded-lg transition duration-200 ${
-                    isCompact ? 'p-3 justify-center' : 'p-3'
+                    isCompact ? 'p-2 justify-center' : 'p-2'
                   } ${
                     isActive ? 'bg-clic-primary text-clic-secondary font-bold' : 'hover:bg-gray-700 text-gray-300'
                   }`
                 }
               >
-                <FontAwesomeIcon icon={item.icon} className={`w-5 h-5 ${
-                  !isCompact ? 'mr-3' : ''
+                <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 ${
+                  !isCompact ? 'mr-2' : ''
                 }`} />
-                {!isCompact && <span className="text-sm">{item.name}</span>}
+                {!isCompact && <span className="text-xs">{item.name}</span>}
               </NavLink>
             </div>
           );
@@ -126,19 +126,19 @@ const MenuLateral = ({ isCompact = false }) => {
 
       {/* Botão de Logout */}
       <div className={`transition-all duration-300 ${
-        isCompact ? 'pt-2' : 'pt-4'
+        isCompact ? 'pt-2' : 'pt-3'
       } border-t border-gray-700`}>
         <button
           onClick={logout}
           title="Sair"
           className={`flex items-center rounded-lg text-red-400 hover:bg-gray-700 transition duration-200 ${
-            isCompact ? 'w-full p-3 justify-center' : 'w-full p-3'
+            isCompact ? 'w-full p-2 justify-center' : 'w-full p-2'
           }`}
         >
-          <FontAwesomeIcon icon={faSignOutAlt} className={`w-5 h-5 ${
-            !isCompact ? 'mr-3' : ''
+          <FontAwesomeIcon icon={faSignOutAlt} className={`w-4 h-4 ${
+            !isCompact ? 'mr-2' : ''
           }`} />
-          {!isCompact && <span className="text-sm">Sair</span>}
+          {!isCompact && <span className="text-xs">Sair</span>}
         </button>
       </div>
     </div>

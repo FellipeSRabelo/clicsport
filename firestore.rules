@@ -52,6 +52,18 @@ service cloud.firestore {
         allow read: if true;
         allow write: if loggedIn() && isGestorOfSchool(escolaId);
       }
+
+      // Subcoleção de unidades (novo campo)
+      match /unidades/{unidadeId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de modalidades (novo campo)
+      match /modalidades/{modalidadeId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
       
       // Campanhas de pesquisa
       match /campaigns/{campaignId} {
@@ -127,6 +139,18 @@ service cloud.firestore {
 
       // Subcoleção de séries
       match /series/{serieId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de unidades (novo campo)
+      match /unidades/{unidadeId} {
+        allow read: if true;
+        allow write: if loggedIn() && isGestorOfSchool(escolaId);
+      }
+
+      // Subcoleção de modalidades (novo campo)
+      match /modalidades/{modalidadeId} {
         allow read: if true;
         allow write: if loggedIn() && isGestorOfSchool(escolaId);
       }
