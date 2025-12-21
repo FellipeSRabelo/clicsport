@@ -1104,6 +1104,9 @@ const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSa
                         </div>
                     </div>
                 </div>
+
+                {/* Botões */}
+                <div className="flex justify-end space-x-3 pt-4">
                     <button
                         type="button"
                         onClick={onClose}
