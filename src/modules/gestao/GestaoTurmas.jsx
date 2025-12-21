@@ -322,6 +322,18 @@ const GestaoTurmas = () => {
         return <div className="p-4 text-center"><FontAwesomeIcon icon={faSpinner} spin className="mr-2" /> Carregando...</div>;
     }
 
+    // Função para obter nome da unidade pelo ID
+    const getNomeUnidade = (unidadeId) => {
+        const unidade = unidades.find(u => u.id === unidadeId);
+        return unidade?.name || unidadeId;
+    };
+
+    // Função para obter nome da modalidade pelo ID
+    const getNomeModalidade = (modalidadeId) => {
+        const modalidade = modalidades.find(m => m.id === modalidadeId);
+        return modalidade?.name || modalidadeId;
+    };
+
     return (
         <div className="bg-white p-4 rounded-xl">
             <div className="flex justify-end space-x-3 mb-6">
@@ -353,7 +365,7 @@ const GestaoTurmas = () => {
                             turmas.map(turma => (
                                 <tr key={turma.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 text-sm font-medium text-clic-secondary">{turma.name}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">{turma.unidade} - {turma.modalidade}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-900">{getNomeUnidade(turma.unidade)} - {getNomeModalidade(turma.modalidade)}</td>
                                     <td className="px-6 py-4 text-sm text-gray-500">{turma.year}</td>
                                     <td className="px-6 py-4 text-sm text-gray-500">{turma.frequencia}x/semana</td>
                                     <td className="px-6 py-4 text-sm text-gray-500">{turma.horaInicio} às {turma.horaTermino}</td>
