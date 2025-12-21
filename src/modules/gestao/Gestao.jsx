@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGraduationCap, faTools, faChalkboardTeacher, faUsers, faBook } from '@fortawesome/free-solid-svg-icons'; 
 import GestaoTurmas from './GestaoTurmas'; 
 import GestaoProfessores from './GestaoProfessores'; 
-import PainelVocacionalGestor from '../vocacional/PainelGestorVocacional'; 
 import GestaoAlunosTable from './GestaoAlunosTable'; 
 import GestaoEscola from './GestaoEscola';
 
@@ -28,7 +27,6 @@ const Gestao = () => {
         { id: 'config', name: 'Configurações', icon: faTools, component: GestaoEscola },
 
         // RELATÓRIOS/FERRAMENTAS (Módulos)
-       // modulosAtivos.vocacional && { id: 'vocacional_res', name: 'Resultados Vocacionais', icon: faBook, component: PainelVocacionalGestor },
         
         // CONFIGURAÇÕES
     ].filter(Boolean); 
