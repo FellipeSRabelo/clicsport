@@ -238,6 +238,22 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
         ciclo: '',
         serie: '',
         nome_turma: '',
+        dataNascimento: '',
+        nomePai: '',
+        celularPai: '',
+        nomeMae: '',
+        celularMae: '',
+        responsavelNome: '',
+        responsavelCPF: '',
+        responsavelCEP: '',
+        responsavelUF: '',
+        responsavelEndereco: '',
+        responsavelNumero: '',
+        responsavelComplemento: '',
+        responsavelBairro: '',
+        responsavelCidade: '',
+        responsavelEmail: '',
+        responsavelTelefone: '',
     });
     const [saving, setSaving] = useState(false);
 
@@ -272,6 +288,22 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                 ciclo: formData.ciclo || null,
                 serie: formData.serie || null,
                 nome_turma: formData.nome_turma || null,
+                dataNascimento: formData.dataNascimento || null,
+                nomePai: formData.nomePai || null,
+                celularPai: formData.celularPai || null,
+                nomeMae: formData.nomeMae || null,
+                celularMae: formData.celularMae || null,
+                responsavelNome: formData.responsavelNome || null,
+                responsavelCPF: formData.responsavelCPF || null,
+                responsavelCEP: formData.responsavelCEP || null,
+                responsavelUF: formData.responsavelUF || null,
+                responsavelEndereco: formData.responsavelEndereco || null,
+                responsavelNumero: formData.responsavelNumero || null,
+                responsavelComplemento: formData.responsavelComplemento || null,
+                responsavelBairro: formData.responsavelBairro || null,
+                responsavelCidade: formData.responsavelCidade || null,
+                responsavelEmail: formData.responsavelEmail || null,
+                responsavelTelefone: formData.responsavelTelefone || null,
                 dataCriacao: serverTimestamp(),
                 dataAtualizacao: new Date().toISOString(),
             });
@@ -398,25 +430,243 @@ const AddAlunoModal = ({ escolaId, ciclos, series, turmas, onClose, onSave }) =>
                     </div>
                 </div>
 
-                {/* Botões */}
-                <div className="flex justify-end space-x-3 pt-4">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition disabled:bg-gray-400"
-                    >
-                        {saving ? 'Adicionando...' : 'Adicionar Aluno'}
-                    </button>
+                {/* Data de Nascimento */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Data de Nascimento
+                    </label>
+                    <input
+                        type="date"
+                        value={formData.dataNascimento}
+                        onChange={(e) => handleChange('dataNascimento', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                    />
                 </div>
-            </form>
-        </Modal>
+
+                {/* Filiação - Pai */}
+                <div className="border-t pt-4 mt-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Filiação</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nome do Pai
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.nomePai}
+                                onChange={(e) => handleChange('nomePai', e.target.value)}
+                                placeholder="Nome completo"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Celular do Pai
+                            </label>
+                            <input
+                                type="tel"
+                                value={formData.celularPai}
+                                onChange={(e) => handleChange('celularPai', e.target.value)}
+                                placeholder="(00) 00000-0000"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filiação - Mãe */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nome da Mãe
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.nomeMae}
+                            onChange={(e) => handleChange('nomeMae', e.target.value)}
+                            placeholder="Nome completo"
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Celular da Mãe
+                        </label>
+                        <input
+                            type="tel"
+                            value={formData.celularMae}
+                            onChange={(e) => handleChange('celularMae', e.target.value)}
+                            placeholder="(00) 00000-0000"
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        />
+                    </div>
+                </div>
+
+                {/* Responsável Financeiro */}
+                <div className="border-t pt-4 mt-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Responsável Financeiro</h3>
+                    
+                    {/* Nome e CPF */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nome Responsável
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelNome}
+                                onChange={(e) => handleChange('responsavelNome', e.target.value)}
+                                placeholder="Nome completo"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                CPF
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelCPF}
+                                onChange={(e) => handleChange('responsavelCPF', e.target.value)}
+                                placeholder="000.000.000-00"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* CEP e UF */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                CEP
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelCEP}
+                                onChange={(e) => handleChange('responsavelCEP', e.target.value)}
+                                placeholder="00000-000"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Estado (UF)
+                            </label>
+                            <select
+                                value={formData.responsavelUF}
+                                onChange={(e) => handleChange('responsavelUF', e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            >
+                                <option value="">Selecione</option>
+                                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                                <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                                <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                                <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                                <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                                <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                                <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Endereço, Número, Complemento */}
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Endereço
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelEndereco}
+                                onChange={(e) => handleChange('responsavelEndereco', e.target.value)}
+                                placeholder="Rua, avenida, etc"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nº
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelNumero}
+                                onChange={(e) => handleChange('responsavelNumero', e.target.value)}
+                                placeholder="123"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Complemento e Bairro */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Complemento
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelComplemento}
+                                onChange={(e) => handleChange('responsavelComplemento', e.target.value)}
+                                placeholder="Apto, sala, etc"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Bairro
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelBairro}
+                                onChange={(e) => handleChange('responsavelBairro', e.target.value)}
+                                placeholder="Nome do bairro"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Cidade, Email, Telefone */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Cidade
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelCidade}
+                                onChange={(e) => handleChange('responsavelCidade', e.target.value)}
+                                placeholder="Nome da cidade"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                E-mail
+                            </label>
+                            <input
+                                type="email"
+                                value={formData.responsavelEmail}
+                                onChange={(e) => handleChange('responsavelEmail', e.target.value)}
+                                placeholder="email@exemplo.com"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Telefone
+                            </label>
+                            <input
+                                type="tel"
+                                value={formData.responsavelTelefone}
+                                onChange={(e) => handleChange('responsavelTelefone', e.target.value)}
+                                placeholder="(00) 00000-0000"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+                </div>
     );
 };
 
@@ -429,6 +679,22 @@ const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSa
         ciclo: aluno.ciclo || '',
         serie: aluno.serie || '',
         nome_turma: aluno.nome_turma || '',
+        dataNascimento: aluno.dataNascimento || '',
+        nomePai: aluno.nomePai || '',
+        celularPai: aluno.celularPai || '',
+        nomeMae: aluno.nomeMae || '',
+        celularMae: aluno.celularMae || '',
+        responsavelNome: aluno.responsavelNome || '',
+        responsavelCPF: aluno.responsavelCPF || '',
+        responsavelCEP: aluno.responsavelCEP || '',
+        responsavelUF: aluno.responsavelUF || '',
+        responsavelEndereco: aluno.responsavelEndereco || '',
+        responsavelNumero: aluno.responsavelNumero || '',
+        responsavelComplemento: aluno.responsavelComplemento || '',
+        responsavelBairro: aluno.responsavelBairro || '',
+        responsavelCidade: aluno.responsavelCidade || '',
+        responsavelEmail: aluno.responsavelEmail || '',
+        responsavelTelefone: aluno.responsavelTelefone || '',
     });
     const [saving, setSaving] = useState(false);
 
@@ -581,8 +847,243 @@ const EditAlunoModal = ({ aluno, escolaId, ciclos, series, turmas, onClose, onSa
                     </div>
                 </div>
 
-                {/* Botões */}
-                <div className="flex justify-end space-x-3 pt-4">
+                {/* Data de Nascimento */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Data de Nascimento
+                    </label>
+                    <input
+                        type="date"
+                        value={formData.dataNascimento}
+                        onChange={(e) => handleChange('dataNascimento', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                    />
+                </div>
+
+                {/* Filiação - Pai */}
+                <div className="border-t pt-4 mt-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Filiação</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nome do Pai
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.nomePai}
+                                onChange={(e) => handleChange('nomePai', e.target.value)}
+                                placeholder="Nome completo"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Celular do Pai
+                            </label>
+                            <input
+                                type="tel"
+                                value={formData.celularPai}
+                                onChange={(e) => handleChange('celularPai', e.target.value)}
+                                placeholder="(00) 00000-0000"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filiação - Mãe */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nome da Mãe
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.nomeMae}
+                            onChange={(e) => handleChange('nomeMae', e.target.value)}
+                            placeholder="Nome completo"
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Celular da Mãe
+                        </label>
+                        <input
+                            type="tel"
+                            value={formData.celularMae}
+                            onChange={(e) => handleChange('celularMae', e.target.value)}
+                            placeholder="(00) 00000-0000"
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        />
+                    </div>
+                </div>
+
+                {/* Responsável Financeiro */}
+                <div className="border-t pt-4 mt-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Responsável Financeiro</h3>
+                    
+                    {/* Nome e CPF */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nome Responsável
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelNome}
+                                onChange={(e) => handleChange('responsavelNome', e.target.value)}
+                                placeholder="Nome completo"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                CPF
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelCPF}
+                                onChange={(e) => handleChange('responsavelCPF', e.target.value)}
+                                placeholder="000.000.000-00"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* CEP e UF */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                CEP
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelCEP}
+                                onChange={(e) => handleChange('responsavelCEP', e.target.value)}
+                                placeholder="00000-000"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Estado (UF)
+                            </label>
+                            <select
+                                value={formData.responsavelUF}
+                                onChange={(e) => handleChange('responsavelUF', e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            >
+                                <option value="">Selecione</option>
+                                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                                <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                                <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                                <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                                <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                                <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                                <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Endereço, Número, Complemento */}
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Endereço
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelEndereco}
+                                onChange={(e) => handleChange('responsavelEndereco', e.target.value)}
+                                placeholder="Rua, avenida, etc"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nº
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelNumero}
+                                onChange={(e) => handleChange('responsavelNumero', e.target.value)}
+                                placeholder="123"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Complemento e Bairro */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Complemento
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelComplemento}
+                                onChange={(e) => handleChange('responsavelComplemento', e.target.value)}
+                                placeholder="Apto, sala, etc"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Bairro
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelBairro}
+                                onChange={(e) => handleChange('responsavelBairro', e.target.value)}
+                                placeholder="Nome do bairro"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Cidade, Email, Telefone */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Cidade
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.responsavelCidade}
+                                onChange={(e) => handleChange('responsavelCidade', e.target.value)}
+                                placeholder="Nome da cidade"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                E-mail
+                            </label>
+                            <input
+                                type="email"
+                                value={formData.responsavelEmail}
+                                onChange={(e) => handleChange('responsavelEmail', e.target.value)}
+                                placeholder="email@exemplo.com"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Telefone
+                            </label>
+                            <input
+                                type="tel"
+                                value={formData.responsavelTelefone}
+                                onChange={(e) => handleChange('responsavelTelefone', e.target.value)}
+                                placeholder="(00) 00000-0000"
+                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+                </div>
                     <button
                         type="button"
                         onClick={onClose}
