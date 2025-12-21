@@ -282,7 +282,7 @@ const TestePerguntas = ({
         </div>
                     {/* Logo centralizada abaixo do container branco */}
             <div className="flex flex-col items-center mt-20 mb-8">
-                <img src="/logo-clichub.png" alt="ClicHub Logo" style={{height: 48, opacity: 0.35}} />
+                <img src="/logo-clichub.png" alt="ClicSport Logo" style={{height: 48, opacity: 0.35}} />
             </div>
     </div>
 

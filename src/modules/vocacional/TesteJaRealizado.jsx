@@ -231,7 +231,7 @@ const TesteJaRealizado = ({
           {/* Rodapé */}
           <div className="bg-gray-50 px-8 py-4 text-center text-sm text-gray-600 border-t">
             <p>Teste de Orientação Vocacional</p>
-            <p>• ClicHub © 2026 •</p>
+            <p>• ClicSport © 2026 •</p>
           </div>
         </div>
       </div>

@@ -50,7 +50,7 @@ const Login = () => {
         {/* Header do Formulário */}
         <div className="text-center mb-6">
           <h1 className="text-4xl font-extrabold text-clic-secondary">
-            ClicHub
+            ClicSport
           </h1>
           <p className="text-clic-primary font-semibold mt-1">
             Plataforma Escolar Unificada
@@ -104,7 +104,7 @@ const Login = () => {
                 : 'bg-clic-secondary text-white hover:bg-clic-secondary/90 shadow-md'
             }`}
           >
-            {loading ? 'Entrando...' : 'Entrar no ClicHub'}
+            {loading ? 'Entrando...' : 'Entrar no ClicSport'}
           </button>
         </form>
         

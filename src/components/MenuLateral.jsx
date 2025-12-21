@@ -39,7 +39,7 @@ const MenuLateral = ({ isCompact = false }) => {
       {/* Header do Menu */}
       {!isCompact && (
         <div className="text-center py-4 border-b border-gray-700">
-          <div className="text-3xl font-extrabold text-clic-primary">ClicHub</div>
+          <div className="text-3xl font-extrabold text-clic-primary">ClicSport</div>
           <p className="text-[18px] font-bold mt-1 text-gray-300">{escolaLoading ? 'Carregando...' : (escolaNome || (escolaId === 'escola-teste' ? 'Teste' : escolaId))}</p>
         </div>
       )}

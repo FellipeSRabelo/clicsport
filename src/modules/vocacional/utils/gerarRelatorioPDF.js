@@ -302,7 +302,7 @@ export async function gerarRelatorioPDF(aluno, escolaInfo = {}) {
     pdf.setTextColor(100, 100, 100);
     pdf.setFontSize(8);
     pdf.text(
-      `Teste de Orientação Vocacional • ClicHub © ${new Date().getFullYear()}`,
+      `Teste de Orientação Vocacional • ClicSport © ${new Date().getFullYear()}`,
       pageWidth / 2,
       pageHeight - 10,
       { align: 'center' }

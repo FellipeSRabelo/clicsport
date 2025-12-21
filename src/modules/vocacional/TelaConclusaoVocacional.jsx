@@ -265,7 +265,7 @@ const TelaConclusaoVocacional = ({
 
           {/* Rodapé */}
           <div className="bg-gray-50 px-8 py-4 text-center text-sm text-gray-600 border-t">
-            <p>Teste de Orientação Vocacional • ClicHub © 2024</p>
+            <p>Teste de Orientação Vocacional • ClicSport © 2024</p>
           </div>
         </div>
       </div>
