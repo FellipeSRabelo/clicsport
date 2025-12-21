@@ -15,6 +15,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_ID
 };
 
+// DEBUG: Verificar se variáveis estão sendo carregadas
+console.log('Firebase Config carregado:', {
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain,
+  hasApiKey: !!firebaseConfig.apiKey
+});
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
