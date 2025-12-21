@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../firebase/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUsers, faBook, faSearch, faBriefcase, faSignOutAlt, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faUsers, faBook, faSearch, faSignOutAlt, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const MenuLateral = ({ isCompact = false }) => {
   const { userRole, modulosAtivos, logout, escolaId, escolaNome, escolaLoading } = useAuth();
@@ -16,7 +16,6 @@ const MenuLateral = ({ isCompact = false }) => {
     { name: 'Gestão Escolar', path: '/gestao', icon: faUsers, roles: ['gestor'] },
     
     // Módulos Ativos (Controlados pelo Firestore)
-    modulosAtivos.vocacional && { name: 'Vocacional', path: '/vocacional', icon: faBriefcase, roles: ['gestor', 'aluno'] },
     modulosAtivos.achados && { name: 'Achados e Perdidos', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno'] },
     modulosAtivos.pesquisas && { 
       name: 'Pesquisas', 

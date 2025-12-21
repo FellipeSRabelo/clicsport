@@ -11,11 +11,8 @@ import NotFound from './components/NotFound';
 // Módulos
 import Dashboard from './modules/Dashboard';
 import Gestao from './modules/gestao/Gestao';
-import Vocacional from './modules/vocacional/Vocacional';
 import Achados from './modules/achados/Achados';
 import Pesquisas from './modules/pesquisas/Pesquisas';
-import TestePublicoAcesso from './modules/vocacional/TestePublicoAcesso';
-import ResultadosTesteVocacional from './modules/vocacional/ResultadosTesteVocacional';
 import PublicPesquisa from './modules/pesquisas/PublicPesquisa';
 
 // Componente Wrapper para Rotas Protegidas
@@ -79,9 +76,6 @@ const AppRoutes = () => {
     <Routes>
       {/* Rota Pública - Login */}
       <Route path="/" element={<Login />} />
-      
-      {/* Rota Pública - Acesso a Teste Vocacional */}
-      <Route path="/v/:escolaId/:testeId" element={<TestePublicoAcesso />} />
 
       {/* Rota Pública - Acesso a Pesquisa */}
       <Route path="/p/:escolaId/:campaignId" element={<PublicPesquisa />} />
@@ -96,8 +90,6 @@ const AppRoutes = () => {
       <Route path="/gestao" element={<PrivateRoute element={Gestao} role="gestor" />} />
 
       {/* Rotas dos módulos controlados - cada rota já inclui o Layout via PrivateRoute */}
-      <Route path="/vocacional" element={<PrivateRoute element={Vocacional} />} />
-      <Route path="/vocacional/resultados/:escolaId/:testeId" element={<PrivateRoute element={ResultadosTesteVocacional} />} />
       <Route path="/pesquisas/*" element={<PrivateRoute element={Pesquisas} />} />
 
       {/* 404 Not Found */}
