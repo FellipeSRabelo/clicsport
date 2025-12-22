@@ -283,172 +283,179 @@ const GestaoEscola = () => {
 
     return (
         <div className="">
-         <h2 className="text-left text-2xl font-bold text-clic-secondary mb-6">Informações da Escola</h2>
+         <h2 className="text-left text-xl font-bold text-clic-secondary mb-4">Informações da Escola</h2>
 
-            <form onSubmit={handleSave} className="space-y-6">
-                {/* Logo e Upload */}
-                <div className="flex flex-col items-center text-center">
-                    <div 
-                        className="w-96 h-48 bg-gray-200 mb-4 flex items-center justify-center border-2 border-dashed border-gray-400 cursor-pointer hover:bg-gray-300"
-                        onClick={() => fileInputRef.current.click()}
-                    >
-                        {previewUrl ? (
-                            <img src={previewUrl} alt="Logo da Escola" className="w-full h-full object-contain" />
-                        ) : (
-                            <FontAwesomeIcon icon={faSchool} className="text-gray-500" size="3x" />
-                        )}
+            <form onSubmit={handleSave} className="">
+                <div className="flex gap-4">
+                    {/* Logo e Upload - Card Lateral */}
+                    <div className="w-64 flex-shrink-0">
+                        <div className="bg-white rounded-lg border border-gray-200 p-3">
+                            <p className="text-xs font-medium text-gray-700 mb-2 text-center">Logo da Escola</p>
+                            <div 
+                                className="w-full h-32 bg-gray-100 mb-2 flex items-center justify-center border border-gray-300 rounded cursor-pointer hover:bg-gray-200 transition"
+                                onClick={() => fileInputRef.current.click()}
+                            >
+                                {previewUrl ? (
+                                    <img src={previewUrl} alt="Logo da Escola" className="w-full h-full object-contain p-1" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faSchool} className="text-gray-400" size="2x" />
+                                )}
+                            </div>
+                            <input
+                                type="file"
+                                accept="image/png, image/jpeg"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                            <button 
+                                type="button" 
+                                onClick={() => fileInputRef.current.click()}
+                                className="w-full px-2 py-1.5 bg-gray-100 text-gray-700 text-xs font-semibold rounded shadow-sm hover:bg-gray-200 transition"
+                            >
+                                <FontAwesomeIcon icon={faUpload} className="mr-1" />
+                                Trocar Logo
+                            </button>
+                            <p className="text-[10px] text-gray-500 mt-1.5 text-center">Recomendado: 300x150 PNG</p>
+                            {fallbackSaved ? (
+                                <p className="text-[10px] text-yellow-700 mt-1 text-center">Imagem salva.</p>
+                            ) : null}
+                        </div>
                     </div>
-                    <input
-                        type="file"
-                        accept="image/png, image/jpeg"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        className="hidden"
-                    />
-                    {fallbackSaved ? (
-                        <p className="text-sm text-yellow-700 mt-2">Imagem salva.</p>
-                    ) : null}
-                    <button 
-                        type="button" 
-                        onClick={() => fileInputRef.current.click()}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-200 transition"
-                    >
-                        <FontAwesomeIcon icon={faUpload} className="mr-2" />
-                        Trocar Logo
-                    </button>
-                     <p className="text-xs text-gray-500 mt-2">Recomendado: 300x150 (PNG)</p>
-                </div>
 
-                {/* Nome da Escola */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Formulário - 3 Colunas */}
+                    <div className="flex-1">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                     <div>
-                        <label htmlFor="razao-social" className="block text-sm font-medium text-gray-700 mb-1">Razão Social</label>
+                        <label htmlFor="razao-social" className="block text-xs font-medium text-gray-700 mb-1">Razão Social</label>
                         <input
                             id="razao-social"
                             type="text"
                             value={escola.razao_social || ''}
                             onChange={(e) => setEscola({ ...escola, razao_social: e.target.value })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="Razão Social"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="fantasia" className="block text-sm font-medium text-gray-700 mb-1">Nome Fantasia</label>
+                        <label htmlFor="fantasia" className="block text-xs font-medium text-gray-700 mb-1">Nome Fantasia</label>
                         <input
                             id="fantasia"
                             type="text"
                             value={escola.nome || ''}
                             onChange={(e) => setEscola({ ...escola, nome: e.target.value })}
                             required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="Nome Fantasia"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="cnpj" className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                        <label htmlFor="cnpj" className="block text-xs font-medium text-gray-700 mb-1">CNPJ</label>
                         <input
                             id="cnpj"
                             type="text"
                             value={escola.cnpj ? formatCNPJ(escola.cnpj) : ''}
                             onChange={handleCnpjChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="00.000.000/0000-00"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="cep" className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                        <label htmlFor="cep" className="block text-xs font-medium text-gray-700 mb-1">CEP</label>
                         <input
                             id="cep"
                             type="text"
                             value={escola.cep ? formatCEP(escola.cep) : ''}
                             onChange={handleCepChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="00000-000"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="endereco" className="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+                        <label htmlFor="endereco" className="block text-xs font-medium text-gray-700 mb-1">Endereço</label>
                         <input
                             id="endereco"
                             type="text"
                             value={escola.endereco || ''}
                             onChange={(e) => setEscola({ ...escola, endereco: e.target.value })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="Endereço"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="cidade" className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                        <label htmlFor="cidade" className="block text-xs font-medium text-gray-700 mb-1">Cidade</label>
                         <input
                             id="cidade"
                             type="text"
                             value={escola.cidade || ''}
                             onChange={(e) => setEscola({ ...escola, cidade: e.target.value })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="Cidade"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="uf" className="block text-sm font-medium text-gray-700 mb-1">UF</label>
+                        <label htmlFor="uf" className="block text-xs font-medium text-gray-700 mb-1">UF</label>
                         <input
                             id="uf"
                             type="text"
                             value={escola.uf || ''}
                             onChange={(e) => setEscola({ ...escola, uf: e.target.value })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="Estado (UF)"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                        <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">E-mail</label>
                         <input
                             id="email"
                             type="email"
                             value={escola.email || ''}
                             onChange={(e) => setEscola({ ...escola, email: e.target.value })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="contato@escola.com.br"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="site" className="block text-sm font-medium text-gray-700 mb-1">Site</label>
+                        <label htmlFor="site" className="block text-xs font-medium text-gray-700 mb-1">Site</label>
                         <input
                             id="site"
                             type="text"
                             value={escola.site || ''}
                             onChange={(e) => setEscola({ ...escola, site: e.target.value })}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="https://www.escola.com.br"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                        <label htmlFor="telefone" className="block text-xs font-medium text-gray-700 mb-1">Telefone</label>
                         <input
                             id="telefone"
                             type="text"
                             value={escola.telefone || ''}
                             onChange={handlePhoneChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-clic-primary focus:border-clic-primary"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm focus:ring-clic-primary focus:border-clic-primary"
                             placeholder="(00) 0000-0000"
                         />
+                    </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* Botão de Salvar */}
-                <div className="text-right pt-4">
+                <div className="text-right pt-3">
                     <button
                         type="submit"
                         disabled={saving}
-                        className="px-6 py-3 bg-clic-secondary text-white font-bold rounded-lg shadow-md hover:bg-gray-800 transition disabled:bg-gray-400"
+                        className="px-4 py-2 bg-clic-secondary text-white text-sm font-bold rounded-lg shadow-md hover:bg-gray-800 transition disabled:bg-gray-400"
                     >
                         {saving ? <FontAwesomeIcon icon={faSpinner} spin className="mr-2" /> : null}
                         Salvar Alterações

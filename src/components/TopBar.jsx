@@ -1,33 +1,81 @@
 // src/components/TopBar.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faBell, faExpand, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faBell, faExpand, faHome, faUsers, faSearch, faBook, faTools, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../firebase/AuthContext';
 
 const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [displayTitle, setDisplayTitle] = useState(title);
+    const menuRef = useRef(null);
+    const navigate = useNavigate();
+    const { logout, modulosAtivos, userRole } = useAuth();
 
     // Atualiza o título quando a prop muda
     useEffect(() => {
         setDisplayTitle(title);
     }, [title]);
 
+    const appMenuItems = useMemo(() => ([
+        { name: 'Dashboard', path: '/app', icon: faHome, roles: ['gestor', 'aluno', 'responsavel'] },
+        { name: 'Gestão', path: '/gestao', icon: faUsers, roles: ['gestor'] },
+        modulosAtivos?.achados && { name: 'Achados', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno'] },
+        modulosAtivos?.pesquisas && { name: 'Pesquisas', path: '/pesquisas', icon: faBook, roles: ['gestor', 'aluno'] },
+        { name: 'Escola', path: '/gestao?tab=config', icon: faTools, roles: ['gestor'] },
+    ].filter(Boolean).filter(item => item.roles.includes(userRole || 'gestor'))), [modulosAtivos, userRole]);
+
+    const handleConfiguracoes = () => {
+        setShowMenu(false);
+        navigate('/gestao?tab=config');
+    };
+
+    const handleLogout = async () => {
+        setShowMenu(false);
+        try {
+            if (logout) await logout();
+            navigate('/');
+        } catch (err) {
+            console.error('Erro ao sair:', err);
+        }
+    };
+
+    // Fecha menu ao clicar fora
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowMenu(false);
+            }
+        };
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') setShowMenu(false);
+        };
+        if (showMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEscape);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [showMenu]);
+
     return (
-        <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
+        <div className="h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm">
             {/* Left: Menu Icon + Title */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
                 <button
                     onClick={onMenuToggle}
-                    className="text-gray-700 hover:text-clic-secondary transition"
+                    className="text-gray-700 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
                     aria-label="Toggle menu"
                 >
-                    <FontAwesomeIcon icon={faBars} size="lg" />
+                    <FontAwesomeIcon icon={faBars} size="sm" />
                 </button>
-                <h1 className="text-2xl font-bold text-gray-800">{displayTitle}</h1>
+                <h1 className="text-lg font-bold text-gray-800">{displayTitle}</h1>
             </div>
 
             {/* Right: Icons */}
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-1.5">
                 {/* Fullscreen */}
                 <button
                     onClick={() => {
@@ -39,44 +87,61 @@ const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
                             document.exitFullscreen();
                         }
                     }}
-                    className="text-gray-600 hover:text-clic-secondary transition"
+                    className="text-gray-600 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
                     aria-label="Toggle fullscreen"
                 >
-                    <FontAwesomeIcon icon={faExpand} size="lg" />
+                    <FontAwesomeIcon icon={faExpand} size="sm" />
                 </button>
 
                 {/* Notifications */}
                 <button
-                    className="relative text-gray-600 hover:text-clic-secondary transition"
+                    className="relative text-gray-600 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
                     aria-label="Notifications"
                 >
-                    <FontAwesomeIcon icon={faBell} size="lg" />
+                    <FontAwesomeIcon icon={faBell} size="sm" />
                     {/* Badge de notificação (opcional) */}
-                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                 </button>
 
                 {/* Menu de Opções */}
-                <div className="relative">
+                <div className="relative" ref={menuRef}>
                     <button
                         onClick={() => setShowMenu(!showMenu)}
-                        className="text-gray-600 hover:text-clic-secondary transition"
+                        className="text-gray-600 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
                         aria-label="More options"
                     >
-                        <FontAwesomeIcon icon={faEllipsisVertical} size="lg" />
+                        <FontAwesomeIcon icon={faEllipsisVertical} size="sm" />
                     </button>
 
                     {/* Dropdown Menu */}
                     {showMenu && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700">
-                                Perfil
-                            </button>
-                            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700">
-                                Configurações
-                            </button>
-                            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 border-t">
-                                Sair
-                            </button>
+                        <div className="absolute right-0 mt-1.5 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-3">
+                            <div className="grid grid-cols-3 gap-2 mb-2">
+                                {appMenuItems.map((item) => (
+                                    <button
+                                        key={item.name}
+                                        onClick={() => { setShowMenu(false); navigate(item.path); }}
+                                        className="flex flex-col items-center justify-center rounded-md border border-gray-100 hover:border-clic-primary hover:bg-gray-50 p-2 text-gray-700 text-xs"
+                                    >
+                                        <FontAwesomeIcon icon={item.icon} className="mb-1" size="sm" />
+                                        <span className="text-[11px] text-center leading-4">{item.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="border-t pt-2">
+                                <button
+                                    onClick={handleConfiguracoes}
+                                    className="w-full text-left px-2 py-1.5 hover:bg-gray-100 text-gray-700 text-sm rounded"
+                                >
+                                    Configurações da Escola
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full text-left px-2 py-1.5 hover:bg-gray-100 text-gray-700 text-sm rounded"
+                                >
+                                    Sair
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

@@ -157,7 +157,16 @@ const GestaoAlunosTable = () => {
                                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{aluno.nome_aluno || '-'}</td>
                                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.unidade || '-'}</td>
                                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.modalidade || '-'}</td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.nome_turma || '-'}</td>
+                                    <td className="px-3 py-2 text-sm text-gray-500">
+                                        {aluno.turmas && aluno.turmas.length > 0 ? (
+                                            <div className="flex flex-wrap gap-1">
+                                                {aluno.turmas.slice(0, 2).map(t => (
+                                                    <span key={t} className="px-1.5 py-0.5 text-[10px] bg-green-100 text-green-800 rounded">{t}</span>
+                                                ))}
+                                                {aluno.turmas.length > 2 && <span className="text-xs">+{aluno.turmas.length - 2}</span>}
+                                            </div>
+                                        ) : (aluno.nome_turma || '-')}
+                                    </td>
                                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.ano_turma || '-'}</td>
                                     <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium text-center space-x-2">
                                         <button onClick={() => handleEditAluno(aluno)} className="text-clic-primary hover:text-yellow-600">
@@ -237,7 +246,7 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
         ano_turma: new Date().getFullYear().toString(),
         unidade: '',
         modalidade: '',
-        nome_turma: '',
+        turmas: [], // Array de nomes de turmas
         dataNascimento: '',
         nomePai: '',
         celularPai: '',
@@ -256,6 +265,43 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
         responsavelTelefone: '',
     });
     const [saving, setSaving] = useState(false);
+
+    // Gerar matrícula automática ao abrir o modal
+    useEffect(() => {
+        const gerarMatricula = async () => {
+            try {
+                const anoAtual = new Date().getFullYear();
+                const anoSufixo = anoAtual.toString().slice(-2); // Pega os 2 últimos dígitos do ano
+                
+                // Buscar a última matrícula de TODOS os alunos (sequência contínua)
+                const { collection, query, orderBy, limit, getDocs } = await import('firebase/firestore');
+                const alunosRef = collection(db, 'escolas', escolaId, 'alunos');
+                const q = query(
+                    alunosRef,
+                    orderBy('matricula', 'desc'),
+                    limit(1)
+                );
+                
+                const snapshot = await getDocs(q);
+                let proximoNumero = 1;
+                
+                if (!snapshot.empty) {
+                    const ultimaMatricula = snapshot.docs[0].data().matricula;
+                    // Pega apenas os últimos 4 dígitos (parte sequencial)
+                    const numeroAtual = parseInt(ultimaMatricula.slice(-4));
+                    proximoNumero = numeroAtual + 1;
+                }
+                
+                // Formatar matrícula: AANNNN (ex: 250250 -> 260251)
+                const novaMatricula = `${anoSufixo}${proximoNumero.toString().padStart(4, '0')}`;
+                handleChange('matricula', novaMatricula);
+            } catch (error) {
+                console.error('Erro ao gerar matrícula:', error);
+            }
+        };
+        
+        gerarMatricula();
+    }, [escolaId]);
 
     // Anos letivos disponíveis
     const anosLetivos = [
@@ -287,7 +333,8 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                 ano_turma: formData.ano_turma,
                 unidade: formData.unidade || null,
                 modalidade: formData.modalidade || null,
-                nome_turma: formData.nome_turma || null,
+                turmas: formData.turmas || [],
+                nome_turma: (formData.turmas && formData.turmas.length > 0) ? formData.turmas[0] : null, // Retrocompatibilidade
                 dataNascimento: formData.dataNascimento || null,
                 nomePai: formData.nomePai || null,
                 celularPai: formData.celularPai || null,
@@ -344,11 +391,12 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                     <input
                         type="text"
                         value={formData.matricula}
-                        onChange={(e) => handleChange('matricula', e.target.value)}
-                        placeholder="Ex: 1520"
-                        className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        readOnly
+                        placeholder="Gerada automaticamente..."
+                        className="w-full text-sm border border-gray-300 rounded-md p-2 bg-gray-50 cursor-not-allowed"
                         required
                     />
+                    <p className="text-xs text-gray-500 mt-1">Matrícula gerada automaticamente baseada no ano atual</p>
                 </div>
 
                 {/* Ano Letivo e Unidade */}
@@ -410,19 +458,39 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                     </div>
 
                     <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Turma<span className="text-red-500">*</span>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Turmas<span className="text-red-500">*</span>
                         </label>
-                        <select
-                            value={formData.nome_turma}
-                            onChange={(e) => handleChange('nome_turma', e.target.value)}
-                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Selecione</option>
-                            {turmas
-                                .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
-                                .map(turma => {
+                        <div className="mb-2">
+                            <div className="flex flex-wrap gap-1.5 mb-2">
+                                {(formData.turmas || []).map(t => (
+                                    <span key={t} className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                        {t}
+                                        <button 
+                                            type="button" 
+                                            onClick={() => handleChange('turmas', (formData.turmas || []).filter(turma => turma !== t))}
+                                            className="text-green-600 hover:text-green-800"
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <select
+                                value=""
+                                onChange={(e) => {
+                                    const selected = e.target.value;
+                                    if (selected && !(formData.turmas || []).includes(selected)) {
+                                        handleChange('turmas', [...(formData.turmas || []), selected]);
+                                    }
+                                }}
+                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            >
+                                <option value="">Adicionar turma...</option>
+                                {turmas
+                                    .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
+                                    .filter(t => !(formData.turmas || []).includes(t.name))
+                                    .map(turma => {
                                     const diasTexto = turma.diasSemana && turma.diasSemana.length > 0 
                                         ? turma.diasSemana.join(', ') 
                                         : '';
@@ -436,6 +504,7 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                                 })
                             }
                         </select>
+                    </div>
                     </div>
                 </div>
 
@@ -457,7 +526,7 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Filiação</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nome do Pai
                             </label>
                             <input
@@ -663,7 +732,7 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Telefone
                             </label>
                             <input
@@ -708,6 +777,7 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
         unidade: aluno.unidade || '',
         modalidade: aluno.modalidade || '',
         nome_turma: aluno.nome_turma || '',
+        turmas: aluno.turmas || (aluno.nome_turma ? [aluno.nome_turma] : []), // Migração automática
         dataNascimento: aluno.dataNascimento || '',
         nomePai: aluno.nomePai || '',
         celularPai: aluno.celularPai || '',
@@ -726,6 +796,7 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
         responsavelTelefone: aluno.responsavelTelefone || '',
     });
     const [saving, setSaving] = useState(false);
+    const [activeTab, setActiveTab] = useState('dados');
 
     // Anos letivos disponíveis
     const anosLetivos = [
@@ -767,45 +838,89 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
 
     return (
         <Modal title="Editar Aluno" onClose={onClose} maxWidth="max-w-4xl">
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Nome do Aluno */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nome do Aluno<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.nome_aluno}
-                        onChange={(e) => handleChange('nome_aluno', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                        required
-                    />
-                </div>
+            {/* Navegação por Abas */}
+            <div className="flex gap-2 mb-4 border-b pb-2">
+                {[
+                    { id: 'dados', label: 'Dados do Aluno' },
+                    { id: 'matricula', label: 'Matrícula' },
+                    { id: 'responsaveis', label: 'Responsáveis' },
+                    { id: 'financeiro', label: 'Financeiro' },
+                ].map(tab => (
+                    <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-4 py-1.5 rounded-md text-xs font-medium transition ${
+                            activeTab === tab.id
+                                ? 'bg-blue-600 text-white shadow-sm'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
 
-                {/* Matrícula */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nº da Matrícula<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.matricula}
-                        disabled
-                        className="w-full border border-gray-300 rounded-lg p-3 bg-gray-100 cursor-not-allowed"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">A matrícula não pode ser editada.</p>
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-3">
+                {/* Aba: Dados do Aluno */}
+                {activeTab === 'dados' && (
+                    <div className="space-y-3">
+                        {/* Nome do Aluno */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Nome do Aluno<span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.nome_aluno}
+                                onChange={(e) => handleChange('nome_aluno', e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                required
+                            />
+                        </div>
 
-                {/* Ano Letivo e Ciclo */}
-                <div className="grid grid-cols-2 gap-4">
+                        {/* Matrícula */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Nº da Matrícula<span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.matricula}
+                                disabled
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-gray-100 cursor-not-allowed"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">A matrícula não pode ser editada.</p>
+                        </div>
+
+                        {/* Data de Nascimento */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Data de Nascimento
+                            </label>
+                            <input
+                                type="date"
+                                value={formData.dataNascimento}
+                                onChange={(e) => handleChange('dataNascimento', e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Aba: Matrícula */}
+                {activeTab === 'matricula' && (
+                    <div className="space-y-3">
+                        {/* Ano Letivo e Unidade */}
+                <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Ano Letivo<span className="text-red-500">*</span>
                         </label>
                         <select
                             value={formData.ano_turma}
                             onChange={(e) => handleChange('ano_turma', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
@@ -816,13 +931,13 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Unidade<span className="text-red-500">*</span>
                         </label>
                         <select
                             value={formData.unidade}
                             onChange={(e) => handleChange('unidade', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full border text-xs border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
@@ -834,15 +949,15 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                 </div>
 
                 {/* Modalidade e Turma */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Modalidade<span className="text-red-500">*</span>
                         </label>
                         <select
                             value={formData.modalidade}
                             onChange={(e) => handleChange('modalidade', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
                         >
                             <option value="">Selecione</option>
@@ -856,19 +971,39 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Turma<span className="text-red-500">*</span>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Turmas<span className="text-red-500">*</span>
                         </label>
-                        <select
-                            value={formData.nome_turma}
-                            onChange={(e) => handleChange('nome_turma', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Selecione</option>
-                            {turmas
-                                .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
-                                .map(turma => {
+                        <div className="mb-2">
+                            <div className="flex flex-wrap gap-1.5 mb-2">
+                                {(formData.turmas || []).map(t => (
+                                    <span key={t} className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                        {t}
+                                        <button 
+                                            type="button" 
+                                            onClick={() => handleChange('turmas', (formData.turmas || []).filter(turma => turma !== t))}
+                                            className="text-green-600 hover:text-green-800"
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <select
+                                value=""
+                                onChange={(e) => {
+                                    const selected = e.target.value;
+                                    if (selected && !(formData.turmas || []).includes(selected)) {
+                                        handleChange('turmas', [...(formData.turmas || []), selected]);
+                                    }
+                                }}
+                                className="w-full text-xs border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            >
+                                <option value="">Adicionar turma...</option>
+                                {turmas
+                                    .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
+                                    .filter(t => !(formData.turmas || []).includes(t.name))
+                                    .map(turma => {
                                     const diasTexto = turma.diasSemana && turma.diasSemana.length > 0 
                                         ? turma.diasSemana.join(', ') 
                                         : '';
@@ -883,27 +1018,19 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                             }
                         </select>
                     </div>
+                    </div>
                 </div>
-
-                {/* Data de Nascimento */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Data de Nascimento
-                    </label>
-                    <input
-                        type="date"
-                        value={formData.dataNascimento}
-                        onChange={(e) => handleChange('dataNascimento', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                    />
-                </div>
-
+                    </div>
+                )}
+                {/* Aba: Responsáveis */}
+                {activeTab === 'responsaveis' && (
+                    <div className="space-y-3">
                 {/* Filiação - Pai */}
-                <div className="border-t pt-4 mt-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Filiação</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                <div className="border-t pt-3 mt-3">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Filiação</h3>
+                    <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nome do Pai
                             </label>
                             <input
@@ -911,11 +1038,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.nomePai}
                                 onChange={(e) => handleChange('nomePai', e.target.value)}
                                 placeholder="Nome completo"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Celular do Pai
                             </label>
                             <input
@@ -923,16 +1050,16 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.celularPai}
                                 onChange={(e) => handleChange('celularPai', e.target.value)}
                                 placeholder="(00) 00000-0000"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Filiação - Mãe */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Nome da Mãe
                         </label>
                         <input
@@ -940,11 +1067,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                             value={formData.nomeMae}
                             onChange={(e) => handleChange('nomeMae', e.target.value)}
                             placeholder="Nome completo"
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Celular da Mãe
                         </label>
                         <input
@@ -952,19 +1079,19 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                             value={formData.celularMae}
                             onChange={(e) => handleChange('celularMae', e.target.value)}
                             placeholder="(00) 00000-0000"
-                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                         />
                     </div>
                 </div>
 
-                {/* Responsável Financeiro */}
-                <div className="border-t pt-4 mt-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Responsável Financeiro</h3>
+                        {/* Responsável Financeiro */}
+                        <div className="border-t pt-3 mt-3 -mx-3 px-3 pb-3 bg-gray-50 rounded-b-lg">
+                            <h3 className="text-xs font-semibold text-gray-700 mb-2">Responsável Financeiro</h3>
                     
                     {/* Nome e CPF */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nome Responsável
                             </label>
                             <input
@@ -972,11 +1099,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelNome}
                                 onChange={(e) => handleChange('responsavelNome', e.target.value)}
                                 placeholder="Nome completo"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 CPF
                             </label>
                             <input
@@ -984,15 +1111,15 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelCPF}
                                 onChange={(e) => handleChange('responsavelCPF', e.target.value)}
                                 placeholder="000.000.000-00"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
 
                     {/* CEP e UF */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 CEP
                             </label>
                             <input
@@ -1000,17 +1127,17 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelCEP}
                                 onChange={(e) => handleChange('responsavelCEP', e.target.value)}
                                 placeholder="00000-000"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Estado (UF)
                             </label>
                             <select
                                 value={formData.responsavelUF}
                                 onChange={(e) => handleChange('responsavelUF', e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             >
                                 <option value="">Selecione</option>
                                 <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
@@ -1027,9 +1154,9 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     </div>
 
                     {/* Endereço, Número, Complemento */}
-                    <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="grid grid-cols-3 gap-3 mb-3">
                         <div className="col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Endereço
                             </label>
                             <input
@@ -1037,11 +1164,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelEndereco}
                                 onChange={(e) => handleChange('responsavelEndereco', e.target.value)}
                                 placeholder="Rua, avenida, etc"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nº
                             </label>
                             <input
@@ -1049,15 +1176,15 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelNumero}
                                 onChange={(e) => handleChange('responsavelNumero', e.target.value)}
                                 placeholder="123"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
 
                     {/* Complemento e Bairro */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Complemento
                             </label>
                             <input
@@ -1065,11 +1192,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelComplemento}
                                 onChange={(e) => handleChange('responsavelComplemento', e.target.value)}
                                 placeholder="Apto, sala, etc"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Bairro
                             </label>
                             <input
@@ -1077,15 +1204,15 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelBairro}
                                 onChange={(e) => handleChange('responsavelBairro', e.target.value)}
                                 placeholder="Nome do bairro"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
 
                     {/* Cidade, Email, Telefone */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Cidade
                             </label>
                             <input
@@ -1093,11 +1220,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelCidade}
                                 onChange={(e) => handleChange('responsavelCidade', e.target.value)}
                                 placeholder="Nome da cidade"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 E-mail
                             </label>
                             <input
@@ -1105,11 +1232,11 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelEmail}
                                 onChange={(e) => handleChange('responsavelEmail', e.target.value)}
                                 placeholder="email@exemplo.com"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Telefone
                             </label>
                             <input
@@ -1117,25 +1244,35 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                                 value={formData.responsavelTelefone}
                                 onChange={(e) => handleChange('responsavelTelefone', e.target.value)}
                                 placeholder="(00) 00000-0000"
-                                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             />
                         </div>
                     </div>
                 </div>
+                    </div>
+                )}
+
+                {/* Aba: Financeiro */}
+                {activeTab === 'financeiro' && (
+                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 text-center">
+                        <p className="text-xs text-gray-500">Seção em desenvolvimento</p>
+                        <p className="text-xs text-gray-400 mt-1">Em breve: histórico de pagamentos e pendências financeiras</p>
+                    </div>
+                )}
 
                 {/* Botões */}
-                <div className="flex justify-end space-x-3 pt-4">
+                <div className="flex justify-end space-x-3 pt-3">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
+                        className="px-6 py-2 bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-300 transition"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
+                        className="px-6 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
                     >
                         {saving ? 'Salvando...' : 'Salvar'}
                     </button>

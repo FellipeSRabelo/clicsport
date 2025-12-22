@@ -1,7 +1,8 @@
 // src/modules/gestao/GestaoTurmas.jsx - VERSÃO ATUALIZADA
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase/firebaseConfig';
-import { collection, query, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../../firebase/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faEdit, faSpinner, faSave, faCog, faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -168,6 +169,7 @@ const GerenciarModalidades = ({ escolaId, unidades }) => {
 // Componente principal de Gestão de Turmas
 const GestaoTurmas = () => {
     const { escolaId, loading: authLoading, currentUser } = useAuth();
+    const navigate = useNavigate();
     const [turmas, setTurmas] = useState([]);
     const [alunos, setAlunos] = useState([]);
     const [professores, setProfessores] = useState([]);
@@ -179,6 +181,7 @@ const GestaoTurmas = () => {
     const [isUnidadesModalOpen, setIsUnidadesModalOpen] = useState(false);
     const [isModalidadesModalOpen, setIsModalidadesModalOpen] = useState(false);
     const [isAlunosModalOpen, setIsAlunosModalOpen] = useState(false);
+    const [abaModalAtiva, setAbaModalAtiva] = useState('alunos'); // 'alunos' ou 'professores'
     const [turmaParaVerAlunos, setTurmaParaVerAlunos] = useState(null);
     const [currentTurma, setCurrentTurma] = useState(null);
 
@@ -341,7 +344,32 @@ const GestaoTurmas = () => {
     // Função para abrir modal de visualização de alunos
     const handleVerAlunos = (turma) => {
         setTurmaParaVerAlunos(turma);
+        setAbaModalAtiva('alunos');
         setIsAlunosModalOpen(true);
+    };
+
+    const handleToggleProfessor = async (professorId, professorName) => {
+        if (!escolaId || !turmaParaVerAlunos) return;
+        try {
+            const profRef = doc(db, 'escolas', escolaId, 'professores', professorId);
+            const profSnap = await getDoc(profRef);
+            const profData = profSnap.data();
+            const turmasAtuais = profData.classes || [];
+            
+            let novasTurmas;
+            if (turmasAtuais.includes(turmaParaVerAlunos.name)) {
+                // Remover
+                novasTurmas = turmasAtuais.filter(t => t !== turmaParaVerAlunos.name);
+            } else {
+                // Adicionar
+                novasTurmas = [...turmasAtuais, turmaParaVerAlunos.name];
+            }
+            
+            await setDoc(profRef, { classes: novasTurmas }, { merge: true });
+        } catch (error) {
+            console.error('Erro ao vincular/desvincular professor:', error);
+            alert('Erro ao atualizar vínculo do professor.');
+        }
     };
 
     return (
@@ -549,39 +577,123 @@ const GestaoTurmas = () => {
 
             {/* Modal Ver Alunos */}
             {isAlunosModalOpen && turmaParaVerAlunos && (
-                <Modal title={`Alunos da Turma: ${turmaParaVerAlunos.name}`} onClose={() => setIsAlunosModalOpen(false)}>
+                <Modal title={`Turma: ${turmaParaVerAlunos.name}`} onClose={() => setIsAlunosModalOpen(false)} maxWidth="max-w-3xl">
+                    {/* Abas */}
+                    <div className="flex border-b border-gray-200 mb-4">
+                        <button
+                            onClick={() => setAbaModalAtiva('alunos')}
+                            className={`flex-1 px-4 py-2 text-sm font-medium ${
+                                abaModalAtiva === 'alunos'
+                                    ? 'border-b-2 border-clic-primary text-clic-secondary'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            Alunos ({alunos.filter(a => (a.turmas || []).includes(turmaParaVerAlunos.name) || a.nome_turma === turmaParaVerAlunos.name).length})
+                        </button>
+                        <button
+                            onClick={() => setAbaModalAtiva('professores')}
+                            className={`flex-1 px-4 py-2 text-sm font-medium ${
+                                abaModalAtiva === 'professores'
+                                    ? 'border-b-2 border-clic-primary text-clic-secondary'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            Professores ({professores.filter(p => (p.classes || []).includes(turmaParaVerAlunos.name)).length})
+                        </button>
+                    </div>
+
                     <div className="space-y-3">
-                        {alunos.filter(a => a.nome_turma === turmaParaVerAlunos.name).length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">Nenhum aluno vinculado a esta turma.</p>
+                        {abaModalAtiva === 'alunos' ? (
+                            // Conteúdo da aba Alunos
+                            alunos.filter(a => (a.turmas || []).includes(turmaParaVerAlunos.name) || a.nome_turma === turmaParaVerAlunos.name).length === 0 ? (
+                                <p className="text-gray-500 text-center py-4">Nenhum aluno vinculado a esta turma.</p>
+                            ) : (
+                                <div className="max-h-96 overflow-y-auto">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Matrícula</th>
+                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ano</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {alunos
+                                                .filter(a => (a.turmas || []).includes(turmaParaVerAlunos.name) || a.nome_turma === turmaParaVerAlunos.name)
+                                                .map(aluno => (
+                                                    <tr key={aluno.id} className="hover:bg-gray-50">
+                                                        <td className="px-4 py-2 text-sm text-gray-900">{aluno.matricula}</td>
+                                                        <td className="px-4 py-2 text-sm text-gray-900">{aluno.nome_aluno}</td>
+                                                        <td className="px-4 py-2 text-sm text-gray-500">{aluno.ano_turma}</td>
+                                                    </tr>
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )
                         ) : (
+                            // Conteúdo da aba Professores
                             <div className="max-h-96 overflow-y-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Matrícula</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ano</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {alunos
-                                            .filter(a => a.nome_turma === turmaParaVerAlunos.name)
-                                            .map(aluno => (
-                                                <tr key={aluno.id} className="hover:bg-gray-50">
-                                                    <td className="px-4 py-2 text-sm text-gray-900">{aluno.matricula}</td>
-                                                    <td className="px-4 py-2 text-sm text-gray-900">{aluno.nome_aluno}</td>
-                                                    <td className="px-4 py-2 text-sm text-gray-500">{aluno.ano_turma}</td>
-                                                </tr>
-                                            ))
-                                        }
-                                    </tbody>
-                                </table>
+                                {professores.length === 0 ? (
+                                    <p className="text-gray-500 text-center py-4">Nenhum professor cadastrado.</p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {professores.map(prof => {
+                                            const isVinculado = (prof.classes || []).includes(turmaParaVerAlunos.name);
+                                            return (
+                                                <div key={prof.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <p className="text-sm font-medium text-gray-900">{prof.name}</p>
+                                                            <button
+                                                                onClick={() => navigate('/gestao?tab=professores')}
+                                                                className="text-gray-400 hover:text-clic-primary"
+                                                                title="Editar professor"
+                                                            >
+                                                                <FontAwesomeIcon icon={faEdit} className="text-xs" />
+                                                            </button>
+                                                            {/* Disponibilidade inline */}
+                                                            <div className="text-xs text-gray-600 ml-2">
+                                                                {prof.diasDisponiveis && prof.diasDisponiveis.length > 0 && (
+                                                                    <span className="mr-2">
+                                                                        <span className="font-medium">Dias:</span> {prof.diasDisponiveis.map(d => d.substring(0, 3)).join(', ')}
+                                                                    </span>
+                                                                )}
+                                                                {prof.turnosDisponiveis && prof.turnosDisponiveis.length > 0 && (
+                                                                    <span>
+                                                                        <span className="font-medium">Turnos:</span> {prof.turnosDisponiveis.map(t => t.charAt(0)).join(', ')}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-1.5">
+                                                            {(prof.modalidades || []).map(m => (
+                                                                <span key={m} className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded">{m}</span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleToggleProfessor(prof.id, prof.name)}
+                                                        className={`px-3 py-1.5 text-xs font-semibold rounded ${
+                                                            isVinculado
+                                                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                                : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                        }`}
+                                                    >
+                                                        {isVinculado ? 'Desvincular' : 'Vincular'}
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         )}
-                        <div className="flex justify-end pt-4">
+                        <div className="flex justify-end pt-4 border-t">
                             <button 
                                 onClick={() => setIsAlunosModalOpen(false)} 
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                                className="px-4 py-2 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600">
                                 Fechar
                             </button>
                         </div>
