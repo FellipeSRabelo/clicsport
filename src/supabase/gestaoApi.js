@@ -49,14 +49,33 @@ export const deleteTurma = async (turmaId) => {
 // ==================== ALUNOS ====================
 
 export const fetchAlunos = async (escolaId) => {
-  const { data, error } = await supabase
+  // Busca alunos
+  const { data: alunos, error: alunosError } = await supabase
     .from('alunos')
     .select('*')
     .eq('escola_id', escolaId)
     .order('nome');
 
-  if (error) throw error;
-  return data || [];
+  if (alunosError) throw alunosError;
+
+  if (!alunos || alunos.length === 0) return [];
+
+  // Para cada aluno, busca suas turmas vinculadas
+  const alunosComTurmas = await Promise.all(
+    alunos.map(async (aluno) => {
+      const { data: turmaVinculos } = await supabase
+        .from('aluno_turmas')
+        .select('turma_id')
+        .eq('aluno_id', aluno.id);
+
+      return {
+        ...aluno,
+        turma_ids: turmaVinculos?.map((tv) => tv.turma_id) || [],
+      };
+    })
+  );
+
+  return alunosComTurmas;
 };
 
 export const gerarMatriculaAluno = async (escolaId) => {
@@ -376,3 +395,13 @@ export const deleteModalidade = async (modalidadeId) => {
 
   if (error) throw error;
 };
+
+// ==================== ALIASES CONVENIENTES ====================
+
+// Aliases para compatibilidade com componentes que usam naming get*
+export const getAlunos = fetchAlunos;
+export const getTurmas = fetchTurmas;
+export const getProfessores = fetchProfessores;
+export const getUnidades = fetchUnidades;
+export const getModalidades = fetchModalidades;
+

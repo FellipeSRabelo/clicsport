@@ -3,225 +3,198 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFileImport, faTrash, faEdit, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import UploadAlunos from '../../components/UploadAlunos'; // CORRIGIDO: Caminho correto
-import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
-                                        ) : (aluno.nome_turma || '-')}
-                                    </td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.ano_turma || '-'}</td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium text-center space-x-2">
-                                        <button onClick={() => handleEditAluno(aluno)} className="text-clic-primary hover:text-yellow-600">
-                                            <FontAwesomeIcon icon={faEdit} className="text-sm" />
-                                        </button>
-                                        <button onClick={() => handleDeleteAluno(aluno)} className="text-red-500 hover:text-red-700">
-                                            <FontAwesomeIcon icon={faTrash} className="text-sm" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+import UploadAlunos from '../../components/UploadAlunos';
+import Modal from '../../components/Modal';
+import * as gestaoApi from '../../supabase/gestaoApi';
 
-            {/* Modal de Upload */}
-            {isUploadModalOpen && (
-                <Modal 
-                    title="Importar Alunos via Planilha" 
-                    onClose={() => setIsUploadModalOpen(false)}
-                >
-                    <UploadAlunos 
-        });
-    }, [turmas, novaMatricula, matriculas]);
+// Helper: sanitiza payload removendo campos vazios
+const sanitizeAlunoPayload = (payload) => {
+    const cleaned = {};
+    Object.entries(payload).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+            cleaned[key] = value;
+        }
+    });
+    return cleaned;
+};
+
+// Helper: compara arrays
+const arraysEqual = (a, b) => {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((val, idx) => val === sortedB[idx]);
+};
+
+// Componente Modal de Adição de Novo Aluno
+const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSave }) => {
+    const [formData, setFormData] = useState({
+        nome_aluno: '',
+        matricula: '',
+        ano_turma: new Date().getFullYear().toString(),
+        unidade: '',
+        modalidade: '',
+        turmas: [],
+        dataNascimento: '',
+        nomePai: '',
+        celularPai: '',
+        nomeMae: '',
+        celularMae: '',
+        responsavelNome: '',
+        responsavelCPF: '',
+        responsavelCEP: '',
+        responsavelUF: '',
+        responsavelEndereco: '',
+        responsavelNumero: '',
+        responsavelComplemento: '',
+        responsavelBairro: '',
+        responsavelCidade: '',
+        responsavelEmail: '',
+        responsavelTelefone: '',
+    });
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (escolaId && !formData.matricula) {
+            gestaoApi.gerarMatriculaAluno(escolaId)
+                .then((mat) => {
+                    if (mat) setFormData((prev) => ({ ...prev, matricula: mat }));
+                })
+                .catch((err) => console.error('Erro ao gerar matrícula:', err));
+        }
+    }, [escolaId, formData.matricula]);
 
     const handleChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.nome_aluno || !formData.matricula) {
-            alert('Nome e Matrícula são obrigatórios.');
-            return;
-        }
-        if (!escolaId) {
-            alert('Escola não identificada. Tente novamente.');
+        if (!formData.nome_aluno.trim()) {
+            alert('Nome do aluno é obrigatório.');
             return;
         }
 
-        setSaving(true);
         try {
+            setSaving(true);
             const payload = sanitizeAlunoPayload({
+                ...formData,
                 escola_id: escolaId,
-                nome: formData.nome_aluno,
-                nome_aluno: formData.nome_aluno,
-                matricula: formData.matricula,
-                data_nascimento: formData.dataNascimento || null,
-                ano_turma: formData.ano_turma || null,
-                nome_turma:
-                    (formData.turmas && formData.turmas.length > 0)
-                        ? formData.turmas[0]
-                        : formData.nome_turma || null,
-                turmas: formData.turmas || null,
-                nome_pai: formData.nomePai || null,
-                celular_pai: formData.celularPai || null,
-                nome_mae: formData.nomeMae || null,
-                celular_mae: formData.celularMae || null,
-                responsavel_nome: formData.responsavelNome || null,
-                responsavel_cpf: formData.responsavelCPF || null,
-                responsavel_cep: formData.responsavelCEP || null,
-                responsavel_uf: formData.responsavelUF || null,
-                responsavel_endereco: formData.responsavelEndereco || null,
-                responsavel_numero: formData.responsavelNumero || null,
-                responsavel_complemento: formData.responsavelComplemento || null,
-                responsavel_bairro: formData.responsavelBairro || null,
-                responsavel_cidade: formData.responsavelCidade || null,
-                responsavel_email: formData.responsavelEmail || null,
-                responsavel_telefone: formData.responsavelTelefone || null,
             });
-
             await gestaoApi.createAluno(payload);
-
             alert('Aluno adicionado com sucesso!');
             onSave();
+            onClose();
         } catch (error) {
             console.error('Erro ao adicionar aluno:', error);
-            alert('Erro ao adicionar aluno: ' + error.message);
+            alert('Erro ao adicionar aluno. Tente novamente.');
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <Modal title="Adicionar Novo Aluno" onClose={onClose} maxWidth="max-w-4xl">
-            <form onSubmit={handleSubmit} className="space-y-3">
-                {/* Nome do Aluno */}
-                <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Nome do Aluno<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.nome_aluno}
-                        onChange={(e) => handleChange('nome_aluno', e.target.value)}
-                        placeholder="Ex: João Silva"
-                        className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                        required
-                    />
-                </div>
-
-                {/* Matrícula */}
-                <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Nº da Matrícula<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.matricula}
-                        readOnly
-                        placeholder="Gerada automaticamente..."
-                        className="w-full text-sm border border-gray-300 rounded-md p-2 bg-gray-50 cursor-not-allowed"
-                        required
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Matrícula gerada automaticamente</p>
-                </div>
-
-                {/* Ano Letivo e Unidade */}
+        <Modal title="Adicionar Novo Aluno" onClose={onClose}>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Nome e Matrícula */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Ano Letivo<span className="text-red-500">*</span>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Nome do Aluno
                         </label>
-                        <select
-                            value={formData.ano_turma}
-                            onChange={(e) => handleChange('ano_turma', e.target.value)}
+                        <input
+                            type="text"
+                            value={formData.nome_aluno}
+                            onChange={(e) => handleChange('nome_aluno', e.target.value)}
+                            placeholder="Nome completo"
                             className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             required
-                        >
-                            {anosLetivos.map(ano => (
-                                <option key={ano} value={ano}>{ano}</option>
-                            ))}
-                        </select>
+                        />
                     </div>
-
                     <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Unidade<span className="text-red-500">*</span>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Matrícula
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.matricula}
+                            onChange={(e) => handleChange('matricula', e.target.value)}
+                            placeholder="Matrícula gerada automaticamente"
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 bg-gray-50 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                            readOnly
+                        />
+                    </div>
+                </div>
+
+                {/* Ano, Unidade, Modalidade */}
+                <div className="grid grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Ano
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.ano_turma}
+                            onChange={(e) => handleChange('ano_turma', e.target.value)}
+                            placeholder="2024"
+                            className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Unidade
                         </label>
                         <select
                             value={formData.unidade}
                             onChange={(e) => handleChange('unidade', e.target.value)}
                             className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
                         >
                             <option value="">Selecione</option>
-                            {unidades.map(unidade => (
+                            {unidades.map((unidade) => (
                                 <option key={unidade.id} value={unidade.id}>{unidade.nome}</option>
                             ))}
                         </select>
                     </div>
-                </div>
-
-                {/* Modalidade e Turma */}
-                <div className="grid grid-cols-2 gap-4">
                     <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Modalidade<span className="text-red-500">*</span>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Modalidade
                         </label>
                         <select
                             value={formData.modalidade}
                             onChange={(e) => handleChange('modalidade', e.target.value)}
                             className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
                         >
                             <option value="">Selecione</option>
-                            {modalidades
-                                .filter(m => !formData.unidade || m.unidade_id === formData.unidade)
-                                .map(modalidade => (
-                                    <option key={modalidade.id} value={modalidade.id}>{modalidade.nome}</option>
-                                ))
-                            }
+                            {modalidades.map((modalidade) => (
+                                <option key={modalidade.id} value={modalidade.id}>{modalidade.nome}</option>
+                            ))}
                         </select>
                     </div>
+                </div>
 
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Turmas<span className="text-red-500">*</span>
-                        </label>
-                        <div className="mb-2">
-                            <div className="flex flex-wrap gap-1.5 mb-2">
-                                {(formData.turmas || []).map(t => (
-                                    <span key={t} className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                                        {t}
-                                        <button 
-                                            type="button" 
-                                            onClick={() => handleChange('turmas', (formData.turmas || []).filter(turma => turma !== t))}
-                                            className="text-green-600 hover:text-green-800"
-                                        >
-                                            &times;
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                            <select
-                                value=""
-                                onChange={(e) => {
-                                    const selected = e.target.value;
-                                    if (selected && !(formData.turmas || []).includes(selected)) {
-                                        const novasTurmas = [...(formData.turmas || []), selected];
-                                        handleChange('turmas', novasTurmas);
-                                        if (!formData.nome_turma) {
-                                            handleChange('nome_turma', selected);
-                                        }
-                                    }
-                                }}
-                                className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            >
-                                <option value="">Adicionar turma...</option>
-                                {turmas
+                {/* Turmas */}
+                <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Turmas (Ctrl/Cmd para múltiplas)
+                    </label>
+                    <div className="border border-gray-300 rounded-md p-2 max-h-32 overflow-y-auto">
+                        <select
+                            multiple
+                            value={formData.turmas || []}
+                            onChange={(e) => {
+                                const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+                                handleChange('turmas', selectedOptions);
+                            }}
+                            className="w-full text-sm focus:outline-none"
+                            size={5}
+                        >
+                            {
+                                turmas
                                     .filter(
-                                        (t) =>
-                                            (!formData.unidade || t.unidade_id === formData.unidade) &&
-                                            (!formData.modalidade || t.modalidade_id === formData.modalidade)
+                                        (turma) =>
+                                            (!formData.ano_turma || String(turma.ano) === formData.ano_turma) &&
+                                            (!formData.unidade || turma.unidade_id === formData.unidade) &&
+                                            (!formData.modalidade || turma.modalidade_id === formData.modalidade)
                                     )
                                     .filter((t) => !(formData.turmas || []).includes(t.nome))
                                     .map((turma) => {
@@ -238,7 +211,6 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                                     })
                             }
                         </select>
-                    </div>
                     </div>
                 </div>
 
@@ -272,7 +244,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Celular do Pai
                             </label>
                             <input
@@ -289,7 +261,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                 {/* Filiação - Mãe */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Nome da Mãe
                         </label>
                         <input
@@ -301,7 +273,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                         />
                     </div>
                     <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                             Celular da Mãe
                         </label>
                         <input
@@ -321,7 +293,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                     {/* Nome e CPF */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nome Responsável
                             </label>
                             <input
@@ -333,7 +305,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 CPF
                             </label>
                             <input
@@ -349,7 +321,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                     {/* CEP e UF */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 CEP
                             </label>
                             <input
@@ -361,7 +333,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Estado (UF)
                             </label>
                             <select
@@ -386,7 +358,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                     {/* Endereço, Número, Complemento */}
                     <div className="grid grid-cols-3 gap-4 mb-4">
                         <div className="col-span-2">
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Endereço
                             </label>
                             <input
@@ -398,7 +370,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Nº
                             </label>
                             <input
@@ -414,7 +386,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                     {/* Complemento e Bairro */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Complemento
                             </label>
                             <input
@@ -426,7 +398,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Bairro
                             </label>
                             <input
@@ -442,7 +414,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                     {/* Cidade, Email, Telefone */}
                     <div className="grid grid-cols-3 gap-4">
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Cidade
                             </label>
                             <input
@@ -454,7 +426,7 @@ import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
                             />
                         </div>
                         <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 E-mail
                             </label>
                             <input
@@ -537,6 +509,12 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
     const [novaMatriculaErro, setNovaMatriculaErro] = useState('');
     const [novaMatriculaLoading, setNovaMatriculaLoading] = useState(false);
     const [matriculaMutacaoId, setMatriculaMutacaoId] = useState(null);
+
+    // Log para debugar dados do aluno
+    useEffect(() => {
+        console.log('EditAlunoModal - Aluno recebido:', aluno);
+        console.log('Campos disponíveis:', Object.keys(aluno).sort());
+    }, [aluno]);
 
     const montarMatriculaInfo = useCallback(
         (turmaId) => {
@@ -1224,6 +1202,194 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                 </div>
             </form>
         </Modal>
+    );
+};
+
+// Componente Principal - Tabela de Gestão de Alunos
+const GestaoAlunosTable = () => {
+    const { escolaId, user } = useSupabaseAuth();
+    const [alunos, setAlunos] = useState([]);
+    const [turmas, setTurmas] = useState([]);
+    const [unidades, setUnidades] = useState([]);
+    const [modalidades, setModalidades] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [editingAluno, setEditingAluno] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const carregarDados = useCallback(async () => {
+        if (!escolaId) {
+            console.warn('escolaId não disponível');
+            return;
+        }
+        try {
+            setLoading(true);
+            console.log('Carregando dados para escolaId:', escolaId);
+            const [alunosData, turmasData, unidadesData, modalidadesData] = await Promise.all([
+                gestaoApi.getAlunos(escolaId),
+                gestaoApi.getTurmas(escolaId),
+                gestaoApi.getUnidades(escolaId),
+                gestaoApi.getModalidades(escolaId),
+            ]);
+            console.log('Alunos carregados:', alunosData);
+            console.log('Turmas carregadas:', turmasData);
+            setAlunos(alunosData || []);
+            setTurmas(turmasData || []);
+            setUnidades(unidadesData || []);
+            setModalidades(modalidadesData || []);
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [escolaId]);
+
+    useEffect(() => {
+        carregarDados();
+    }, [carregarDados]);
+
+    const handleAddAluno = async () => {
+        carregarDados();
+        setShowAddModal(false);
+    };
+
+    const handleDeleteAluno = async (id) => {
+        if (!window.confirm('Tem certeza que deseja deletar este aluno?')) return;
+        try {
+            await gestaoApi.deleteAluno(id);
+            setAlunos((prev) => prev.filter((a) => a.id !== id));
+        } catch (error) {
+            console.error('Erro ao deletar aluno:', error);
+            alert('Erro ao deletar aluno');
+        }
+    };
+
+    const handleEditAluno = (aluno) => {
+        setEditingAluno(aluno);
+        setShowEditModal(true);
+    };
+
+    const handleSaveAluno = async () => {
+        carregarDados();
+        setShowEditModal(false);
+        setEditingAluno(null);
+    };
+
+    if (!escolaId || !user) {
+        return <div className="p-4 text-center text-gray-500">Carregando...</div>;
+    }
+
+    return (
+        <div className="space-y-4">
+            {/* Header */}
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800">Gestão de Alunos</h2>
+                <div className="space-x-2">
+                    <button
+                        onClick={() => setShowUploadModal(true)}
+                        className="px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition"
+                    >
+                        <FontAwesomeIcon icon={faFileImport} className="mr-2" />
+                        Importar Alunos
+                    </button>
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition"
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                        Novo Aluno
+                    </button>
+                </div>
+            </div>
+
+            {/* Tabela de Alunos */}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+                {loading ? (
+                    <div className="p-8 text-center">
+                        <FontAwesomeIcon icon={faSpinner} spin className="text-blue-500" />
+                        <p className="mt-2 text-gray-600">Carregando alunos...</p>
+                    </div>
+                ) : alunos.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">
+                        Nenhum aluno encontrado. Clique em "Novo Aluno" para adicionar.
+                    </div>
+                ) : (
+                    <table className="w-full text-sm">
+                        <thead className="bg-gray-100 border-b">
+                            <tr>
+                                <th className="px-4 py-2 text-left font-semibold text-gray-700">Matrícula</th>
+                                <th className="px-4 py-2 text-left font-semibold text-gray-700">Nome</th>
+                                <th className="px-4 py-2 text-left font-semibold text-gray-700">Turmas</th>
+                                <th className="px-4 py-2 text-left font-semibold text-gray-700">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {alunos.map((aluno) => (
+                                <tr key={aluno.id} className="border-b hover:bg-gray-50 transition">
+                                    <td className="px-4 py-2 text-gray-800">{aluno.matricula || '—'}</td>
+                                    <td className="px-4 py-2 text-gray-800">{aluno.nome_aluno || '—'}</td>
+                                    <td className="px-4 py-2 text-gray-600">
+                                        {aluno.turma_ids && aluno.turma_ids.length > 0
+                                            ? turmas
+                                                  .filter((t) => aluno.turma_ids.includes(t.id))
+                                                  .map((t) => t.nome)
+                                                  .join(', ')
+                                            : '—'}
+                                    </td>
+                                    <td className="px-4 py-2 space-x-2">
+                                        <button
+                                            onClick={() => handleEditAluno(aluno)}
+                                            className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
+                                            title="Editar"
+                                        >
+                                            <FontAwesomeIcon icon={faEdit} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteAluno(aluno.id)}
+                                            className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                                            title="Deletar"
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
+            {/* Modais */}
+            {showAddModal && (
+                <AddAlunoModal
+                    escolaId={escolaId}
+                    unidades={unidades}
+                    modalidades={modalidades}
+                    turmas={turmas}
+                    onClose={() => setShowAddModal(false)}
+                    onSave={handleAddAluno}
+                />
+            )}
+
+            {showEditModal && editingAluno && (
+                <EditAlunoModal
+                    aluno={editingAluno}
+                    escolaId={escolaId}
+                    unidades={unidades}
+                    modalidades={modalidades}
+                    turmas={turmas}
+                    onClose={() => setShowEditModal(false)}
+                    onSave={handleSaveAluno}
+                />
+            )}
+
+            {showUploadModal && (
+                <Modal title="Importar Alunos" onClose={() => setShowUploadModal(false)}>
+                    <UploadAlunos escolaId={escolaId} onSuccess={carregarDados} onClose={() => setShowUploadModal(false)} />
+                </Modal>
+            )}
+        </div>
     );
 };
 
