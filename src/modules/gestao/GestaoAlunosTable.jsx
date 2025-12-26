@@ -514,7 +514,46 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
     useEffect(() => {
         console.log('EditAlunoModal - Aluno recebido:', aluno);
         console.log('Campos disponíveis:', Object.keys(aluno).sort());
-    }, [aluno]);
+        
+        // Recarrega os dados do aluno para garantir que tem os responsáveis
+        const carregarDadosCompletos = async () => {
+            try {
+                const alunoCompleto = await gestaoApi.fetchAlunoById(aluno.id);
+                console.log('Aluno completo carregado:', alunoCompleto);
+                
+                // Atualiza formData com todos os dados disponíveis
+                setFormData((prev) => ({
+                    ...prev,
+                    nome_aluno: alunoCompleto.nome_aluno || '',
+                    matricula: alunoCompleto.matricula || '',
+                    ano_turma: alunoCompleto.ano_turma || '',
+                    unidade: alunoCompleto.unidade || '',
+                    modalidade: alunoCompleto.modalidade || '',
+                    nome_turma: alunoCompleto.nome_turma || '',
+                    dataNascimento: alunoCompleto.data_nascimento || alunoCompleto.dataNascimento || '',
+                    nomePai: alunoCompleto.nome_pai || alunoCompleto.nomePai || '',
+                    celularPai: alunoCompleto.celular_pai || alunoCompleto.celularPai || '',
+                    nomeMae: alunoCompleto.nome_mae || alunoCompleto.nomeMae || '',
+                    celularMae: alunoCompleto.celular_mae || alunoCompleto.celularMae || '',
+                    responsavelNome: alunoCompleto.responsavel_nome || alunoCompleto.responsavelNome || '',
+                    responsavelCPF: alunoCompleto.responsavel_cpf || alunoCompleto.responsavelCPF || '',
+                    responsavelCEP: alunoCompleto.responsavel_cep || alunoCompleto.responsavelCEP || '',
+                    responsavelUF: alunoCompleto.responsavel_uf || alunoCompleto.responsavelUF || '',
+                    responsavelEndereco: alunoCompleto.responsavel_endereco || alunoCompleto.responsavelEndereco || '',
+                    responsavelNumero: alunoCompleto.responsavel_numero || alunoCompleto.responsavelNumero || '',
+                    responsavelComplemento: alunoCompleto.responsavel_complemento || alunoCompleto.responsavelComplemento || '',
+                    responsavelBairro: alunoCompleto.responsavel_bairro || alunoCompleto.responsavelBairro || '',
+                    responsavelCidade: alunoCompleto.responsavel_cidade || alunoCompleto.responsavelCidade || '',
+                    responsavelEmail: alunoCompleto.responsavel_email || alunoCompleto.responsavelEmail || '',
+                    responsavelTelefone: alunoCompleto.responsavel_telefone || alunoCompleto.responsavelTelefone || '',
+                }));
+            } catch (error) {
+                console.error('Erro ao carregar dados completos do aluno:', error);
+            }
+        };
+        
+        carregarDadosCompletos();
+    }, [aluno.id]);
 
     const montarMatriculaInfo = useCallback(
         (turmaId) => {
