@@ -78,6 +78,28 @@ export const fetchAlunos = async (escolaId) => {
   return alunosComTurmas;
 };
 
+export const fetchAlunoById = async (alunoId) => {
+  // Busca um aluno específico com todos os seus dados
+  const { data: aluno, error: alunoError } = await supabase
+    .from('alunos')
+    .select('*')
+    .eq('id', alunoId)
+    .single();
+
+  if (alunoError) throw alunoError;
+
+  // Busca suas turmas vinculadas
+  const { data: turmaVinculos } = await supabase
+    .from('aluno_turmas')
+    .select('turma_id')
+    .eq('aluno_id', alunoId);
+
+  return {
+    ...aluno,
+    turma_ids: turmaVinculos?.map((tv) => tv.turma_id) || [],
+  };
+};
+
 export const gerarMatriculaAluno = async (escolaId) => {
   const anoAtual = new Date().getFullYear();
   const prefixo = `${anoAtual}-`;
