@@ -1,13 +1,13 @@
 // src/modules/achados/components/ModalDetalhesGestor.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../../../firebase/AuthContext';
-import { db } from '../../../firebase/firebaseConfig';
-import { doc, runTransaction } from 'firebase/firestore';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
+import { supabase } from '../../../supabase/supabaseConfig';
+import { updateItem } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const ModalDetalhesGestor = ({ isOpen, onClose, item }) => {
-  const { currentUser, escolaId } = useAuth();
+  const { currentUser, escolaId } = useSupabaseAuth();
   const [newNote, setNewNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,7 +15,7 @@ const ModalDetalhesGestor = ({ isOpen, onClose, item }) => {
   if (!isOpen || !item) return null;
 
   const sortedNotes = item.employeeNotes?.length
-    ? [...item.employeeNotes].sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate())
+    ? [...item.employeeNotes].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     : [];
 
   const handleSaveNote = async () => {
@@ -28,27 +28,22 @@ const ModalDetalhesGestor = ({ isOpen, onClose, item }) => {
     setError('');
 
     try {
-      const itemRef = doc(db, 'escolas', escolaId, 'achados_perdidos', item.id);
-      
-      await runTransaction(db, async (transaction) => {
-        const itemDoc = await transaction.get(itemRef);
-        if (!itemDoc.exists()) {
-          throw new Error('Documento não existe!');
+      const { data } = await supabase
+        .from('achados_perdidos')
+        .select('employee_notes')
+        .eq('id', item.id)
+        .maybeSingle();
+      const existingNotes = data?.employee_notes || [];
+      const updatedNotes = [
+        ...existingNotes,
+        {
+          text: newNote.trim(),
+          employeeName: currentUser?.email || 'Gestor',
+          employeeId: currentUser?.id || 'gestor',
+          timestamp: new Date().toISOString()
         }
-
-        const existingNotes = itemDoc.data().employeeNotes || [];
-        const updatedNotes = [
-          ...existingNotes,
-          {
-            text: newNote.trim(),
-            employeeName: currentUser.displayName || currentUser.email || 'Gestor',
-            employeeId: currentUser.uid,
-            timestamp: new Date()
-          }
-        ];
-
-        transaction.update(itemRef, { employeeNotes: updatedNotes });
-      });
+      ];
+      await updateItem(item.id, { employee_notes: updatedNotes });
 
       setNewNote('');
       onClose();
@@ -66,21 +61,16 @@ const ModalDetalhesGestor = ({ isOpen, onClose, item }) => {
     setLoading(true);
 
     try {
-      const itemRef = doc(db, 'escolas', escolaId, 'achados_perdidos', item.id);
-
-      await runTransaction(db, async (transaction) => {
-        const itemDoc = await transaction.get(itemRef);
-        if (!itemDoc.exists()) {
-          throw new Error('Documento não existe!');
-        }
-
-        const existingNotes = itemDoc.data().employeeNotes || [];
-        const updatedNotes = existingNotes.filter(
-          note => note.timestamp.toMillis() !== noteTimestamp.toMillis()
-        );
-
-        transaction.update(itemRef, { employeeNotes: updatedNotes });
-      });
+      const { data } = await supabase
+        .from('achados_perdidos')
+        .select('employee_notes')
+        .eq('id', item.id)
+        .maybeSingle();
+      const existingNotes = data?.employee_notes || [];
+      const updatedNotes = existingNotes.filter(
+        note => new Date(note.timestamp).getTime() !== new Date(noteTimestamp).getTime()
+      );
+      await updateItem(item.id, { employee_notes: updatedNotes });
 
       onClose();
     } catch (error) {

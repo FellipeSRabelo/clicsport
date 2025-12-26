@@ -1,170 +1,10 @@
 // src/modules/gestao/GestaoAlunosTable.jsx
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../firebase/AuthContext'; // CORRIGIDO: Volta dois níveis
-import { db } from '../../firebase/firebaseConfig'; // CORRIGIDO: Volta dois níveis
-import { collection, query, getDocs, onSnapshot, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFileImport, faTrash, faEdit, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faFileImport, faTrash, faEdit, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import UploadAlunos from '../../components/UploadAlunos'; // CORRIGIDO: Caminho correto
 import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
-
-
-const GestaoAlunosTable = () => {
-    const { escolaId, loading: authLoading } = useAuth();
-    const [alunos, setAlunos] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-    const [isAddAlunoModalOpen, setIsAddAlunoModalOpen] = useState(false);
-    const [errorMsg, setErrorMsg] = useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [selectedAluno, setSelectedAluno] = useState(null);
-    
-    // Lista as Turmas e Professores (Mock de dados mestres)
-    const [turmas, setTurmas] = useState([]);
-    const [professores, setProfessores] = useState([]);
-    const [refreshTrigger, setRefreshTrigger] = useState(0); // Gatilho de refresh
-    const [unidades, setUnidades] = useState([]);
-    const [modalidades, setModalidades] = useState([]);
-
-    // Função que lista os alunos em tempo real
-    useEffect(() => {
-        if (!escolaId) return;
-
-        const init = async () => {
-            setErrorMsg(null);
-            setLoading(true);
-
-            // Caminho da subcoleção de alunos da escola
-            const alunosRef = collection(db, 'escolas', escolaId, 'alunos');
-            const alunosQuery = query(alunosRef);
-
-
-
-            // Listener em tempo real (onSnapshot) com proteção contra erros internos do SDK
-            let unsubscribe = null;
-            try {
-                unsubscribe = onSnapshot(alunosQuery, (snapshot) => {
-                    const alunosData = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
-                    setAlunos(alunosData);
-                    setLoading(false);
-                }, (error) => {
-                    console.error("Erro ao listar alunos (onSnapshot):", error);
-                    setLoading(false);
-                    setErrorMsg('Erro ao escutar atualizações de alunos. Veja o console para detalhes.');
-                    try { if (unsubscribe) unsubscribe(); } catch (e) { console.error('Erro ao cancelar onSnapshot de alunos após erro:', e); }
-                });
-            } catch (err) {
-                console.error('Falha ao inicializar onSnapshot para alunos:', err);
-                setLoading(false);
-                setErrorMsg('Falha interna ao inicializar o listener de alunos.');
-            }
-
-            return () => { try { if (unsubscribe) unsubscribe(); } catch (e) { console.error('Erro ao limpar onSnapshot alunos:', e); } };
-        };
-
-        const cleanupPromise = init();
-        return () => { try { if (cleanupPromise && typeof cleanupPromise.then === 'function') { cleanupPromise.then(unsub => { if (typeof unsub === 'function') unsub(); }); } } catch (e) { /* noop */ } };
-    }, [escolaId, refreshTrigger]); 
-    
-    // Função que lista as turmas, unidades, modalidades e professores
-    useEffect(() => {
-        const fetchMasters = async () => {
-            if (!escolaId) return;
-            // Turmas
-            const turmasSnap = await getDocs(collection(db, 'escolas', escolaId, 'turmas'));
-            setTurmas(turmasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            
-            // Unidades
-            const unidadesSnap = await getDocs(collection(db, 'escolas', escolaId, 'unidades'));
-            setUnidades(unidadesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            
-            // Modalidades
-            const modalidadesSnap = await getDocs(collection(db, 'escolas', escolaId, 'modalidades'));
-            setModalidades(modalidadesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            
-            // Professores
-            const profSnap = await getDocs(collection(db, 'escolas', escolaId, 'professores'));
-            setProfessores(profSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        };
-        fetchMasters();
-    }, [escolaId, refreshTrigger]);
-
-    if (authLoading || loading) {
-        return <div className="p-4 text-center"><FontAwesomeIcon icon={faSpinner} spin className="mr-2" /> Carregando lista de alunos...</div>;
-    }
-    
-    // Funções de Ação
-    const handleAddAluno = () => setIsAddAlunoModalOpen(true);
-    
-    const handleEditAluno = (aluno) => {
-        setSelectedAluno(aluno);
-        setIsEditModalOpen(true);
-    };
-    
-    const handleDeleteAluno = (aluno) => {
-        if (confirm(`Tem certeza que deseja deletar o aluno ${aluno.nome_aluno || aluno.matricula}?`)) {
-            alert(`Futuro: Deletar Aluno ID: ${aluno.id}`);
-        }
-    };
-
-
-    return (
-        <div className="bg-white p-3 rounded-lg">
-            {/* Botões de Ação */}
-            <div className="flex justify-end space-x-2 mb-4">
-                <button
-                    onClick={() => setIsUploadModalOpen(true)}
-                    className="flex items-center px-3 py-1.5 text-sm bg-clic-primary text-clic-secondary font-semibold rounded-md shadow-md hover:bg-yellow-400 transition"
-                >
-                    <FontAwesomeIcon icon={faFileImport} className="mr-1.5 text-xs" />
-                    Importar Planilha
-                </button>
-                <button
-                    onClick={handleAddAluno}
-                    className="flex items-center px-3 py-1.5 text-sm bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 transition"
-                >
-                    <FontAwesomeIcon icon={faPlus} className="mr-1.5 text-xs" />
-                    Novo Aluno
-                </button>
-            </div>
-
-            {/* Tabela de Alunos */}
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Matrícula</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unidade</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Modalidade</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Turma</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ano</th>
-                            <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {alunos.length === 0 ? (
-                            <tr>
-                                <td colSpan="7" className="px-3 py-3 text-center text-sm text-gray-500">Nenhum aluno cadastrado. Use a importação para começar!</td>
-                            </tr>
-                        ) : (
-                            alunos.map((aluno) => (
-                                <tr key={aluno.id} className="hover:bg-gray-50">
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-clic-secondary">{aluno.matricula}</td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{aluno.nome_aluno || '-'}</td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.unidade || '-'}</td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.modalidade || '-'}</td>
-                                    <td className="px-3 py-2 text-sm text-gray-500">
-                                        {aluno.turmas && aluno.turmas.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {aluno.turmas.slice(0, 2).map(t => (
-                                                    <span key={t} className="px-1.5 py-0.5 text-[10px] bg-green-100 text-green-800 rounded">{t}</span>
-                                                ))}
-                                                {aluno.turmas.length > 2 && <span className="text-xs">+{aluno.turmas.length - 2}</span>}
-                                            </div>
                                         ) : (aluno.nome_turma || '-')}
                                     </td>
                                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">{aluno.ano_turma || '-'}</td>
@@ -190,125 +30,8 @@ const GestaoAlunosTable = () => {
                     onClose={() => setIsUploadModalOpen(false)}
                 >
                     <UploadAlunos 
-                        onClose={() => setIsUploadModalOpen(false)}
-                        onImportComplete={() => {
-                            setIsUploadModalOpen(false);
-                            setRefreshTrigger(prev => prev + 1); // Força refresh da lista após upload
-                        }}
-                    />
-                </Modal>
-            )}
-
-            {/* Modal de Novo Aluno */}
-            {isAddAlunoModalOpen && (
-                <AddAlunoModal
-                    escolaId={escolaId}
-                    unidades={unidades}
-                    modalidades={modalidades}
-                    turmas={turmas}
-                    onClose={() => setIsAddAlunoModalOpen(false)}
-                    onSave={() => {
-                        setIsAddAlunoModalOpen(false);
-                        setRefreshTrigger(prev => prev + 1);
-                    }}
-                />
-            )}
-            
-            {/* Modal de Edição */}
-            {isEditModalOpen && selectedAluno && (
-                <EditAlunoModal
-                    aluno={selectedAluno}
-                    escolaId={escolaId}
-                    unidades={unidades}
-                    modalidades={modalidades}
-                    turmas={turmas}
-                    onClose={() => {
-                        setIsEditModalOpen(false);
-                        setSelectedAluno(null);
-                    }}
-                    onSave={() => {
-                        setIsEditModalOpen(false);
-                        setSelectedAluno(null);
-                        setRefreshTrigger(prev => prev + 1);
-                    }}
-                />
-            )}
-
-        </div>
-    );
-};
-
-// Componente Modal de Adição de Novo Aluno
-const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSave }) => {
-    const [formData, setFormData] = useState({
-        nome_aluno: '',
-        matricula: '',
-        ano_turma: new Date().getFullYear().toString(),
-        unidade: '',
-        modalidade: '',
-        turmas: [], // Array de nomes de turmas
-        dataNascimento: '',
-        nomePai: '',
-        celularPai: '',
-        nomeMae: '',
-        celularMae: '',
-        responsavelNome: '',
-        responsavelCPF: '',
-        responsavelCEP: '',
-        responsavelUF: '',
-        responsavelEndereco: '',
-        responsavelNumero: '',
-        responsavelComplemento: '',
-        responsavelBairro: '',
-        responsavelCidade: '',
-        responsavelEmail: '',
-        responsavelTelefone: '',
-    });
-    const [saving, setSaving] = useState(false);
-
-    // Gerar matrícula automática ao abrir o modal
-    useEffect(() => {
-        const gerarMatricula = async () => {
-            try {
-                const anoAtual = new Date().getFullYear();
-                const anoSufixo = anoAtual.toString().slice(-2); // Pega os 2 últimos dígitos do ano
-                
-                // Buscar a última matrícula de TODOS os alunos (sequência contínua)
-                const { collection, query, orderBy, limit, getDocs } = await import('firebase/firestore');
-                const alunosRef = collection(db, 'escolas', escolaId, 'alunos');
-                const q = query(
-                    alunosRef,
-                    orderBy('matricula', 'desc'),
-                    limit(1)
-                );
-                
-                const snapshot = await getDocs(q);
-                let proximoNumero = 1;
-                
-                if (!snapshot.empty) {
-                    const ultimaMatricula = snapshot.docs[0].data().matricula;
-                    // Pega apenas os últimos 4 dígitos (parte sequencial)
-                    const numeroAtual = parseInt(ultimaMatricula.slice(-4));
-                    proximoNumero = numeroAtual + 1;
-                }
-                
-                // Formatar matrícula: AANNNN (ex: 250250 -> 260251)
-                const novaMatricula = `${anoSufixo}${proximoNumero.toString().padStart(4, '0')}`;
-                handleChange('matricula', novaMatricula);
-            } catch (error) {
-                console.error('Erro ao gerar matrícula:', error);
-            }
-        };
-        
-        gerarMatricula();
-    }, [escolaId]);
-
-    // Anos letivos disponíveis
-    const anosLetivos = [
-        new Date().getFullYear() - 1,
-        new Date().getFullYear(),
-        new Date().getFullYear() + 1,
-    ];
+        });
+    }, [turmas, novaMatricula, matriculas]);
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -320,40 +43,43 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
             alert('Nome e Matrícula são obrigatórios.');
             return;
         }
+        if (!escolaId) {
+            alert('Escola não identificada. Tente novamente.');
+            return;
+        }
 
         setSaving(true);
         try {
-            // Gerar ID único baseado na matrícula
-            const alunoId = `aluno_${formData.matricula}_${Date.now()}`;
-            const alunoRef = doc(db, 'escolas', escolaId, 'alunos', alunoId);
-            
-            await setDoc(alunoRef, {
+            const payload = sanitizeAlunoPayload({
+                escola_id: escolaId,
+                nome: formData.nome_aluno,
                 nome_aluno: formData.nome_aluno,
                 matricula: formData.matricula,
-                ano_turma: formData.ano_turma,
-                unidade: formData.unidade || null,
-                modalidade: formData.modalidade || null,
-                turmas: formData.turmas || [],
-                nome_turma: (formData.turmas && formData.turmas.length > 0) ? formData.turmas[0] : null, // Retrocompatibilidade
-                dataNascimento: formData.dataNascimento || null,
-                nomePai: formData.nomePai || null,
-                celularPai: formData.celularPai || null,
-                nomeMae: formData.nomeMae || null,
-                celularMae: formData.celularMae || null,
-                responsavelNome: formData.responsavelNome || null,
-                responsavelCPF: formData.responsavelCPF || null,
-                responsavelCEP: formData.responsavelCEP || null,
-                responsavelUF: formData.responsavelUF || null,
-                responsavelEndereco: formData.responsavelEndereco || null,
-                responsavelNumero: formData.responsavelNumero || null,
-                responsavelComplemento: formData.responsavelComplemento || null,
-                responsavelBairro: formData.responsavelBairro || null,
-                responsavelCidade: formData.responsavelCidade || null,
-                responsavelEmail: formData.responsavelEmail || null,
-                responsavelTelefone: formData.responsavelTelefone || null,
-                dataCriacao: serverTimestamp(),
-                dataAtualizacao: new Date().toISOString(),
+                data_nascimento: formData.dataNascimento || null,
+                ano_turma: formData.ano_turma || null,
+                nome_turma:
+                    (formData.turmas && formData.turmas.length > 0)
+                        ? formData.turmas[0]
+                        : formData.nome_turma || null,
+                turmas: formData.turmas || null,
+                nome_pai: formData.nomePai || null,
+                celular_pai: formData.celularPai || null,
+                nome_mae: formData.nomeMae || null,
+                celular_mae: formData.celularMae || null,
+                responsavel_nome: formData.responsavelNome || null,
+                responsavel_cpf: formData.responsavelCPF || null,
+                responsavel_cep: formData.responsavelCEP || null,
+                responsavel_uf: formData.responsavelUF || null,
+                responsavel_endereco: formData.responsavelEndereco || null,
+                responsavel_numero: formData.responsavelNumero || null,
+                responsavel_complemento: formData.responsavelComplemento || null,
+                responsavel_bairro: formData.responsavelBairro || null,
+                responsavel_cidade: formData.responsavelCidade || null,
+                responsavel_email: formData.responsavelEmail || null,
+                responsavel_telefone: formData.responsavelTelefone || null,
             });
+
+            await gestaoApi.createAluno(payload);
 
             alert('Aluno adicionado com sucesso!');
             onSave();
@@ -396,7 +122,7 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                         className="w-full text-sm border border-gray-300 rounded-md p-2 bg-gray-50 cursor-not-allowed"
                         required
                     />
-                    <p className="text-xs text-gray-500 mt-1">Matrícula gerada automaticamente baseada no ano atual</p>
+                    <p className="text-xs text-gray-500 mt-1">Matrícula gerada automaticamente</p>
                 </div>
 
                 {/* Ano Letivo e Unidade */}
@@ -429,7 +155,7 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                         >
                             <option value="">Selecione</option>
                             {unidades.map(unidade => (
-                                <option key={unidade.id} value={unidade.id}>{unidade.name}</option>
+                                <option key={unidade.id} value={unidade.id}>{unidade.nome}</option>
                             ))}
                         </select>
                     </div>
@@ -449,9 +175,9 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                         >
                             <option value="">Selecione</option>
                             {modalidades
-                                .filter(m => !formData.unidade || m.unidadeId === formData.unidade)
+                                .filter(m => !formData.unidade || m.unidade_id === formData.unidade)
                                 .map(modalidade => (
-                                    <option key={modalidade.id} value={modalidade.id}>{modalidade.name}</option>
+                                    <option key={modalidade.id} value={modalidade.id}>{modalidade.nome}</option>
                                 ))
                             }
                         </select>
@@ -481,27 +207,35 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
                                 onChange={(e) => {
                                     const selected = e.target.value;
                                     if (selected && !(formData.turmas || []).includes(selected)) {
-                                        handleChange('turmas', [...(formData.turmas || []), selected]);
+                                        const novasTurmas = [...(formData.turmas || []), selected];
+                                        handleChange('turmas', novasTurmas);
+                                        if (!formData.nome_turma) {
+                                            handleChange('nome_turma', selected);
+                                        }
                                     }
                                 }}
                                 className="w-full text-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
                             >
                                 <option value="">Adicionar turma...</option>
                                 {turmas
-                                    .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
-                                    .filter(t => !(formData.turmas || []).includes(t.name))
-                                    .map(turma => {
-                                    const diasTexto = turma.diasSemana && turma.diasSemana.length > 0 
-                                        ? turma.diasSemana.join(', ') 
-                                        : '';
-                                    const horario = turma.horaInicio && turma.horaTermino 
-                                        ? `${turma.horaInicio} às ${turma.horaTermino}` 
-                                        : '';
-                                    const label = [turma.name, diasTexto, horario].filter(Boolean).join(' | ');
-                                    return (
-                                        <option key={turma.id} value={turma.name}>{label}</option>
-                                    );
-                                })
+                                    .filter(
+                                        (t) =>
+                                            (!formData.unidade || t.unidade_id === formData.unidade) &&
+                                            (!formData.modalidade || t.modalidade_id === formData.modalidade)
+                                    )
+                                    .filter((t) => !(formData.turmas || []).includes(t.nome))
+                                    .map((turma) => {
+                                        const diasTexto = Array.isArray(turma.dias_semana)
+                                            ? turma.dias_semana.join(', ')
+                                            : '';
+                                        const horario = turma.hora_inicio && turma.hora_termino
+                                            ? `${turma.hora_inicio} às ${turma.hora_termino}`
+                                            : '';
+                                        const label = [turma.nome, diasTexto, horario].filter(Boolean).join(' | ');
+                                        return (
+                                            <option key={turma.id} value={turma.nome}>{label}</option>
+                                        );
+                                    })
                             }
                         </select>
                     </div>
@@ -778,25 +512,166 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
         modalidade: aluno.modalidade || '',
         nome_turma: aluno.nome_turma || '',
         turmas: aluno.turmas || (aluno.nome_turma ? [aluno.nome_turma] : []), // Migração automática
-        dataNascimento: aluno.dataNascimento || '',
-        nomePai: aluno.nomePai || '',
-        celularPai: aluno.celularPai || '',
-        nomeMae: aluno.nomeMae || '',
-        celularMae: aluno.celularMae || '',
-        responsavelNome: aluno.responsavelNome || '',
-        responsavelCPF: aluno.responsavelCPF || '',
-        responsavelCEP: aluno.responsavelCEP || '',
-        responsavelUF: aluno.responsavelUF || '',
-        responsavelEndereco: aluno.responsavelEndereco || '',
-        responsavelNumero: aluno.responsavelNumero || '',
-        responsavelComplemento: aluno.responsavelComplemento || '',
-        responsavelBairro: aluno.responsavelBairro || '',
-        responsavelCidade: aluno.responsavelCidade || '',
-        responsavelEmail: aluno.responsavelEmail || '',
-        responsavelTelefone: aluno.responsavelTelefone || '',
+        dataNascimento: aluno.data_nascimento || aluno.dataNascimento || '',
+        nomePai: aluno.nomePai || aluno.nome_pai || '',
+        celularPai: aluno.celularPai || aluno.celular_pai || '',
+        nomeMae: aluno.nomeMae || aluno.nome_mae || '',
+        celularMae: aluno.celularMae || aluno.celular_mae || '',
+        responsavelNome: aluno.responsavelNome || aluno.responsavel_nome || '',
+        responsavelCPF: aluno.responsavelCPF || aluno.responsavel_cpf || '',
+        responsavelCEP: aluno.responsavelCEP || aluno.responsavel_cep || '',
+        responsavelUF: aluno.responsavelUF || aluno.responsavel_uf || '',
+        responsavelEndereco: aluno.responsavelEndereco || aluno.responsavel_endereco || '',
+        responsavelNumero: aluno.responsavelNumero || aluno.responsavel_numero || '',
+        responsavelComplemento: aluno.responsavelComplemento || aluno.responsavel_complemento || '',
+        responsavelBairro: aluno.responsavelBairro || aluno.responsavel_bairro || '',
+        responsavelCidade: aluno.responsavelCidade || aluno.responsavel_cidade || '',
+        responsavelEmail: aluno.responsavelEmail || aluno.responsavel_email || '',
+        responsavelTelefone: aluno.responsavelTelefone || aluno.responsavel_telefone || '',
     });
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('dados');
+    const [matriculas, setMatriculas] = useState([]);
+    const [showNovaMatricula, setShowNovaMatricula] = useState(false);
+    const [novaMatricula, setNovaMatricula] = useState({ ano: '', unidade: '', modalidade: '', turma: '' });
+    const [novaMatriculaErro, setNovaMatriculaErro] = useState('');
+    const [novaMatriculaLoading, setNovaMatriculaLoading] = useState(false);
+    const [matriculaMutacaoId, setMatriculaMutacaoId] = useState(null);
+
+    const montarMatriculaInfo = useCallback(
+        (turmaId) => {
+            if (!turmaId) return null;
+            const turma = turmas.find((t) => t.id === turmaId);
+            if (!turma) return null;
+            const unidade = unidades.find((u) => u.id === turma.unidade_id);
+            const modalidade = modalidades.find((m) => m.id === turma.modalidade_id);
+            return {
+                turmaId: turma.id,
+                ano: turma.ano,
+                unidadeId: turma.unidade_id,
+                unidadeNome: unidade?.nome || turma.unidade_id || '—',
+                modalidadeId: turma.modalidade_id,
+                modalidadeNome: modalidade?.nome || turma.modalidade_id || '—',
+                turmaNome: turma.nome,
+            };
+        },
+        [turmas, unidades, modalidades]
+    );
+
+    useEffect(() => {
+        const info = (aluno.turma_ids || []).map((id) => montarMatriculaInfo(id)).filter(Boolean);
+        setMatriculas(info);
+    }, [aluno.turma_ids, montarMatriculaInfo]);
+
+    const anosDisponiveis = useMemo(() => {
+        const anosSet = new Set((turmas || []).map((turma) => String(turma.ano || '')));
+        const values = Array.from(anosSet).filter(Boolean).sort();
+        return values.length ? values : [String(new Date().getFullYear())];
+    }, [turmas]);
+
+    const modalidadesDisponiveis = useMemo(() => {
+        if (!novaMatricula.unidade) return modalidades;
+        return modalidades.filter((m) => m.unidade_id === novaMatricula.unidade);
+    }, [modalidades, novaMatricula.unidade]);
+
+    const turmasDisponiveis = useMemo(() => {
+        return (turmas || []).filter((turma) => {
+            const matchesAno = !novaMatricula.ano || String(turma.ano) === novaMatricula.ano;
+            const matchesUnidade = !novaMatricula.unidade || turma.unidade_id === novaMatricula.unidade;
+            const matchesModalidade = !novaMatricula.modalidade || turma.modalidade_id === novaMatricula.modalidade;
+            const jaVinculado = matriculas.some((m) => m.turmaId === turma.id);
+            return matchesAno && matchesUnidade && matchesModalidade && !jaVinculado;
+        });
+    }, [turmas, novaMatricula, matriculas]);
+
+    useEffect(() => {
+        const turmasNomes = matriculas.map((m) => m.turmaNome);
+        const principal = matriculas[0];
+
+        setFormData((prev) => {
+            const alreadySynced =
+                arraysEqual(prev.turmas || [], turmasNomes) &&
+                (!principal ||
+                    (prev.nome_turma === principal.turmaNome &&
+                        prev.ano_turma === (principal.ano ? String(principal.ano) : '') &&
+                        prev.unidade === principal.unidadeId &&
+                        prev.modalidade === principal.modalidadeId));
+
+            if (alreadySynced) return prev;
+
+            const next = { ...prev, turmas: turmasNomes };
+            if (principal) {
+                next.nome_turma = principal.turmaNome;
+                next.ano_turma = principal.ano ? String(principal.ano) : '';
+                next.unidade = principal.unidadeId || '';
+                next.modalidade = principal.modalidadeId || '';
+            }
+            return next;
+        });
+    }, [matriculas]);
+
+    const resetNovaMatricula = () => {
+        setNovaMatricula({ ano: '', unidade: '', modalidade: '', turma: '' });
+        setNovaMatriculaErro('');
+    };
+
+    const handleNovaMatriculaChange = (field, value) => {
+        setNovaMatricula((prev) => {
+            const updated = { ...prev, [field]: value };
+            if (field === 'unidade') {
+                updated.modalidade = '';
+                updated.turma = '';
+            }
+            if (field === 'modalidade' || field === 'ano') {
+                updated.turma = '';
+            }
+            return updated;
+        });
+        setNovaMatriculaErro('');
+    };
+
+    const handleAdicionarMatricula = async () => {
+        if (!novaMatricula.turma) {
+            setNovaMatriculaErro('Selecione a turma que deseja vincular.');
+            return;
+        }
+
+        const turmaSelecionada = turmas.find((t) => t.id === novaMatricula.turma);
+        if (!turmaSelecionada) {
+            setNovaMatriculaErro('Turma selecionada é inválida.');
+            return;
+        }
+
+        try {
+            setNovaMatriculaLoading(true);
+            await gestaoApi.addAlunoToTurma(aluno.id, turmaSelecionada.id);
+            const novaInfo = montarMatriculaInfo(turmaSelecionada.id);
+            if (novaInfo) {
+                setMatriculas((prev) => [...prev, novaInfo]);
+            }
+            resetNovaMatricula();
+            setShowNovaMatricula(false);
+        } catch (error) {
+            console.error('Erro ao vincular turma:', error);
+            setNovaMatriculaErro('Não foi possível vincular a turma. Tente novamente.');
+        } finally {
+            setNovaMatriculaLoading(false);
+        }
+    };
+
+    const handleRemoverMatricula = async (turmaId) => {
+        if (!window.confirm('Remover o vínculo desta turma?')) return;
+        try {
+            setMatriculaMutacaoId(turmaId);
+            await gestaoApi.removeAlunoFromTurma(aluno.id, turmaId);
+            setMatriculas((prev) => prev.filter((mat) => mat.turmaId !== turmaId));
+        } catch (error) {
+            console.error('Erro ao remover vínculo:', error);
+            alert('Não foi possível remover o vínculo.');
+        } finally {
+            setMatriculaMutacaoId(null);
+        }
+    };
 
     // Anos letivos disponíveis
     const anosLetivos = [
@@ -818,13 +693,35 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
 
         setSaving(true);
         try {
-            const { doc, setDoc } = await import('firebase/firestore');
-            const alunoRef = doc(db, 'escolas', escolaId, 'alunos', aluno.id);
-            
-            await setDoc(alunoRef, {
-                ...formData,
-                dataAtualizacao: new Date().toISOString(),
-            }, { merge: true });
+            const payload = sanitizeAlunoPayload({
+                nome: formData.nome_aluno,
+                nome_aluno: formData.nome_aluno,
+                matricula: formData.matricula,
+                data_nascimento: formData.dataNascimento || null,
+                ano_turma: formData.ano_turma || null,
+                nome_turma:
+                    (formData.turmas && formData.turmas.length > 0)
+                        ? formData.turmas[0]
+                        : formData.nome_turma || null,
+                turmas: formData.turmas || null,
+                nome_pai: formData.nomePai || null,
+                celular_pai: formData.celularPai || null,
+                nome_mae: formData.nomeMae || null,
+                celular_mae: formData.celularMae || null,
+                responsavel_nome: formData.responsavelNome || null,
+                responsavel_cpf: formData.responsavelCPF || null,
+                responsavel_cep: formData.responsavelCEP || null,
+                responsavel_uf: formData.responsavelUF || null,
+                responsavel_endereco: formData.responsavelEndereco || null,
+                responsavel_numero: formData.responsavelNumero || null,
+                responsavel_complemento: formData.responsavelComplemento || null,
+                responsavel_bairro: formData.responsavelBairro || null,
+                responsavel_cidade: formData.responsavelCidade || null,
+                responsavel_email: formData.responsavelEmail || null,
+                responsavel_telefone: formData.responsavelTelefone || null,
+            });
+
+            await gestaoApi.updateAluno(aluno.id, payload);
 
             alert('Aluno atualizado com sucesso!');
             onSave();
@@ -910,116 +807,164 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
 
                 {/* Aba: Matrícula */}
                 {activeTab === 'matricula' && (
-                    <div className="space-y-3">
-                        {/* Ano Letivo e Unidade */}
-                <div className="grid grid-cols-2 gap-3">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Ano Letivo<span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            value={formData.ano_turma}
-                            onChange={(e) => handleChange('ano_turma', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Selecione</option>
-                            {anosLetivos.map(ano => (
-                                <option key={ano} value={ano}>{ano}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Unidade<span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            value={formData.unidade}
-                            onChange={(e) => handleChange('unidade', e.target.value)}
-                            className="w-full border text-xs border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Selecione</option>
-                            {unidades.map(unidade => (
-                                <option key={unidade.id} value={unidade.id}>{unidade.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Modalidade e Turma */}
-                <div className="grid grid-cols-2 gap-3">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Modalidade<span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            value={formData.modalidade}
-                            onChange={(e) => handleChange('modalidade', e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Selecione</option>
-                            {modalidades
-                                .filter(m => !formData.unidade || m.unidadeId === formData.unidade)
-                                .map(modalidade => (
-                                    <option key={modalidade.id} value={modalidade.id}>{modalidade.name}</option>
-                                ))
-                            }
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                            Turmas<span className="text-red-500">*</span>
-                        </label>
-                        <div className="mb-2">
-                            <div className="flex flex-wrap gap-1.5 mb-2">
-                                {(formData.turmas || []).map(t => (
-                                    <span key={t} className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                                        {t}
-                                        <button 
-                                            type="button" 
-                                            onClick={() => handleChange('turmas', (formData.turmas || []).filter(turma => turma !== t))}
-                                            className="text-green-600 hover:text-green-800"
-                                        >
-                                            &times;
-                                        </button>
-                                    </span>
-                                ))}
+                    <div className="space-y-4">
+                        <div className="flex flex-col gap-1 border-b pb-3 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <p className="text-sm font-semibold text-gray-800">Vínculos de Matrícula</p>
+                                <p className="text-xs text-gray-500">Gerencie manualmente as turmas associadas a este aluno.</p>
                             </div>
-                            <select
-                                value=""
-                                onChange={(e) => {
-                                    const selected = e.target.value;
-                                    if (selected && !(formData.turmas || []).includes(selected)) {
-                                        handleChange('turmas', [...(formData.turmas || []), selected]);
-                                    }
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowNovaMatricula((prev) => !prev);
+                                    setNovaMatriculaErro('');
                                 }}
-                                className="w-full text-xs border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                className="self-start rounded-md border border-clic-primary px-3 py-1 text-xs font-semibold text-clic-primary transition hover:bg-clic-primary hover:text-white"
                             >
-                                <option value="">Adicionar turma...</option>
-                                {turmas
-                                    .filter(t => (!formData.unidade || t.unidade === formData.unidade) && (!formData.modalidade || t.modalidade === formData.modalidade))
-                                    .filter(t => !(formData.turmas || []).includes(t.name))
-                                    .map(turma => {
-                                    const diasTexto = turma.diasSemana && turma.diasSemana.length > 0 
-                                        ? turma.diasSemana.join(', ') 
-                                        : '';
-                                    const horario = turma.horaInicio && turma.horaTermino 
-                                        ? `${turma.horaInicio} às ${turma.horaTermino}` 
-                                        : '';
-                                    const label = [turma.name, diasTexto, horario].filter(Boolean).join(' | ');
-                                    return (
-                                        <option key={turma.id} value={turma.name}>{label}</option>
-                                    );
-                                })
-                            }
-                        </select>
-                    </div>
-                    </div>
-                </div>
+                                {showNovaMatricula ? 'Fechar' : 'Nova Matrícula'}
+                            </button>
+                        </div>
+
+                        {showNovaMatricula && (
+                            <div className="space-y-3 rounded-lg border border-blue-100 bg-blue-50 p-4">
+                                {novaMatriculaErro && (
+                                    <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                                        {novaMatriculaErro}
+                                    </div>
+                                )}
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Ano</label>
+                                        <select
+                                            value={novaMatricula.ano}
+                                            onChange={(e) => handleNovaMatriculaChange('ano', e.target.value)}
+                                            className="w-full rounded-md border border-gray-300 p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                        >
+                                            <option value="">Todos</option>
+                                            {anosDisponiveis.map((ano) => (
+                                                <option key={ano} value={ano}>{ano}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Unidade</label>
+                                        <select
+                                            value={novaMatricula.unidade}
+                                            onChange={(e) => handleNovaMatriculaChange('unidade', e.target.value)}
+                                            className="w-full rounded-md border border-gray-300 p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                        >
+                                            <option value="">Todas</option>
+                                            {unidades.map((unidade) => (
+                                                <option key={unidade.id} value={unidade.id}>{unidade.nome}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Modalidade</label>
+                                        <select
+                                            value={novaMatricula.modalidade}
+                                            onChange={(e) => handleNovaMatriculaChange('modalidade', e.target.value)}
+                                            className="w-full rounded-md border border-gray-300 p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                            disabled={!novaMatricula.unidade}
+                                        >
+                                            <option value="">{novaMatricula.unidade ? 'Todas' : 'Selecione uma unidade'}</option>
+                                            {modalidadesDisponiveis.map((modalidade) => (
+                                                <option key={modalidade.id} value={modalidade.id}>{modalidade.nome}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Turma</label>
+                                        <select
+                                            value={novaMatricula.turma}
+                                            onChange={(e) => handleNovaMatriculaChange('turma', e.target.value)}
+                                            className="w-full rounded-md border border-gray-300 p-2 text-xs focus:ring-2 focus:ring-clic-primary focus:border-transparent"
+                                        >
+                                            <option value="">Selecione...</option>
+                                            {turmasDisponiveis.map((turma) => {
+                                                const diasTexto = Array.isArray(turma.dias_semana)
+                                                    ? turma.dias_semana.join(', ')
+                                                    : '';
+                                                const horario = turma.hora_inicio && turma.hora_termino
+                                                    ? `${turma.hora_inicio} às ${turma.hora_termino}`
+                                                    : '';
+                                                const label = [turma.nome, diasTexto, horario].filter(Boolean).join(' | ');
+                                                return (
+                                                    <option key={turma.id} value={turma.id}>{label}</option>
+                                                );
+                                            })}
+                                        </select>
+                                        {!turmasDisponiveis.length && (
+                                            <p className="mt-1 text-[11px] text-gray-500">Nenhuma turma disponível com os filtros selecionados.</p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            resetNovaMatricula();
+                                            setShowNovaMatricula(false);
+                                        }}
+                                        className="rounded-md px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-200"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleAdicionarMatricula}
+                                        disabled={novaMatriculaLoading}
+                                        className={`rounded-md px-3 py-1 text-xs font-semibold text-white ${
+                                            novaMatriculaLoading ? 'bg-gray-400' : 'bg-clic-secondary hover:bg-gray-800'
+                                        }`}
+                                    >
+                                        {novaMatriculaLoading ? 'Vinculando...' : 'Vincular'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="overflow-hidden rounded-lg border">
+                            <table className="min-w-full divide-y divide-gray-200 text-xs">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600">Ano</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600">Unidade</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600">Modalidade</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600">Turma</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600">Situação</th>
+                                        <th className="px-3 py-2 text-right font-semibold text-gray-600">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 bg-white">
+                                    {matriculas.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-3 py-4 text-center text-gray-500">Nenhuma matrícula vinculada.</td>
+                                        </tr>
+                                    ) : (
+                                        matriculas.map((matricula) => (
+                                            <tr key={matricula.turmaId}>
+                                                <td className="px-3 py-2 text-gray-700">{matricula.ano || '—'}</td>
+                                                <td className="px-3 py-2 text-gray-700">{matricula.unidadeNome}</td>
+                                                <td className="px-3 py-2 text-gray-700">{matricula.modalidadeNome}</td>
+                                                <td className="px-3 py-2 text-gray-900 font-medium">{matricula.turmaNome}</td>
+                                                <td className="px-3 py-2 text-gray-600">Vinculada</td>
+                                                <td className="px-3 py-2 text-right">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoverMatricula(matricula.turmaId)}
+                                                        disabled={matriculaMutacaoId === matricula.turmaId}
+                                                        className="text-red-500 hover:text-red-700"
+                                                    >
+                                                        {matriculaMutacaoId === matricula.turmaId ? 'Removendo...' : 'Remover'}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
                 {/* Aba: Responsáveis */}

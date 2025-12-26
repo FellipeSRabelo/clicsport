@@ -1,14 +1,13 @@
 // src/modules/achados/components/ModalDetalhesItem.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../../../firebase/AuthContext';
-import { db, storage } from '../../../firebase/firebaseConfig';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
+import { supabase } from '../../../supabase/supabaseConfig';
+import { updateItem } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCheckCircle, faImage, faCamera } from '@fortawesome/free-solid-svg-icons';
 
 const ModalDetalhesItem = ({ isOpen, onClose, item }) => {
-  const { currentUser, escolaId } = useAuth();
+  const { currentUser, escolaId } = useSupabaseAuth();
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState('Nenhum arquivo');
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
@@ -83,10 +82,9 @@ const ModalDetalhesItem = ({ isOpen, onClose, item }) => {
 
     setLoading(true);
     try {
-      const itemRef = doc(db, 'escolas', escolaId, 'achados_perdidos', item.id);
-      await updateDoc(itemRef, {
-        foundByOwner: true,
-        foundByOwnerAt: serverTimestamp()
+      await updateItem(item.id, {
+        found_by_owner: true,
+        found_by_owner_at: new Date().toISOString()
       });
       onClose();
     } catch (error) {
@@ -108,12 +106,13 @@ const ModalDetalhesItem = ({ isOpen, onClose, item }) => {
 
     try {
       const resizedFile = await resizeImage(selectedFile);
-      const storageRef = ref(storage, `achados_perdidos/${escolaId}/${Date.now()}_${selectedFile.name}`);
-      await uploadBytes(storageRef, resizedFile);
-      const fotoUrl = await getDownloadURL(storageRef);
-
-      const itemRef = doc(db, 'escolas', escolaId, 'achados_perdidos', item.id);
-      await updateDoc(itemRef, { fotoUrl: fotoUrl });
+      const path = `achados/${escolaId}/${Date.now()}_${selectedFile.name}`;
+      const { error: upErr } = await supabase.storage.from('achados').upload(path, resizedFile);
+      if (!upErr) {
+        const { data: pub } = await supabase.storage.from('achados').getPublicUrl(path);
+        const fotoUrl = pub?.publicUrl || '';
+        await updateItem(item.id, { foto_url: fotoUrl });
+      }
 
       setShowPhotoUpload(false);
       setSelectedFile(null);

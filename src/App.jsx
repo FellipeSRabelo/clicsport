@@ -1,7 +1,8 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './firebase/AuthContext';
+// import { AuthProvider, useAuth } from './firebase/AuthContext'; // Firebase (desabilitado)
+import { useSupabaseAuth } from './supabase/SupabaseAuthContext'; // Supabase (ativo)
 import Login from './modules/Login';
 
 // Importando o Layout Base e o NotFound
@@ -12,12 +13,14 @@ import NotFound from './components/NotFound';
 import Dashboard from './modules/Dashboard';
 import Gestao from './modules/gestao/Gestao';
 import Achados from './modules/achados/Achados';
+import CadastroResponsavelOAuth from './modules/achados/CadastroResponsavelOAuth';
 import Pesquisas from './modules/pesquisas/Pesquisas';
 import PublicPesquisa from './modules/pesquisas/PublicPesquisa';
+import MatriculaBifurcacao from './modules/matricula/MatriculaBifurcacao';
 
 // Componente Wrapper para Rotas Protegidas
 const PrivateRoute = ({ element: Element, role, ...rest }) => {
-  const { currentUser, loading, userRole, modulosAtivos } = useAuth();
+  const { currentUser, loading, userRole, modulosAtivos } = useSupabaseAuth(); // Trocado para Supabase
   
   // 1. Ainda carregando: Mostra um placeholder
   if (loading) {
@@ -28,7 +31,7 @@ const PrivateRoute = ({ element: Element, role, ...rest }) => {
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Carregando ClicSport...</h2>
-          <p className="text-gray-600">Autenticando com Firebase</p>
+          <p className="text-gray-600">Conectando ao Supabase...</p>
         </div>
       </div>
     );
@@ -39,18 +42,24 @@ const PrivateRoute = ({ element: Element, role, ...rest }) => {
     return <Navigate to="/" replace />;
   }
 
+  // 2.1 Responsável deve ir direto para Achados
+  const path = window.location.pathname.split('/')[1]; 
+  const moduleName = path.toLowerCase();
+  if (userRole === 'responsavel' && moduleName === 'app') {
+    return <Navigate to="/achados" replace />;
+  }
+
   // 3. Logado, mas sem permissão de role (Gestão)
   if (role === 'gestor' && userRole !== 'gestor') {
     return <Navigate to="/app" replace />; 
   }
   
   // 4. Logado, mas módulo inativo (Controle de Módulos)
-  const path = window.location.pathname.split('/')[1]; 
-  const moduleName = path.toLowerCase();
-  
-  // Apenas checa se o módulo não é o Dashboard ou o Login
-  // Permite acesso ao gestor independentemente do flag 'modulosAtivos' (útil em dev/testing)
-  if (moduleName !== 'app' && moduleName !== 'gestao' && !(userRole === 'gestor') && !modulosAtivos[moduleName]) {
+  // Responsável tem acesso apenas ao Achados, não bloqueia pelo modulosAtivos
+  if (userRole !== 'responsavel') {
+    // Apenas checa se o módulo não é o Dashboard ou o Login
+    // Permite acesso ao gestor independentemente do flag 'modulosAtivos' (útil em dev/testing)
+    if (moduleName !== 'app' && moduleName !== 'gestao' && !(userRole === 'gestor') && !modulosAtivos[moduleName]) {
       return (
         <Layout>
           <div className="p-10 text-center bg-white m-10 rounded-xl shadow-lg">
@@ -59,6 +68,7 @@ const PrivateRoute = ({ element: Element, role, ...rest }) => {
           </div>
         </Layout>
       );
+    }
   }
   
   // 5. Permissão concedida: Rendezia o componente DENTRO do Layout
@@ -76,6 +86,14 @@ const AppRoutes = () => {
     <Routes>
       {/* Rota Pública - Login */}
       <Route path="/" element={<Login />} />
+
+      {/* Rota Pública - Cadastro Responsável (código + Google) */}
+      <Route path="/cadastro-responsavel" element={<CadastroResponsavelOAuth />} />
+
+      {/* Rota Pública - Matrícula Online */}
+      <Route path="/matricula/:escolaId" element={<MatriculaBifurcacao escolaId={null} />} />
+      <Route path="/matricula/renovacao" element={<MatriculaBifurcacao escolaId={null} />} />
+      <Route path="/matricula/nova" element={<MatriculaBifurcacao escolaId={null} />} />
 
       {/* Rota Pública - Acesso a Pesquisa */}
       <Route path="/p/:escolaId/:campaignId" element={<PublicPesquisa />} />
@@ -102,9 +120,8 @@ const AppRoutes = () => {
 // Main App Wrapper
 const App = () => (
   <Router>
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    {/* AuthProvider removido - agora está em main.jsx como SupabaseAuthProvider */}
+    <AppRoutes />
   </Router>
 );
 

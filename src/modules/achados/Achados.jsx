@@ -1,14 +1,12 @@
 // src/modules/achados/Achados.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../firebase/AuthContext';
-import { db } from '../../firebase/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import ListaOcorrencias from './components/ListaOcorrencias';
 import PainelGestor from './components/PainelGestor';
 import CadastroResponsavel from './components/CadastroResponsavel';
 
 const Achados = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, userRole: contextUserRole, papelAchados } = useSupabaseAuth();
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,14 +18,10 @@ const Achados = () => {
       }
 
       try {
-        // Verifica se o usuário é gestor
-        const gestorDocRef = doc(db, 'gestores', currentUser.uid);
-        const gestorDocSnap = await getDoc(gestorDocRef);
-
-        if (gestorDocSnap.exists()) {
-          setUserRole('gestor');
+        // Supabase: confia no contexto
+        if (contextUserRole === 'gestor') {
+          setUserRole(papelAchados === 'funcionario' ? 'gestor' : 'responsavel');
         } else {
-          // Se não é gestor, é um responsável (user comum)
           setUserRole('user');
         }
       } catch (error) {
@@ -40,7 +34,7 @@ const Achados = () => {
     };
 
     fetchUserRole();
-  }, [currentUser]);
+  }, [currentUser, contextUserRole, papelAchados]);
 
   if (loading) {
     return (
@@ -58,12 +52,12 @@ const Achados = () => {
     return <CadastroResponsavel onCadastroSucesso={() => window.location.reload()} />;
   }
 
-  // Gestor vê o painel administrativo
+  // Gestor como "funcionário" vê o painel administrativo (fechamento de ocorrências)
   if (userRole === 'gestor') {
     return <PainelGestor />;
   }
 
-  // Responsáveis veem suas próprias ocorrências
+  // Responsáveis veem suas próprias ocorrências (abertura de ocorrências)
   return <ListaOcorrencias />;
 };
 

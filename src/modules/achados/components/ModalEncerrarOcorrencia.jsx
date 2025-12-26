@@ -1,13 +1,12 @@
 // src/modules/achados/components/ModalEncerrarOcorrencia.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../../../firebase/AuthContext';
-import { db } from '../../../firebase/firebaseConfig';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
+import { updateItem } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const ModalEncerrarOcorrencia = ({ isOpen, onClose, item }) => {
-  const { escolaId } = useAuth();
+  const { escolaId } = useSupabaseAuth();
   const [loading, setLoading] = useState(false);
 
   if (!isOpen || !item) return null;
@@ -16,10 +15,10 @@ const ModalEncerrarOcorrencia = ({ isOpen, onClose, item }) => {
     setLoading(true);
 
     try {
-      const itemRef = doc(db, 'escolas', escolaId, 'achados_perdidos', item.id);
-      await updateDoc(itemRef, {
+      await updateItem(item.id, {
         status: newStatus,
-        closedAt: serverTimestamp()
+        closed_at: new Date().toISOString(),
+        closed_by: 'gestor'
       });
       onClose();
     } catch (error) {

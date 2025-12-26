@@ -1,16 +1,8 @@
 // src/modules/achados/components/ListaOcorrencias.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../firebase/AuthContext';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../../../firebase/firebaseConfig';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot,
-  doc,
-  updateDoc
-} from 'firebase/firestore';
+import { fetchItemsByOwner, fetchResponsavel, upsertResponsavel } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -30,7 +22,7 @@ import ModalAdicionarItem from './ModalAdicionarItem';
 import ModalDetalhesItem from './ModalDetalhesItem';
 
 const ListaOcorrencias = () => {
-  const { currentUser, escolaId, logout } = useAuth();
+  const { currentUser, escolaId, logout } = useSupabaseAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
@@ -48,30 +40,38 @@ const ListaOcorrencias = () => {
 
   // Carrega ocorrências do responsável logado
   useEffect(() => {
-    if (!currentUser || !escolaId) return;
-
-    const itemsRef = collection(db, 'escolas', escolaId, 'achados_perdidos');
-    const q = query(itemsRef, where('owner', '==', currentUser.uid));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const itemsData = [];
-      snapshot.forEach((doc) => {
-        itemsData.push({ id: doc.id, ...doc.data() });
-      });
-      
-      // Ordena por data de criação (mais recentes primeiro)
-      itemsData.sort((a, b) => {
-        const dateA = a.criadoEm?.toDate() || new Date(0);
-        const dateB = b.criadoEm?.toDate() || new Date(0);
-        return dateB - dateA;
-      });
-
-      setItems(itemsData);
-      setFilteredItems(itemsData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    let isMounted = true;
+    const load = async () => {
+      if (!currentUser || !escolaId) return;
+      try {
+        const rows = await fetchItemsByOwner(escolaId, currentUser.id || currentUser.uid);
+        // Normaliza campos
+        const itemsData = rows.map(r => ({
+          id: r.id,
+          nomeObjeto: r.nome_objeto || r.nomeObjeto || r.name,
+          nomeAluno: r.nome_aluno || r.nomeAluno || r.studentName,
+          descricao: r.descricao,
+          local: r.local,
+          status: r.status,
+          criadoEm: r.criado_em ? new Date(r.criado_em) : null,
+          ownerFullName: r.owner_full_name,
+          turma: r.turma,
+          fotoUrl: r.foto_url,
+          uniqueId: r.unique_id
+        }));
+        itemsData.sort((a, b) => (b.uniqueId || 0) - (a.uniqueId || 0));
+        if (isMounted) {
+          setItems(itemsData);
+          setFilteredItems(itemsData);
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error('Erro ao carregar itens:', e);
+        if (isMounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { isMounted = false; };
   }, [currentUser, escolaId]);
 
   // Carrega dados do perfil
@@ -79,12 +79,10 @@ const ListaOcorrencias = () => {
     const loadProfileData = async () => {
       if (!currentUser || !escolaId) return;
       try {
-        const responsavelRef = doc(db, 'escolas', escolaId, 'responsaveis', currentUser.uid);
-        const docSnap = await (await import('firebase/firestore')).getDoc(responsavelRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        const data = await fetchResponsavel(escolaId, currentUser.id || currentUser.uid);
+        if (data) {
           setProfileData({
-            nomeCompleto: data.nomeCompleto || '',
+            nomeCompleto: data.nome_completo || data.nomeCompleto || '',
             telefone: data.telefone || ''
           });
         }
@@ -128,20 +126,12 @@ const ListaOcorrencias = () => {
 
   const handleSaveProfile = async () => {
     if (!currentUser || !escolaId) return;
-    
     setSavingProfile(true);
     try {
-      console.log('[handleSaveProfile] escolaId:', escolaId, 'uid:', currentUser.uid);
-      const responsavelRef = doc(db, 'escolas', escolaId, 'responsaveis', currentUser.uid);
-      const { setDoc } = await import('firebase/firestore');
-      
-      // Usa setDoc com merge para criar ou atualizar
-      await setDoc(responsavelRef, {
-        nomeCompleto: profileData.nomeCompleto,
+      await upsertResponsavel(escolaId, currentUser.id || currentUser.uid, {
+        nome_completo: profileData.nomeCompleto,
         telefone: profileData.telefone
-      }, { merge: true });
-      
-      console.log('[handleSaveProfile] Perfil salvo com sucesso!');
+      });
       setIsEditProfileOpen(false);
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);

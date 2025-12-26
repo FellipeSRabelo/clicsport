@@ -2,12 +2,12 @@
 import React, { useState, useMemo } from 'react';
 import MenuLateral from './MenuLateral';
 import TopBar from './TopBar';
-import { useAuth } from '../firebase/AuthContext';
+import { useSupabaseAuth } from '../supabase/SupabaseAuthContext';
 import { Outlet, useLocation } from 'react-router-dom'; // Importa Outlet para renderizar rotas filhas
 import ErrorBoundary from './ErrorBoundary';
 
 const Layout = ({ children }) => {
-  const { loading, currentUser, escolaId, modulosAtivos, userRole } = useAuth();
+  const { loading, currentUser, escolaId, modulosAtivos, userRole } = useSupabaseAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
 

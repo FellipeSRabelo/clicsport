@@ -1,6 +1,6 @@
 // src/modules/gestao/GestaoEscola.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../firebase/AuthContext';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { db, storage } from '../../firebase/firebaseConfig';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -8,7 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faUpload, faSchool } from '@fortawesome/free-solid-svg-icons';
 
 const GestaoEscola = () => {
-    const { escolaId } = useAuth();
+    const { user } = useSupabaseAuth();
+    const escolaId = user?.escola_id; // Agora vem corretamente do contexto
     const [escola, setEscola] = useState({ nome: '', razao_social: '', cnpj: '', cep: '', endereco: '', cidade: '', uf: '', email: '', site: '', telefone: '', logoUrl: '' });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);

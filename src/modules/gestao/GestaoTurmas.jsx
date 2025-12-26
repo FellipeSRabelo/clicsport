@@ -1,50 +1,63 @@
 // src/modules/gestao/GestaoTurmas.jsx - VERSÃO ATUALIZADA
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../../firebase/firebaseConfig';
-import { collection, query, onSnapshot, doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
-import { useAuth } from '../../firebase/AuthContext';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
+import * as gestaoApi from '../../supabase/gestaoApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faEdit, faSpinner, faSave, faCog, faUsers } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../../components/Modal';
 
 // Subcomponente para Gerenciar Unidades (antigamente Ciclos)
-const GerenciarUnidades = ({ escolaId }) => {
+const GerenciarUnidades = ({ escolaId, onDataChanged }) => {
     const [unidades, setUnidades] = useState([]);
     const [newUnidadeName, setNewUnidadeName] = useState('');
     const [editingUnidade, setEditingUnidade] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!escolaId) return;
-        const unidadesRef = collection(db, 'escolas', escolaId, 'unidades');
-        const unsubscribe = onSnapshot(unidadesRef, (snapshot) => {
-            setUnidades(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-        return unsubscribe;
+        loadUnidades();
     }, [escolaId]);
+
+    const loadUnidades = async () => {
+        try {
+            const data = await gestaoApi.fetchUnidades(escolaId);
+            setUnidades(data);
+        } catch (error) {
+            console.error("Erro ao carregar unidades:", error);
+        }
+    };
 
     const handleSave = async () => {
         if (!newUnidadeName.trim()) return;
+        setLoading(true);
         try {
             if (editingUnidade) {
-                await setDoc(doc(db, 'escolas', escolaId, 'unidades', editingUnidade.id), 
-                    { name: newUnidadeName }, { merge: true });
+                await gestaoApi.updateUnidade(editingUnidade.id, { nome: newUnidadeName });
                 setEditingUnidade(null);
             } else {
-                await setDoc(doc(collection(db, 'escolas', escolaId, 'unidades')), { name: newUnidadeName });
+                await gestaoApi.createUnidade({ escola_id: escolaId, nome: newUnidadeName });
             }
             setNewUnidadeName('');
+            await loadUnidades();
+            // Notificar pai para recarregar dados
+            if (onDataChanged) onDataChanged();
         } catch (error) {
             console.error("Erro ao salvar unidade:", error);
+            alert('Erro ao salvar unidade. Verifique o console.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDelete = async (unidadeId) => {
         if (window.confirm("Tem certeza? Deletar uma unidade pode afetar modalidades e turmas.")) {
             try {
-                await deleteDoc(doc(db, 'escolas', escolaId, 'unidades', unidadeId));
+                await gestaoApi.deleteUnidade(unidadeId);
+                await loadUnidades();
             } catch (error) {
                 console.error("Erro ao deletar unidade:", error);
+                alert('Erro ao deletar unidade.');
             }
         }
     };
@@ -54,9 +67,9 @@ const GerenciarUnidades = ({ escolaId }) => {
             <ul className="space-y-2 max-h-60 overflow-y-auto mb-4 pr-2">
                 {unidades.map(unidade => (
                     <li key={unidade.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span>{unidade.name}</span>
+                        <span>{unidade.nome}</span>
                         <div className="space-x-3">
-                            <button onClick={() => { setEditingUnidade(unidade); setNewUnidadeName(unidade.name); }} 
+                            <button onClick={() => { setEditingUnidade(unidade); setNewUnidadeName(unidade.nome); }} 
                                 className="text-blue-500 hover:text-blue-700">
                                 <FontAwesomeIcon icon={faEdit} />
                             </button>
@@ -70,8 +83,8 @@ const GerenciarUnidades = ({ escolaId }) => {
             <div className="flex space-x-2">
                 <input type="text" value={newUnidadeName} onChange={(e) => setNewUnidadeName(e.target.value)}
                     placeholder="Nome da Unidade" className="flex-grow border border-gray-300 rounded-md shadow-sm p-2" />
-                <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600">
-                    {editingUnidade ? 'Salvar' : 'Adicionar'}
+                <button onClick={handleSave} disabled={loading} className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 disabled:opacity-50">
+                    {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : (editingUnidade ? 'Salvar' : 'Adicionar')}
                 </button>
             </div>
         </div>
@@ -79,50 +92,70 @@ const GerenciarUnidades = ({ escolaId }) => {
 };
 
 // Subcomponente para Gerenciar Modalidades (antigamente Séries)
-const GerenciarModalidades = ({ escolaId, unidades }) => {
+const GerenciarModalidades = ({ escolaId, unidades, onDataChanged }) => {
     const [modalidades, setModalidades] = useState([]);
     const [newModalidadeName, setNewModalidadeName] = useState('');
     const [linkedUnidadeId, setLinkedUnidadeId] = useState('');
     const [editingModalidade, setEditingModalidade] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!escolaId) return;
-        const modalidadesRef = collection(db, 'escolas', escolaId, 'modalidades');
-        const unsubscribe = onSnapshot(modalidadesRef, (snapshot) => {
-            setModalidades(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-        return unsubscribe;
+        loadModalidades();
     }, [escolaId]);
+
+    const loadModalidades = async () => {
+        try {
+            const data = await gestaoApi.fetchModalidades(escolaId);
+            setModalidades(data);
+        } catch (error) {
+            console.error("Erro ao carregar modalidades:", error);
+        }
+    };
 
     const handleSave = async () => {
         if (!newModalidadeName.trim() || !linkedUnidadeId) {
             alert("Preencha o nome da modalidade e vincule a uma unidade.");
             return;
         }
-        const linkedUnidade = unidades.find(u => u.id === linkedUnidadeId);
+        setLoading(true);
         try {
             if (editingModalidade) {
-                await setDoc(doc(db, 'escolas', escolaId, 'modalidades', editingModalidade.id), 
-                    { name: newModalidadeName, unidadeId: linkedUnidadeId, unidadeName: linkedUnidade?.name }, 
-                    { merge: true });
+                await gestaoApi.updateModalidade(editingModalidade.id, { 
+                    nome: newModalidadeName, 
+                    unidade_id: linkedUnidadeId 
+                });
                 setEditingModalidade(null);
             } else {
-                await setDoc(doc(collection(db, 'escolas', escolaId, 'modalidades')), 
-                    { name: newModalidadeName, unidadeId: linkedUnidadeId, unidadeName: linkedUnidade?.name });
+                await gestaoApi.createModalidade({ 
+                    escola_id: escolaId,
+                    nome: newModalidadeName, 
+                    unidade_id: linkedUnidadeId 
+                });
             }
             setNewModalidadeName('');
             setLinkedUnidadeId('');
+            await loadModalidades();
+            // Notificar pai para recarregar dados
+            if (onDataChanged) onDataChanged();
         } catch (error) {
             console.error("Erro ao salvar modalidade:", error);
+            alert('Erro ao salvar modalidade. Verifique o console.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDelete = async (modalidadeId) => {
         if (window.confirm("Tem certeza? Deletar uma modalidade pode afetar turmas existentes.")) {
             try {
-                await deleteDoc(doc(db, 'escolas', escolaId, 'modalidades', modalidadeId));
+                await gestaoApi.deleteModalidade(modalidadeId);
+                await loadModalidades();
+                // Notificar pai para recarregar dados
+                if (onDataChanged) onDataChanged();
             } catch (error) {
                 console.error("Erro ao deletar modalidade:", error);
+                alert('Erro ao deletar modalidade.');
             }
         }
     };
@@ -130,29 +163,32 @@ const GerenciarModalidades = ({ escolaId, unidades }) => {
     return (
         <div className="p-2">
             <ul className="space-y-2 max-h-60 overflow-y-auto mb-4 pr-2">
-                {modalidades.map(m => (
-                    <li key={m.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <div>
-                            <span>{m.name}</span>
-                            <span className="ml-2 px-2 py-0.5 text-xs text-white bg-gray-400 rounded-full">{m.unidadeName}</span>
-                        </div>
-                        <div className="space-x-3">
-                            <button onClick={() => { setEditingModalidade(m); setNewModalidadeName(m.name); setLinkedUnidadeId(m.unidadeId); }} 
-                                className="text-blue-500 hover:text-blue-700">
-                                <FontAwesomeIcon icon={faEdit} />
-                            </button>
-                            <button onClick={() => handleDelete(m.id)} className="text-red-500 hover:text-red-700">
-                                <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                        </div>
-                    </li>
-                ))}
+                {modalidades.map(m => {
+                    const unidadeNome = unidades.find(u => u.id === m.unidade_id)?.nome || 'N/A';
+                    return (
+                        <li key={m.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div>
+                                <span>{m.nome}</span>
+                                <span className="ml-2 px-2 py-0.5 text-xs text-white bg-gray-400 rounded-full">{unidadeNome}</span>
+                            </div>
+                            <div className="space-x-3">
+                                <button onClick={() => { setEditingModalidade(m); setNewModalidadeName(m.nome); setLinkedUnidadeId(m.unidade_id); }} 
+                                    className="text-blue-500 hover:text-blue-700">
+                                    <FontAwesomeIcon icon={faEdit} />
+                                </button>
+                                <button onClick={() => handleDelete(m.id)} className="text-red-500 hover:text-red-700">
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                            </div>
+                        </li>
+                    );
+                })}
             </ul>
             <div className="space-y-3">
                 <select value={linkedUnidadeId} onChange={(e) => setLinkedUnidadeId(e.target.value)}
                     className="w-full border border-gray-300 rounded-md shadow-sm p-2">
                     <option value="">Vincular à Unidade*</option>
-                    {unidades.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                    {unidades.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
                 </select>
                 <div className="flex space-x-2">
                     <input type="text" value={newModalidadeName} onChange={(e) => setNewModalidadeName(e.target.value)}
@@ -168,7 +204,9 @@ const GerenciarModalidades = ({ escolaId, unidades }) => {
 
 // Componente principal de Gestão de Turmas
 const GestaoTurmas = () => {
-    const { escolaId, loading: authLoading, currentUser } = useAuth();
+    const { user, loading: authLoading } = useSupabaseAuth();
+    const escolaId = user?.escola_id; // Agora vem corretamente do contexto
+    const currentUser = user;
     const navigate = useNavigate();
     const [turmas, setTurmas] = useState([]);
     const [alunos, setAlunos] = useState([]);
@@ -176,6 +214,8 @@ const GestaoTurmas = () => {
     const [unidades, setUnidades] = useState([]);
     const [modalidades, setModalidades] = useState([]);
     const [filteredModalidades, setFilteredModalidades] = useState([]);
+    const [alunoTurmas, setAlunoTurmas] = useState([]); // Vínculos aluno-turma
+    const [professorTurmas, setProfessorTurmas] = useState([]); // Vínculos professor-turma
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUnidadesModalOpen, setIsUnidadesModalOpen] = useState(false);
@@ -211,54 +251,69 @@ const GestaoTurmas = () => {
 
     useEffect(() => {
         if (!escolaId) return;
-        setLoading(true);
-
-        const unsubFunctions = [
-            onSnapshot(collection(db, 'escolas', escolaId, 'turmas'),
-                snapshot => setTurmas(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))),
-                err => console.error('Erro ao carregar turmas:', err)),
-            onSnapshot(collection(db, 'escolas', escolaId, 'alunos'),
-                snapshot => setAlunos(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))),
-                err => console.error('Erro ao carregar alunos:', err)),
-            onSnapshot(collection(db, 'escolas', escolaId, 'professores'),
-                snapshot => setProfessores(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))),
-                err => console.error('Erro ao carregar professores:', err)),
-            onSnapshot(collection(db, 'escolas', escolaId, 'unidades'),
-                snapshot => setUnidades(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))),
-                err => console.error('Erro ao carregar unidades:', err)),
-            onSnapshot(collection(db, 'escolas', escolaId, 'modalidades'),
-                snapshot => {
-                    setModalidades(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-                    setLoading(false);
-                },
-                err => console.error('Erro ao carregar modalidades:', err))
-        ];
-
-        return () => unsubFunctions.forEach(unsub => unsub());
+        loadAllData();
     }, [escolaId]);
 
+    const loadAllData = async () => {
+        setLoading(true);
+        try {
+            const [turmasData, alunosData, professoresData, unidadesData, modalidadesData, alunoTurmasData, professorTurmasData] = await Promise.all([
+                gestaoApi.fetchTurmas(escolaId),
+                gestaoApi.fetchAlunos(escolaId),
+                gestaoApi.fetchProfessores(escolaId),
+                gestaoApi.fetchUnidades(escolaId),
+                gestaoApi.fetchModalidades(escolaId),
+                gestaoApi.fetchAllAlunoTurmas(escolaId),
+                gestaoApi.fetchAllProfessorTurmas(escolaId)
+            ]);
+            
+            setTurmas(turmasData);
+            setAlunos(alunosData);
+            setProfessores(professoresData);
+            setUnidades(unidadesData);
+            setModalidades(modalidadesData);
+            setAlunoTurmas(alunoTurmasData);
+            setProfessorTurmas(professorTurmasData);
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            alert('Erro ao carregar dados. Verifique o console.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Sempre que unidades/modalidades mudam, garantir que o valor selecionado ainda existe
     useEffect(() => {
+        // Resetar unidade se não existir mais
+        if (formData.unidade && !unidades.find(u => u.id === formData.unidade)) {
+            setFormData(f => ({ ...f, unidade: '', modalidade: '' }));
+        }
+        // Resetar modalidade se não existir mais
+        if (formData.modalidade && !modalidades.find(m => m.id === formData.modalidade)) {
+            setFormData(f => ({ ...f, modalidade: '' }));
+        }
+        // Atualizar modalidades filtradas
         if (formData.unidade) {
-            setFilteredModalidades(modalidades.filter(m => m.unidadeId === formData.unidade));
+            setFilteredModalidades(modalidades.filter(m => m.unidade_id === formData.unidade));
         } else {
             setFilteredModalidades([]);
         }
-    }, [formData.unidade, modalidades]);
+    }, [formData.unidade, modalidades, unidades, formData.modalidade]);
 
     const handleOpenModal = (turma = null) => {
         if (turma) {
             setCurrentTurma(turma);
             setFormData({
-                name: turma.name,
-                year: turma.year,
-                unidade: turma.unidade || '',
-                modalidade: turma.modalidade || '',
+                name: turma.nome || '',
+                year: turma.ano || new Date().getFullYear().toString(),
+                unidade: turma.unidade_id || '',
+                modalidade: turma.modalidade_id || '',
                 teachers: turma.teachers || [],
                 frequencia: turma.frequencia || 5,
-                diasSemana: turma.diasSemana || [],
-                horaInicio: turma.horaInicio || '08:00',
-                horaTermino: turma.horaTermino || '12:00',
-                limiteAlunos: turma.limiteAlunos || 30,
+                diasSemana: turma.dias_semana || [],
+                horaInicio: turma.hora_inicio || '08:00',
+                horaTermino: turma.hora_termino || '12:00',
+                limiteAlunos: turma.limite_alunos || 30,
                 mensalidade: turma.mensalidade || 0
             });
         } else {
@@ -293,11 +348,35 @@ const GestaoTurmas = () => {
 
         setLoading(true);
         try {
-            const turmasRef = collection(db, 'escolas', escolaId, 'turmas');
-            const docRef = currentTurma ? doc(turmasRef, currentTurma.id) : doc(turmasRef);
-            await setDoc(docRef, formData, { merge: true });
+            // Garantir que valores numéricos nunca sejam NaN
+            const frequencia = parseInt(formData.frequencia) || 5;
+            const limiteAlunos = parseInt(formData.limiteAlunos) || 30;
+            const mensalidade = parseFloat(formData.mensalidade) || 0;
+            const ano = parseInt(formData.year) || new Date().getFullYear();
+
+            const turmaData = {
+                escola_id: escolaId,
+                nome: formData.name,
+                ano: ano,
+                unidade_id: formData.unidade,
+                modalidade_id: formData.modalidade,
+                frequencia: frequencia,
+                dias_semana: formData.diasSemana || [],
+                hora_inicio: formData.horaInicio || '08:00',
+                hora_termino: formData.horaTermino || '12:00',
+                limite_alunos: limiteAlunos,
+                mensalidade: mensalidade
+            };
+
+            if (currentTurma) {
+                await gestaoApi.updateTurma(currentTurma.id, turmaData);
+            } else {
+                await gestaoApi.createTurma(turmaData);
+            }
+            
             alert(`Turma ${formData.name} salva com sucesso!`);
             setIsModalOpen(false);
+            await loadAllData();
         } catch (error) {
             console.error("Erro ao salvar turma:", error);
             alert("Falha ao salvar turma.");
@@ -310,8 +389,9 @@ const GestaoTurmas = () => {
         if (!escolaId || !window.confirm(`Deletar a turma ${turmaName}?`)) return;
         setLoading(true);
         try {
-            await deleteDoc(doc(db, 'escolas', escolaId, 'turmas', turmaId));
+            await gestaoApi.deleteTurma(turmaId);
             alert(`Turma ${turmaName} deletada.`);
+            await loadAllData();
         } catch (error) {
             console.error("Erro ao deletar turma:", error);
             alert("Falha ao deletar turma.");
@@ -327,18 +407,18 @@ const GestaoTurmas = () => {
     // Função para obter nome da unidade pelo ID
     const getNomeUnidade = (unidadeId) => {
         const unidade = unidades.find(u => u.id === unidadeId);
-        return unidade?.name || unidadeId;
+        return unidade?.nome || unidadeId;
     };
 
     // Função para obter nome da modalidade pelo ID
     const getNomeModalidade = (modalidadeId) => {
         const modalidade = modalidades.find(m => m.id === modalidadeId);
-        return modalidade?.name || modalidadeId;
+        return modalidade?.nome || modalidadeId;
     };
 
     // Função para contar quantos alunos estão vinculados a uma turma
-    const contarAlunosDaTurma = (nomeTurma) => {
-        return alunos.filter(aluno => aluno.nome_turma === nomeTurma).length;
+    const contarAlunosDaTurma = (turmaId) => {
+        return alunoTurmas.filter(vinculo => vinculo.turma_id === turmaId).length;
     };
 
     // Função para abrir modal de visualização de alunos
@@ -351,21 +431,22 @@ const GestaoTurmas = () => {
     const handleToggleProfessor = async (professorId, professorName) => {
         if (!escolaId || !turmaParaVerAlunos) return;
         try {
-            const profRef = doc(db, 'escolas', escolaId, 'professores', professorId);
-            const profSnap = await getDoc(profRef);
-            const profData = profSnap.data();
-            const turmasAtuais = profData.classes || [];
+            // Verifica se professor já está vinculado
+            const jaVinculado = professorTurmas.some(
+                v => v.professor_id === professorId && v.turma_id === turmaParaVerAlunos.id
+            );
             
-            let novasTurmas;
-            if (turmasAtuais.includes(turmaParaVerAlunos.name)) {
-                // Remover
-                novasTurmas = turmasAtuais.filter(t => t !== turmaParaVerAlunos.name);
+            if (jaVinculado) {
+                // Remover vínculo
+                await gestaoApi.removeProfessorFromTurma(professorId, turmaParaVerAlunos.id);
             } else {
-                // Adicionar
-                novasTurmas = [...turmasAtuais, turmaParaVerAlunos.name];
+                // Adicionar vínculo
+                await gestaoApi.addProfessorToTurma(professorId, turmaParaVerAlunos.id);
             }
             
-            await setDoc(profRef, { classes: novasTurmas }, { merge: true });
+            // Recarregar vínculos
+            const novosVinculos = await gestaoApi.fetchAllProfessorTurmas(escolaId);
+            setProfessorTurmas(novosVinculos);
         } catch (error) {
             console.error('Erro ao vincular/desvincular professor:', error);
             alert('Erro ao atualizar vínculo do professor.');
@@ -402,12 +483,12 @@ const GestaoTurmas = () => {
                         ) : (
                             turmas.map(turma => (
                                 <tr key={turma.id} className="hover:bg-gray-50">
-                                    <td className="px-3 py-2 text-sm font-medium text-clic-secondary">{turma.name}</td>
-                                    <td className="px-3 py-2 text-sm text-gray-900">{getNomeUnidade(turma.unidade)} - {getNomeModalidade(turma.modalidade)}</td>
-                                    <td className="px-3 py-2 text-sm text-gray-500">{turma.year}</td>
+                                    <td className="px-3 py-2 text-sm font-medium text-clic-secondary">{turma.nome}</td>
+                                    <td className="px-3 py-2 text-sm text-gray-900">{getNomeUnidade(turma.unidade_id)} - {getNomeModalidade(turma.modalidade_id)}</td>
+                                    <td className="px-3 py-2 text-sm text-gray-500">{turma.ano}</td>
                                     <td className="px-3 py-2 text-sm text-gray-500">{turma.frequencia}x/semana</td>
-                                    <td className="px-3 py-2 text-sm text-gray-500">{turma.horaInicio} às {turma.horaTermino}</td>
-                                    <td className="px-3 py-2 text-sm text-gray-500">{contarAlunosDaTurma(turma.name)}/{turma.limiteAlunos}</td>
+                                    <td className="px-3 py-2 text-sm text-gray-500">{turma.hora_inicio} às {turma.hora_termino}</td>
+                                    <td className="px-3 py-2 text-sm text-gray-500">{contarAlunosDaTurma(turma.id)}/{turma.limite_alunos}</td>
                                     <td className="px-3 py-2 text-sm text-gray-500">R$ {turma.mensalidade?.toFixed(2) || '0.00'}</td>
                                     <td className="px-3 py-2 text-right text-sm space-x-2">
                                         <button onClick={() => handleVerAlunos(turma)} className="text-blue-500 hover:text-blue-700" title="Ver Alunos">
@@ -416,7 +497,7 @@ const GestaoTurmas = () => {
                                         <button onClick={() => handleOpenModal(turma)} className="text-clic-primary hover:text-yellow-600" title="Editar">
                                             <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                         </button>
-                                        <button onClick={() => handleDelete(turma.id, turma.name)} className="text-red-500 hover:text-red-700" title="Deletar">
+                                        <button onClick={() => handleDelete(turma.id, turma.nome)} className="text-red-500 hover:text-red-700" title="Deletar">
                                             <FontAwesomeIcon icon={faTrash} className="text-sm" />
                                         </button>
                                     </td>
@@ -450,10 +531,10 @@ const GestaoTurmas = () => {
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1">Unidade*</label>
                                 <div className="flex items-center space-x-2">
-                                    <select value={formData.unidade} onChange={(e) => setFormData({...formData, unidade: e.target.value, modalidade: ''})}
+                                    <select value={formData.unidade || ''} onChange={(e) => setFormData({...formData, unidade: e.target.value, modalidade: ''})}
                                         required className="block w-full text-sm border border-gray-300 rounded-md p-1.5">
                                         <option value="">Selecione...</option>
-                                        {unidades.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                        {unidades.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
                                     </select>
                                     <button type="button" onClick={() => setIsUnidadesModalOpen(true)} className="p-1.5 text-gray-500 hover:text-gray-700">
                                         <FontAwesomeIcon icon={faCog} className="text-sm" />
@@ -463,10 +544,10 @@ const GestaoTurmas = () => {
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1">Modalidade*</label>
                                 <div className="flex items-center space-x-2">
-                                    <select value={formData.modalidade} onChange={(e) => setFormData({...formData, modalidade: e.target.value})}
+                                    <select value={formData.modalidade || ''} onChange={(e) => setFormData({...formData, modalidade: e.target.value})}
                                         required disabled={!formData.unidade} className="block w-full text-sm border border-gray-300 rounded-md p-1.5 disabled:bg-gray-100">
                                         <option value="">{formData.unidade ? 'Selecione...' : 'Escolha uma unidade'}</option>
-                                        {filteredModalidades.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                                        {filteredModalidades.map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
                                     </select>
                                     <button type="button" onClick={() => setIsModalidadesModalOpen(true)} className="p-1.5 text-gray-500 hover:text-gray-700">
                                         <FontAwesomeIcon icon={faCog} className="text-sm" />
@@ -564,20 +645,20 @@ const GestaoTurmas = () => {
             {/* Modal Unidades */}
             {isUnidadesModalOpen && (
                 <Modal title="Gerenciar Unidades" onClose={() => setIsUnidadesModalOpen(false)}>
-                    <GerenciarUnidades escolaId={escolaId} />
+                    <GerenciarUnidades escolaId={escolaId} onDataChanged={loadAllData} />
                 </Modal>
             )}
 
             {/* Modal Modalidades */}
             {isModalidadesModalOpen && (
                 <Modal title="Gerenciar Modalidades" onClose={() => setIsModalidadesModalOpen(false)}>
-                    <GerenciarModalidades escolaId={escolaId} unidades={unidades} />
+                    <GerenciarModalidades escolaId={escolaId} unidades={unidades} onDataChanged={loadAllData} />
                 </Modal>
             )}
 
             {/* Modal Ver Alunos */}
             {isAlunosModalOpen && turmaParaVerAlunos && (
-                <Modal title={`Turma: ${turmaParaVerAlunos.name}`} onClose={() => setIsAlunosModalOpen(false)} maxWidth="max-w-3xl">
+                <Modal title={`Turma: ${turmaParaVerAlunos.nome}`} onClose={() => setIsAlunosModalOpen(false)} maxWidth="max-w-3xl">
                     {/* Abas */}
                     <div className="flex border-b border-gray-200 mb-4">
                         <button
@@ -588,7 +669,7 @@ const GestaoTurmas = () => {
                                     : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            Alunos ({alunos.filter(a => (a.turmas || []).includes(turmaParaVerAlunos.name) || a.nome_turma === turmaParaVerAlunos.name).length})
+                            Alunos ({alunoTurmas.filter(v => v.turma_id === turmaParaVerAlunos.id).length})
                         </button>
                         <button
                             onClick={() => setAbaModalAtiva('professores')}
@@ -598,14 +679,14 @@ const GestaoTurmas = () => {
                                     : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            Professores ({professores.filter(p => (p.classes || []).includes(turmaParaVerAlunos.name)).length})
+                            Professores ({professorTurmas.filter(v => v.turma_id === turmaParaVerAlunos.id).length})
                         </button>
                     </div>
 
                     <div className="space-y-3">
                         {abaModalAtiva === 'alunos' ? (
                             // Conteúdo da aba Alunos
-                            alunos.filter(a => (a.turmas || []).includes(turmaParaVerAlunos.name) || a.nome_turma === turmaParaVerAlunos.name).length === 0 ? (
+                            alunoTurmas.filter(v => v.turma_id === turmaParaVerAlunos.id).length === 0 ? (
                                 <p className="text-gray-500 text-center py-4">Nenhum aluno vinculado a esta turma.</p>
                             ) : (
                                 <div className="max-h-96 overflow-y-auto">
@@ -618,15 +699,19 @@ const GestaoTurmas = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {alunos
-                                                .filter(a => (a.turmas || []).includes(turmaParaVerAlunos.name) || a.nome_turma === turmaParaVerAlunos.name)
-                                                .map(aluno => (
-                                                    <tr key={aluno.id} className="hover:bg-gray-50">
-                                                        <td className="px-4 py-2 text-sm text-gray-900">{aluno.matricula}</td>
-                                                        <td className="px-4 py-2 text-sm text-gray-900">{aluno.nome_aluno}</td>
-                                                        <td className="px-4 py-2 text-sm text-gray-500">{aluno.ano_turma}</td>
-                                                    </tr>
-                                                ))
+                                            {alunoTurmas
+                                                .filter(v => v.turma_id === turmaParaVerAlunos.id)
+                                                .map(vinculo => {
+                                                    const aluno = alunos.find(a => a.id === vinculo.aluno_id);
+                                                    if (!aluno) return null;
+                                                    return (
+                                                        <tr key={aluno.id} className="hover:bg-gray-50">
+                                                            <td className="px-4 py-2 text-sm text-gray-900">{aluno.matricula}</td>
+                                                            <td className="px-4 py-2 text-sm text-gray-900">{aluno.nome_aluno || aluno.nome || '-'}</td>
+                                                            <td className="px-4 py-2 text-sm text-gray-500">{aluno.ano_turma || aluno.ano || '-'}</td>
+                                                        </tr>
+                                                    );
+                                                })
                                             }
                                         </tbody>
                                     </table>
@@ -640,12 +725,14 @@ const GestaoTurmas = () => {
                                 ) : (
                                     <div className="space-y-2">
                                         {professores.map(prof => {
-                                            const isVinculado = (prof.classes || []).includes(turmaParaVerAlunos.name);
+                                            const isVinculado = professorTurmas.some(
+                                                v => v.professor_id === prof.uid && v.turma_id === turmaParaVerAlunos.id
+                                            );
                                             return (
-                                                <div key={prof.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+                                                <div key={prof.uid} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <p className="text-sm font-medium text-gray-900">{prof.name}</p>
+                                                            <p className="text-sm font-medium text-gray-900">{prof.nome}</p>
                                                             <button
                                                                 onClick={() => navigate('/gestao?tab=professores')}
                                                                 className="text-gray-400 hover:text-clic-primary"
@@ -655,14 +742,14 @@ const GestaoTurmas = () => {
                                                             </button>
                                                             {/* Disponibilidade inline */}
                                                             <div className="text-xs text-gray-600 ml-2">
-                                                                {prof.diasDisponiveis && prof.diasDisponiveis.length > 0 && (
+                                                                {prof.dias_disponiveis && prof.dias_disponiveis.length > 0 && (
                                                                     <span className="mr-2">
-                                                                        <span className="font-medium">Dias:</span> {prof.diasDisponiveis.map(d => d.substring(0, 3)).join(', ')}
+                                                                        <span className="font-medium">Dias:</span> {prof.dias_disponiveis.map(d => d.substring(0, 3)).join(', ')}
                                                                     </span>
                                                                 )}
-                                                                {prof.turnosDisponiveis && prof.turnosDisponiveis.length > 0 && (
+                                                                {prof.turnos_disponiveis && prof.turnos_disponiveis.length > 0 && (
                                                                     <span>
-                                                                        <span className="font-medium">Turnos:</span> {prof.turnosDisponiveis.map(t => t.charAt(0)).join(', ')}
+                                                                        <span className="font-medium">Turnos:</span> {prof.turnos_disponiveis.map(t => t.charAt(0)).join(', ')}
                                                                     </span>
                                                                 )}
                                                             </div>
@@ -674,7 +761,7 @@ const GestaoTurmas = () => {
                                                         </div>
                                                     </div>
                                                     <button
-                                                        onClick={() => handleToggleProfessor(prof.id, prof.name)}
+                                                        onClick={() => handleToggleProfessor(prof.uid, prof.nome)}
                                                         className={`px-3 py-1.5 text-xs font-semibold rounded ${
                                                             isVinculado
                                                                 ? 'bg-red-100 text-red-700 hover:bg-red-200'

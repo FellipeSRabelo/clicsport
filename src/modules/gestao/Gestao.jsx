@@ -1,7 +1,7 @@
 // src/modules/gestao/Gestao.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../firebase/AuthContext'; // CORRIGIDO: Volta dois níveis
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGraduationCap, faTools, faChalkboardTeacher, faUsers, faBook } from '@fortawesome/free-solid-svg-icons'; 
 import GestaoTurmas from './GestaoTurmas'; 
@@ -11,7 +11,7 @@ import GestaoEscola from './GestaoEscola';
 
 
 const Gestao = () => {
-    const { userRole } = useAuth();
+    const { userRole } = useSupabaseAuth();
     const location = useLocation();
     const navigate = useNavigate();
     // Inicia na tab 'alunos' (a que tem o upload)

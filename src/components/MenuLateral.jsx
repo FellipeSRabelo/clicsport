@@ -1,26 +1,27 @@
 // src/components/MenuLateral.jsx
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '../firebase/AuthContext';
+import { useSupabaseAuth } from '../supabase/SupabaseAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faUsers, faBook, faSearch, faSignOutAlt, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const MenuLateral = ({ isCompact = false }) => {
-  const { userRole, modulosAtivos, logout, escolaId, escolaNome, escolaLoading } = useAuth();
+  const { userRole, modulosAtivos, modulosPermitidos, logout, escolaId, escolaNome, escolaLoading } = useSupabaseAuth();
   const [expandedMenu, setExpandedMenu] = useState(null);
   const location = useLocation();
   
   // Define os itens do menu baseados no role e módulos ativos
   const menuItems = [
-    { name: 'Dashboard', path: '/app', icon: faHome, roles: ['gestor', 'aluno'] },
-    { name: 'Gestão Escolar', path: '/gestao', icon: faUsers, roles: ['gestor'] },
+    { name: 'Dashboard', path: '/app', icon: faHome, roles: ['gestor', 'aluno', 'responsavel'], key: 'dashboard' },
+    { name: 'Gestão Escolar', path: '/gestao', icon: faUsers, roles: ['gestor'], key: 'gestao' },
     
-    // Módulos Ativos (Controlados pelo Firestore)
-    modulosAtivos.achados && { name: 'Achados e Perdidos', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno'] },
+    // Módulos Ativos (Controlados pelo Supabase)
+    (modulosAtivos.achados !== false) && { name: 'Achados e Perdidos', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno', 'responsavel'], key: 'achados' },
     modulosAtivos.pesquisas && { 
       name: 'Pesquisas', 
       icon: faBook, 
       roles: ['gestor', 'aluno'],
+      key: 'pesquisas',
       submenu: [
         { name: 'Dashboard', path: '/pesquisas' },
         { name: 'Nova Campanha', path: '/pesquisas/nova-campanha' },
@@ -28,7 +29,15 @@ const MenuLateral = ({ isCompact = false }) => {
       ]
     },
     
-  ].filter(item => item && item.roles.includes(userRole)); // Filtra pelos módulos ativos e permissão de role
+  ].filter(item => {
+    if (!item || !item.roles.includes(userRole)) return false;
+    
+    // Se for gestor, verifica modulosPermitidos
+    if (userRole === 'gestor' && item.key) {
+      return modulosPermitidos[item.key] !== false;
+    }
+    return true;
+  });
 
   return (
     <div className={`flex flex-col h-full bg-clic-secondary text-white shadow-xl transition-all duration-300 ${

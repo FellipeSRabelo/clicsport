@@ -16,8 +16,25 @@ service cloud.firestore {
     
     // Coleção de gestores (já existente - mantém as regras atuais)
     match /gestores/{gestorId} {
-      allow read: if loggedIn() && request.auth.uid == gestorId;
+      // Permitir leitura por qualquer usuário autenticado (necessário para login)
+      allow read: if loggedIn();
       allow write: if loggedIn() && request.auth.uid == gestorId;
+    }
+
+    // Regras globais para collectionGroup (necessárias para login)
+    match /{path=**}/gestores/{gestorId} {
+      allow read: if loggedIn();
+      allow write: if loggedIn() && request.auth.uid == gestorId;
+    }
+
+    match /{path=**}/professores/{professorId} {
+      allow read: if loggedIn();
+      allow write: if loggedIn();
+    }
+
+    match /{path=**}/responsaveis/{responsavelId} {
+      allow read: if loggedIn();
+      allow write: if loggedIn() && request.auth.uid == responsavelId;
     }
     
     // Coleção de escolas (V1 - nome 'escolas')

@@ -3,27 +3,40 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faBell, faExpand, faHome, faUsers, faSearch, faBook, faTools, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../firebase/AuthContext';
+import { useSupabaseAuth } from '../supabase/SupabaseAuthContext';
 
 const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [displayTitle, setDisplayTitle] = useState(title);
     const menuRef = useRef(null);
     const navigate = useNavigate();
-    const { logout, modulosAtivos, userRole } = useAuth();
+    const { logout, modulosAtivos, modulosPermitidos, userRole } = useSupabaseAuth();
 
     // Atualiza o título quando a prop muda
     useEffect(() => {
         setDisplayTitle(title);
     }, [title]);
 
-    const appMenuItems = useMemo(() => ([
-        { name: 'Dashboard', path: '/app', icon: faHome, roles: ['gestor', 'aluno', 'responsavel'] },
-        { name: 'Gestão', path: '/gestao', icon: faUsers, roles: ['gestor'] },
-        modulosAtivos?.achados && { name: 'Achados', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno'] },
-        modulosAtivos?.pesquisas && { name: 'Pesquisas', path: '/pesquisas', icon: faBook, roles: ['gestor', 'aluno'] },
-        { name: 'Escola', path: '/gestao?tab=config', icon: faTools, roles: ['gestor'] },
-    ].filter(Boolean).filter(item => item.roles.includes(userRole || 'gestor'))), [modulosAtivos, userRole]);
+    const appMenuItems = useMemo(() => {
+        console.log('📋 modulosPermitidos:', modulosPermitidos);
+        return [
+            { name: 'Dashboard', path: '/app', icon: faHome, roles: ['gestor', 'aluno', 'responsavel'], key: 'dashboard' },
+            { name: 'Gestão', path: '/gestao', icon: faUsers, roles: ['gestor'], key: 'gestao' },
+            (modulosAtivos?.achados !== false) && { name: 'Achados', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno', 'responsavel'], key: 'achados' },
+            modulosAtivos?.pesquisas && { name: 'Pesquisas', path: '/pesquisas', icon: faBook, roles: ['gestor', 'aluno'], key: 'pesquisas' },
+            { name: 'Escola', path: '/gestao?tab=config', icon: faTools, roles: ['gestor'], key: 'config' },
+        ].filter(Boolean).filter(item => {
+            // Se for gestor, verifica modulosPermitidos
+            if (userRole === 'gestor' && item.key) {
+                // Converte string "false" para booleano false
+                const permitido = modulosPermitidos[item.key];
+                const isPermitted = permitido === false || permitido === 'false' ? false : true;
+                console.log(`✓ ${item.key}:`, permitido, '→', isPermitted);
+                return item.roles.includes(userRole) && isPermitted;
+            }
+            return item.roles.includes(userRole || 'gestor');
+        });
+    }, [modulosAtivos, modulosPermitidos, userRole]);
 
     const handleConfiguracoes = () => {
         setShowMenu(false);

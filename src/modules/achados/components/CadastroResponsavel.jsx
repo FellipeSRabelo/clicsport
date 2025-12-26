@@ -1,13 +1,13 @@
 // src/modules/achados/components/CadastroResponsavel.jsx
 import React, { useState } from 'react';
-import { db } from '../../../firebase/firebaseConfig';
-import { auth } from '../../../firebase/firebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
+import { supabase } from '../../../supabase/supabaseConfig';
+import { upsertResponsavel } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const CadastroResponsavel = ({ onCadastroSucesso }) => {
+  const { currentUser } = useSupabaseAuth();
   const [step, setStep] = useState(1); // 1: Código | 2: Matrícula | 3: Dados
   const [formData, setFormData] = useState({
     codigoEscola: '',
@@ -34,45 +34,33 @@ const CadastroResponsavel = ({ onCadastroSucesso }) => {
     setLoading(true);
 
     try {
-      const codigoLower = formData.codigoEscola.toLowerCase().trim();
-      
-      // Tenta buscar pelo campo codigoEscola
-      const escolasRef = collection(db, 'escolas');
-      let q = query(escolasRef, where('codigoEscola', '==', codigoLower));
-      let snapshot = await getDocs(q);
-
-      // Se não encontrou, tenta buscar diretamente pelo ID do documento
-      if (snapshot.empty) {
-        try {
-          const docRef = doc(db, 'escolas', codigoLower);
-          const docSnap = await getDoc(docRef);
-          
-          if (docSnap.exists()) {
-            const escolaData = docSnap.data();
-            setEscolaId(docSnap.id);
-            setEscolaNome(escolaData.nome || escolaData.schoolName || 'Escola');
-            setSuccess(`✓ Escola "${escolaData.nome || escolaData.schoolName}" validada com sucesso!`);
-            
-            setTimeout(() => {
-              setSuccess('');
-              setStep(2);
-            }, 1500);
-            setLoading(false);
-            return;
-          }
-        } catch (err) {
-          console.log('[CadastroResponsavel] Não encontrou por ID:', err);
-        }
-        
+      const codigo = formData.codigoEscola.trim();
+      // Supabase: valida por ID da escola (UUID) ou por coluna codigo (se existir)
+      let escola = null;
+      // Tenta por id
+      let { data, error } = await supabase
+        .from('escolas')
+        .select('id,nome')
+        .eq('id', codigo)
+        .maybeSingle();
+      if (!error && data) escola = data;
+      // Tenta por codigo
+      if (!escola) {
+        const { data: byCode } = await supabase
+          .from('escolas')
+          .select('id,nome,codigo')
+          .eq('codigo', codigo)
+          .maybeSingle();
+        if (byCode) escola = byCode;
+      }
+      if (!escola) {
         setError('Código da escola não encontrado. Verifique e tente novamente.');
         setLoading(false);
         return;
       }
-
-      const escolaDoc = snapshot.docs[0];
-      setEscolaId(escolaDoc.id);
-      setEscolaNome(escolaDoc.data().nome || escolaDoc.data().schoolName || 'Escola');
-      setSuccess(`✓ Escola "${escolaDoc.data().nome || escolaDoc.data().schoolName}" validada com sucesso!`);
+      setEscolaId(escola.id);
+      setEscolaNome(escola.nome || 'Escola');
+      setSuccess(`✓ Escola "${escola.nome || 'Escola'}" validada com sucesso!`);
       
       setTimeout(() => {
         setSuccess('');
@@ -93,15 +81,23 @@ const CadastroResponsavel = ({ onCadastroSucesso }) => {
     setLoading(true);
 
     try {
-      const alunosRef = collection(db, 'escolas', escolaId, 'alunos');
-      const q = query(alunosRef, where('matricula', '==', formData.matriculaAluno));
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
+      const { data, error } = await supabase
+        .from('alunos')
+        .select('id,nome_aluno,matricula,nome_turma,serie')
+        .eq('escola_id', escolaId)
+        .eq('matricula', formData.matriculaAluno);
+      if (error) throw error;
+      if (!data || data.length === 0) {
         setError('Nenhum aluno encontrado com essa matrícula.');
         setAlunosEncontrados([]);
       } else {
-        const alunos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const alunos = data.map(row => ({
+          id: row.id,
+          nome_aluno: row.nome_aluno,
+          matricula: row.matricula,
+          nome_turma: row.nome_turma,
+          serie: row.serie
+        }));
         setAlunosEncontrados(alunos);
         setSuccess(`${alunos.length} aluno(s) encontrado(s)!`);
         
@@ -166,27 +162,25 @@ const CadastroResponsavel = ({ onCadastroSucesso }) => {
     }
 
     try {
-      // Criar usuário no Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.senha
-      );
+      // Criar usuário no Supabase Auth
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.senha
+      });
+      if (signUpError) throw signUpError;
+      const userId = signUpData?.user?.id;
+      if (!userId) throw new Error('Falha ao criar usuário.');
 
-      const userId = userCredential.user.uid;
-
-      // Salvar dados do responsável no Firestore
-      const responsavelRef = doc(db, 'escolas', escolaId, 'responsaveis', userId);
-      await setDoc(responsavelRef, {
+      // Salvar dados do responsável no Supabase
+      await upsertResponsavel(escolaId, userId, {
         uid: userId,
-        nomeCompleto: formData.nomeCompleto,
+        nome_completo: formData.nomeCompleto,
         email: formData.email,
         telefone: formData.telefone,
-        alunoId: alunoSelecionado.id,
-        nomeAluno: alunoSelecionado.nome_aluno,
-        matriculaAluno: alunoSelecionado.matricula,
-        turmaAluno: alunoSelecionado.nome_turma || alunoSelecionado.serie || 'Não informado',
-        criadoEm: serverTimestamp(),
+        aluno_id: alunoSelecionado.id,
+        aluno_nome: alunoSelecionado.nome_aluno,
+        matricula_aluno: alunoSelecionado.matricula,
+        turma_aluno: alunoSelecionado.nome_turma || alunoSelecionado.serie || 'Não informado',
         ativo: true
       });
 
@@ -199,9 +193,9 @@ const CadastroResponsavel = ({ onCadastroSucesso }) => {
     } catch (error) {
       console.error('[CadastroResponsavel] Erro ao criar cadastro:', error);
       
-      if (error.code === 'auth/email-already-in-use') {
+      if (error?.message?.includes('already registered')) {
         setError('Este email já está cadastrado. Faça login ou use outro email.');
-      } else if (error.code === 'auth/invalid-email') {
+      } else if (error?.message?.includes('Invalid email')) {
         setError('Email inválido.');
       } else {
         setError('Erro ao criar cadastro. Tente novamente.');

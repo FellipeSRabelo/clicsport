@@ -1,16 +1,7 @@
 // src/modules/achados/components/PainelGestor.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../firebase/AuthContext';
-import { db } from '../../../firebase/firebaseConfig';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  doc, 
-  updateDoc,
-  serverTimestamp 
-} from 'firebase/firestore';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
+import { fetchItemsByEscola, updateItem } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faSearch,
@@ -30,7 +21,7 @@ import ModalDetalhesGestor from './ModalDetalhesGestor';
 import ModalEncerrarOcorrencia from './ModalEncerrarOcorrencia';
 
 const PainelGestor = () => {
-  const { escolaId } = useAuth();
+  const { escolaId } = useSupabaseAuth();
   const [allItems, setAllItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,25 +34,35 @@ const PainelGestor = () => {
 
   // Carrega todas as ocorrências da escola
   useEffect(() => {
-    if (!escolaId) return;
-
-    const itemsRef = collection(db, 'escolas', escolaId, 'achados_perdidos');
-    const q = query(itemsRef);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const itemsData = [];
-      snapshot.forEach((doc) => {
-        itemsData.push({ id: doc.id, ...doc.data() });
-      });
-      
-      // Ordena por uniqueId (mais recentes primeiro)
-      itemsData.sort((a, b) => (b.uniqueId || 0) - (a.uniqueId || 0));
-
-      setAllItems(itemsData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    let mounted = true;
+    const load = async () => {
+      if (!escolaId) return;
+      try {
+        const rows = await fetchItemsByEscola(escolaId);
+        const itemsData = rows.map(r => ({
+          id: r.id,
+          name: r.name || r.nome_objeto,
+          studentName: r.student_name || r.nome_aluno,
+          ownerFullName: r.owner_full_name,
+          turma: r.turma,
+          status: r.status,
+          uniqueId: r.unique_id,
+          closedAt: r.closed_at ? new Date(r.closed_at) : null,
+          notes: r.notes,
+          fotoUrl: r.foto_url,
+        }));
+        itemsData.sort((a, b) => (b.uniqueId || 0) - (a.uniqueId || 0));
+        if (mounted) {
+          setAllItems(itemsData);
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error('[PainelGestor] Erro ao carregar itens:', e);
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
   }, [escolaId]);
 
   // Aplicar filtros
@@ -122,13 +123,10 @@ const PainelGestor = () => {
 
   const handleReopen = async (itemId) => {
     if (!confirm('Deseja realmente retornar este item para "Pendente"?')) return;
-
     try {
-      const itemRef = doc(db, 'escolas', escolaId, 'achados_perdidos', itemId);
-      await updateDoc(itemRef, {
-        status: 'active',
-        closedAt: null
-      });
+      await updateItem(itemId, { status: 'active', closed_at: null });
+      // Atualiza localmente
+      setAllItems(prev => prev.map(i => i.id === itemId ? { ...i, status: 'active', closedAt: null } : i));
     } catch (error) {
       console.error('[PainelGestor] Erro ao reabrir item:', error);
       alert('Erro ao reabrir ocorrência.');

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase/firebaseConfig'; // CORRIGIDO: Volta dois níveis
 import { collection, query, getDocs, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { useAuth } from '../../firebase/AuthContext'; // CORRIGIDO: Volta dois níveis
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext'; // CORRIGIDO: Volta dois níveis
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faEdit, faSpinner, faTimes, faSave } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
@@ -35,7 +35,8 @@ const formatPhone = (v) => {
 
 // Componente de Tabela e Gerenciamento
 const GestaoProfessores = () => {
-    const { escolaId, loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useSupabaseAuth();
+    const escolaId = user?.escola_id; // Agora vem corretamente do contexto
     const [professores, setProfessores] = useState([]);
     const [turmas, setTurmas] = useState([]); // Lista de turmas para o dropdown
     const [modalidades, setModalidades] = useState([]); // Lista de modalidades com nome

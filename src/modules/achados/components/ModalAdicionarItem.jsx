@@ -1,21 +1,13 @@
 // src/modules/achados/components/ModalAdicionarItem.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../firebase/AuthContext';
-import { db, storage } from '../../../firebase/firebaseConfig';
-import { 
-  collection, 
-  addDoc, 
-  doc, 
-  runTransaction, 
-  serverTimestamp,
-  getDoc
-} from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useSupabaseAuth } from '../../../supabase/SupabaseAuthContext';
+import { supabase } from '../../../supabase/supabaseConfig';
+import { fetchResponsavel, insertItem } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCamera, faImage } from '@fortawesome/free-solid-svg-icons';
 
 const ModalAdicionarItem = ({ isOpen, onClose }) => {
-  const { currentUser, escolaId } = useAuth();
+  const { currentUser, escolaId } = useSupabaseAuth();
   const [formData, setFormData] = useState({
     nomeObjeto: '',
     local: '',
@@ -40,17 +32,13 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
 
   const loadResponsavelData = async () => {
     try {
-      const responsavelRef = doc(db, 'escolas', escolaId, 'responsaveis', currentUser.uid);
-      const docSnap = await getDoc(responsavelRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        console.log('[ModalAdicionarItem] Dados do responsável:', data);
+      const data = await fetchResponsavel(escolaId, currentUser.id || currentUser.uid);
+      if (data) {
         setResponsavelData({
-          nomeAluno: data.nomeAluno || 'Não informado (refaça o cadastro do responsável para vincular o aluno)',
-          turmaAluno: data.turmaAluno || 'Não informado (refaça o cadastro do responsável para vincular o aluno)'
+          nomeAluno: data.aluno_nome || 'Não informado',
+          turmaAluno: data.turma_aluno || 'Não informado'
         });
       } else {
-        console.warn('[ModalAdicionarItem] Documento do responsável não encontrado');
         setResponsavelData({
           nomeAluno: 'Não encontrado (refaça o cadastro do responsável)',
           turmaAluno: 'Não encontrado (refaça o cadastro do responsável)'
@@ -136,48 +124,45 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
 
     try {
       let fotoUrl = '';
-
-      // Upload da imagem se existir
       if (selectedFile) {
-        const resizedFile = await resizeImage(selectedFile);
-        const storageRef = ref(storage, `achados_perdidos/${escolaId}/${Date.now()}_${selectedFile.name}`);
-        await uploadBytes(storageRef, resizedFile);
-        fotoUrl = await getDownloadURL(storageRef);
+        try {
+          const resizedFile = await resizeImage(selectedFile);
+          const path = `achados/${escolaId}/${Date.now()}_${selectedFile.name}`;
+          const { error: upErr } = await supabase.storage.from('achados').upload(path, resizedFile);
+          if (!upErr) {
+            const { data: pub } = await supabase.storage.from('achados').getPublicUrl(path);
+            fotoUrl = pub?.publicUrl || '';
+          }
+        } catch (e) {
+          console.warn('Upload falhou, prosseguindo sem foto:', e);
+        }
       }
 
-      // Usar transaction para gerar uniqueId sequencial
-      const itemsRef = collection(db, 'escolas', escolaId, 'achados_perdidos');
-      const metadataRef = doc(db, 'escolas', escolaId, 'metadata', 'achados_counter');
-      
-      await runTransaction(db, async (transaction) => {
-        const metadataSnap = await transaction.get(metadataRef);
-        let nextId = 1;
-        
-        if (metadataSnap.exists()) {
-          nextId = (metadataSnap.data().counter || 0) + 1;
-        }
-        
-        // Atualizar o contador
-        transaction.set(metadataRef, { counter: nextId }, { merge: true });
-        
-        // Criar o documento com o uniqueId
-        const newItemRef = await addDoc(itemsRef, {
-          uniqueId: nextId,
-          nomeObjeto: formData.nomeObjeto,
-          nomeAluno: responsavelData.nomeAluno,
-          turma: responsavelData.turmaAluno,
-          local: formData.local,
-          dataSumiço: formData.dataSumiço,
-          descricao: formData.descricao,
-          fotoUrl: fotoUrl,
-          status: 'Pendente',
-          foundByOwner: false,
-          owner: currentUser.uid,
-          ownerEmail: currentUser.email || 'Não informado',
-          criadoEm: serverTimestamp()
-        });
-        
-        return newItemRef;
+      // Gerar unique_id simples: último + 1
+      let nextId = Math.floor(Date.now() / 1000);
+      const { data: last } = await supabase
+        .from('achados_perdidos')
+        .select('unique_id')
+        .eq('escola_id', escolaId)
+        .order('unique_id', { ascending: false })
+        .limit(1);
+      if (last && last.length > 0) nextId = (last[0].unique_id || 0) + 1;
+
+      await insertItem({
+        unique_id: nextId,
+        nome_objeto: formData.nomeObjeto,
+        nome_aluno: responsavelData.nomeAluno,
+        turma: responsavelData.turmaAluno,
+        local: formData.local,
+        data_sumico: formData.dataSumiço,
+        descricao: formData.descricao,
+        foto_url: fotoUrl,
+        status: 'active',
+        found_by_owner: false,
+        owner: currentUser.id || currentUser.uid,
+        owner_email: currentUser.email || 'Não informado',
+        criado_em: new Date().toISOString(),
+        escola_id: escolaId
       });
 
       // Resetar formulário

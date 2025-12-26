@@ -1,7 +1,7 @@
 // Contexto que gerencia a sessão do usuário e a ativação dos módulos
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { doc, getDoc, onSnapshot, collection, getDocs, query, where } from 'firebase/firestore';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, getDoc, onSnapshot, collection, getDocs, query, where, collectionGroup } from 'firebase/firestore';
 import { auth, db } from './firebaseConfig'; // A importação foi corrigida no ambiente de teste para ser './firebaseConfig'
 
 // 1. Criação do Contexto
@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }) => {
   const [escolaId, setEscolaId] = useState(null);
   const [userRole, setUserRole] = useState(null); // 'gestor' ou 'aluno'
   const [modulosAtivos, setModulosAtivos] = useState({});
+  const [modulosPermitidos, setModulosPermitidos] = useState({}); // Controle granular por gestor
+  const [papelAchados, setPapelAchados] = useState(null); // 'responsavel' ou 'funcionario' dentro do Achados
   const [escolaNome, setEscolaNome] = useState('');
   const [escolaLoading, setEscolaLoading] = useState(false);
 
@@ -76,6 +78,129 @@ export const AuthProvider = ({ children }) => {
     return userCredential;
   };
 
+  // Login genérico com Google (gestor, professor ou responsável)
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userEmail = user.email;
+    const userUid = user.uid;
+
+    console.log('🔐 loginWithGoogle - UID:', userUid);
+
+    try {
+      // 1) Busca em gestores (collectionGroup - dentro de escolas/{escolaId}/gestores)
+      console.log('🔍 Buscando em gestores collection...');
+      try {
+        const gestoresQuery = query(
+          collectionGroup(db, 'gestores'),
+          where('uid', '==', userUid)
+        );
+        const gestoresSnap = await getDocs(gestoresQuery);
+        console.log('✅ Resultados gestores:', gestoresSnap.size);
+
+        if (!gestoresSnap.empty) {
+          console.log('🎉 GESTOR ENCONTRADO!');
+          const gestorDoc = gestoresSnap.docs[0];
+          const gestorData = gestorDoc.data();
+          const escolaPath = gestorDoc.ref.parent.parent.path;
+          const escolaIdFromPath = escolaPath.split('/')[1];
+
+          console.log('✓ Escola ID extraído:', escolaIdFromPath);
+          setEscolaId(escolaIdFromPath);
+          setUserRole('gestor');
+
+          // Carregar modulosPermitidos do documento do gestor
+          if (gestorData.modulosPermitidos) {
+            console.log('📋 Módulos permitidos:', gestorData.modulosPermitidos);
+            setModulosPermitidos(gestorData.modulosPermitidos);
+          }
+
+          // Carregar papelAchados (responsavel ou funcionario)
+          if (gestorData.papelAchados) {
+            console.log('👤 Papel Achados:', gestorData.papelAchados);
+            setPapelAchados(gestorData.papelAchados);
+          }
+
+          const escolaDocRef = doc(db, 'escolas', escolaIdFromPath);
+          const escolaDocSnap = await getDoc(escolaDocRef);
+          if (escolaDocSnap.exists()) {
+            setModulosAtivos(escolaDocSnap.data().modulos_ativos || {});
+          }
+          return { found: true, role: 'gestor' };
+        }
+      } catch (gestorError) {
+        console.log('❌ Erro ao buscar gestor:', gestorError.code, gestorError.message);
+      }
+
+      // 2) Busca em professores (collectionGroup por uid)
+      console.log('🔍 Buscando em professores collection...');
+      try {
+        const professoresQuery = query(
+          collectionGroup(db, 'professores'),
+          where('uid', '==', userUid)
+        );
+        const professoresSnap = await getDocs(professoresQuery);
+        console.log('✅ Resultados professores:', professoresSnap.size);
+
+        if (!professoresSnap.empty) {
+          console.log('🎉 PROFESSOR ENCONTRADO!');
+          const professorDoc = professoresSnap.docs[0];
+          const escolaPath = professorDoc.ref.parent.parent.path;
+          const escolaIdFromPath = escolaPath.split('/')[1];
+
+          setEscolaId(escolaIdFromPath);
+          setUserRole('professor');
+
+          const escolaDocRef = doc(db, 'escolas', escolaIdFromPath);
+          const escolaDocSnap = await getDoc(escolaDocRef);
+          if (escolaDocSnap.exists()) {
+            setModulosAtivos(escolaDocSnap.data().modulos_ativos || {});
+          }
+          return { found: true, role: 'professor' };
+        }
+      } catch (profError) {
+        console.log('❌ Erro ao buscar professor:', profError.code, profError.message);
+      }
+
+      // 3) Busca em responsáveis (collectionGroup por uid)
+      console.log('🔍 Buscando em responsaveis collection...');
+      try {
+        const responsaveisQuery = query(
+          collectionGroup(db, 'responsaveis'),
+          where('uid', '==', userUid)
+        );
+        const responsaveisSnap = await getDocs(responsaveisQuery);
+        console.log('✅ Resultados responsáveis:', responsaveisSnap.size);
+
+        if (!responsaveisSnap.empty) {
+          console.log('🎉 RESPONSÁVEL ENCONTRADO!');
+          const responsavelDoc = responsaveisSnap.docs[0];
+          const escolaPath = responsavelDoc.ref.parent.parent.path;
+          const escolaIdFromPath = escolaPath.split('/')[1];
+
+          setEscolaId(escolaIdFromPath);
+          setUserRole('responsavel');
+
+          const escolaDocRef = doc(db, 'escolas', escolaIdFromPath);
+          const escolaDocSnap = await getDoc(escolaDocRef);
+          if (escolaDocSnap.exists()) {
+            setModulosAtivos(escolaDocSnap.data().modulos_ativos || {});
+          }
+          return { found: true, role: 'responsavel' };
+        }
+      } catch (respError) {
+        console.log('❌ Erro ao buscar responsável:', respError.code, respError.message);
+      }
+    } catch (error) {
+      console.error('❌ Erro geral durante busca de usuário:', error);
+    }
+
+    // 4) Não encontrado - usuário precisa se cadastrar
+    console.log('⚠️ NENHUM REGISTRO ENCONTRADO - Redirecionando para cadastro');
+    return { found: false, role: null, email: userEmail, uid: userUid };
+  };
+
 
   useEffect(() => {
     console.log('AuthProvider: registrando listener onAuthStateChanged');
@@ -93,70 +218,9 @@ export const AuthProvider = ({ children }) => {
 
       try {
         if (user) {
-          // 1. Tenta como gestor
-          const gestorDocRef = doc(db, 'gestores', user.uid);
-          const gestorDocSnap = await getDoc(gestorDocRef);
-
-          if (gestorDocSnap.exists()) {
-            const gestorData = gestorDocSnap.data();
-            setEscolaId(gestorData.escolaId);
-            setUserRole('gestor');
-
-            const escolaDocRef = doc(db, 'escolas', gestorData.escolaId);
-            const escolaDocSnap = await getDoc(escolaDocRef);
-
-            if (escolaDocSnap.exists()) {
-              setModulosAtivos(escolaDocSnap.data().modulos_ativos || {});
-            }
-          } else {
-            // 2. Tenta como responsável usando collectionGroup
-            try {
-              const { collectionGroup } = await import('firebase/firestore');
-              const responsaveisQuery = query(
-                collectionGroup(db, 'responsaveis'),
-                where('uid', '==', user.uid)
-              );
-              const responsaveisSnap = await getDocs(responsaveisQuery);
-              
-              if (!responsaveisSnap.empty) {
-                const responsavelDoc = responsaveisSnap.docs[0];
-                const escolaPath = responsavelDoc.ref.parent.parent.path;
-                const escolaIdFromPath = escolaPath.split('/')[1];
-                
-                setEscolaId(escolaIdFromPath);
-                setUserRole('responsavel');
-
-                const escolaDocRef = doc(db, 'escolas', escolaIdFromPath);
-                const escolaDocSnap = await getDoc(escolaDocRef);
-
-                if (escolaDocSnap.exists()) {
-                  setModulosAtivos(escolaDocSnap.data().modulos_ativos || {});
-                }
-              } else {
-                // 3. Fallback: assume aluno (mock)
-                const mockEscolaId = 'escola-teste';
-                setEscolaId(mockEscolaId);
-                setUserRole('aluno');
-
-                const escolaDocRef = doc(db, 'escolas', mockEscolaId);
-                const escolaDocSnap = await getDoc(escolaDocRef);
-
-                if (escolaDocSnap.exists()) {
-                  setModulosAtivos(escolaDocSnap.data().modulos_ativos || {});
-                }
-              }
-            } catch (responsavelError) {
-              // Silenciar erro de permissão - é esperado que collectionGroup falhe
-              // O fallback para aluno já funciona corretamente
-              if (responsavelError.code !== 'permission-denied') {
-                console.error('AuthProvider: erro inesperado ao buscar responsável:', responsavelError);
-              }
-              // Fallback para aluno
-              const mockEscolaId = 'escola-teste';
-              setEscolaId(mockEscolaId);
-              setUserRole('aluno');
-            }
-          }
+          // Usa o loginWithGoogle para detectar role
+          const result = await loginWithGoogle();
+          console.log('AuthProvider: loginWithGoogle retornou ->', result);
         } else {
           setEscolaId(null);
           setUserRole(null);
@@ -214,11 +278,14 @@ export const AuthProvider = ({ children }) => {
     escolaId,
     userRole,
     modulosAtivos,
+    modulosPermitidos,
+    papelAchados,
     escolaNome,
     escolaLoading,
     loginGestor,
     loginAluno,
     loginResponsavel,
+    loginWithGoogle,
     logout: () => signOut(auth),
     loading,
   };
