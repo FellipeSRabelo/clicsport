@@ -41,8 +41,15 @@ const ConfirmacaoMatricula = ({ matricula }) => {
         </div>
 
         <button
-          onClick={() => (window.location.href = '/')}
+          onClick={() => (window.location.href = '/responsavel')}
           className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition"
+        >
+          Acessar Meu Painel
+        </button>
+
+        <button
+          onClick={() => (window.location.href = '/')}
+          className="w-full bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-400 transition mt-3"
         >
           Voltar ao Início
         </button>

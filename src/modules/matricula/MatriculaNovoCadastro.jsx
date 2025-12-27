@@ -12,10 +12,11 @@ import {
 import ConfirmacaoMatricula from './ConfirmacaoMatricula';
 
 const MatriculaNovoCadastro = ({ escolaId: escolaIdProp, onBack }) => {
-  const { id: escolaIdUrl } = useParams();
-  const escolaId = escolaIdProp || escolaIdUrl;
+  const { escolaId: escolaIdUrl } = useParams();
+  const escolaIdFallback = typeof window !== 'undefined' ? localStorage.getItem('pendingEscolaId') : null;
+  const escolaId = escolaIdProp || escolaIdUrl || escolaIdFallback || useSupabaseAuth()?.escolaId;
   const { loginWithGoogle, currentUser } = useSupabaseAuth();
-  const [passo, setPasso] = useState(1); // 1, 2, 3, 4, 5 (confirmação)
+  const [passo, setPasso] = useState(1); // 1, 2, 3, 4, 5 (revisão)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [turmas, setTurmas] = useState([]);
@@ -144,11 +145,16 @@ const MatriculaNovoCadastro = ({ escolaId: escolaIdProp, onBack }) => {
   };
 
   useEffect(() => {
-    setAluno((prev) => ({ ...prev, unidade: escolaId }));
+    if (escolaId) {
+      setAluno((prev) => ({ ...prev, unidade: escolaId }));
+    }
   }, [escolaId]);
 
   useEffect(() => {
-    if (!escolaId) return;
+    if (!escolaId) {
+      setError('Escola não identificada. Volte e selecione o link correto ou entre pelo painel.');
+      return;
+    }
     const loadTurmas = async () => {
       try {
         const data = await fetchTurmasAbertas(escolaId);
@@ -363,13 +369,13 @@ const MatriculaNovoCadastro = ({ escolaId: escolaIdProp, onBack }) => {
             <ArrowLeft size={20} /> Voltar
           </button>
           <h1 className="text-3xl font-bold text-gray-800">ClicMatrícula</h1>
-          <p className="text-gray-600">Novo Cadastro - Passo {passo} de 4</p>
+          <p className="text-gray-600">Novo Cadastro - Passo {Math.min(passo, 5)} de 5</p>
 
           {/* Progress bar */}
           <div className="w-full bg-gray-300 rounded-full h-2 mt-4">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all"
-              style={{ width: `${(passo / 4) * 100}%` }}
+              style={{ width: `${(Math.min(passo, 5) / 5) * 100}%` }}
             ></div>
           </div>
         </div>
@@ -581,7 +587,7 @@ const MatriculaNovoCadastro = ({ escolaId: escolaIdProp, onBack }) => {
           {passo === 3 && (
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
-                4 - RESPONSÁVEL FINANCEIRO *
+                3 - RESPONSÁVEL FINANCEIRO *
               </h2>
               <input
                 type="text"
@@ -729,7 +735,7 @@ const MatriculaNovoCadastro = ({ escolaId: escolaIdProp, onBack }) => {
           {passo === 4 && (
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
-                5 - ASSINATURA DIGITAL *
+                4 - ASSINATURA DIGITAL *
               </h2>
               <CanvasAssinatura
                 onCapture={(data) => setAssinatura(data)}

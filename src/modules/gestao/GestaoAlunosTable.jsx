@@ -77,11 +77,42 @@ const AddAlunoModal = ({ escolaId, unidades, modalidades, turmas, onClose, onSav
 
         try {
             setSaving(true);
+            
+            // Cria o aluno com dados principais
             const payload = sanitizeAlunoPayload({
-                ...formData,
+                nome_aluno: formData.nome_aluno,
+                nome: formData.nome_aluno,
+                matricula: formData.matricula,
+                ano_turma: formData.ano_turma,
+                data_nascimento: formData.dataNascimento || null,
                 escola_id: escolaId,
             });
-            await gestaoApi.createAluno(payload);
+            
+            const alunoNovo = await gestaoApi.createAluno(payload);
+
+            // Salva dados de filiação (usando ID do aluno)
+            await gestaoApi.upsertFiliacao(alunoNovo.id, {
+                nome_pai: formData.nomePai || null,
+                celular_pai: formData.celularPai || null,
+                nome_mae: formData.nomeMae || null,
+                celular_mae: formData.celularMae || null,
+            });
+
+            // Salva dados do responsável financeiro (usando ID do aluno)
+            await gestaoApi.upsertResponsavelFinanceiro(alunoNovo.id, {
+                nome: formData.responsavelNome || null,
+                cpf: formData.responsavelCPF || null,
+                cep: formData.responsavelCEP || null,
+                uf: formData.responsavelUF || null,
+                endereco: formData.responsavelEndereco || null,
+                numero: formData.responsavelNumero || null,
+                complemento: formData.responsavelComplemento || null,
+                bairro: formData.responsavelBairro || null,
+                cidade: formData.responsavelCidade || null,
+                email: formData.responsavelEmail || null,
+                telefone: formData.responsavelTelefone || null,
+            });
+
             alert('Aluno adicionado com sucesso!');
             onSave();
             onClose();
@@ -509,6 +540,8 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
     const [novaMatriculaErro, setNovaMatriculaErro] = useState('');
     const [novaMatriculaLoading, setNovaMatriculaLoading] = useState(false);
     const [matriculaMutacaoId, setMatriculaMutacaoId] = useState(null);
+    const [showAssinatura, setShowAssinatura] = useState(false);
+    const [assinaturaSelecionada, setAssinaturaSelecionada] = useState(null);
 
     // Log para debugar dados do aluno
     useEffect(() => {
@@ -520,10 +553,15 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
             try {
                 const alunoCompleto = await gestaoApi.fetchAlunoById(aluno.id);
                 console.log('Aluno completo carregado:', alunoCompleto);
+                console.log('Dados de responsáveis:', {
+                    responsavel_nome: alunoCompleto.responsavel_nome,
+                    responsavel_cpf: alunoCompleto.responsavel_cpf,
+                    responsavel_email: alunoCompleto.responsavel_email,
+                    responsavel_telefone: alunoCompleto.responsavel_telefone,
+                });
                 
                 // Atualiza formData com todos os dados disponíveis
-                setFormData((prev) => ({
-                    ...prev,
+                const novoFormData = {
                     nome_aluno: alunoCompleto.nome_aluno || '',
                     matricula: alunoCompleto.matricula || '',
                     ano_turma: alunoCompleto.ano_turma || '',
@@ -535,18 +573,25 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     celularPai: alunoCompleto.celular_pai || alunoCompleto.celularPai || '',
                     nomeMae: alunoCompleto.nome_mae || alunoCompleto.nomeMae || '',
                     celularMae: alunoCompleto.celular_mae || alunoCompleto.celularMae || '',
-                    responsavelNome: alunoCompleto.responsavel_nome || alunoCompleto.responsavelNome || '',
-                    responsavelCPF: alunoCompleto.responsavel_cpf || alunoCompleto.responsavelCPF || '',
-                    responsavelCEP: alunoCompleto.responsavel_cep || alunoCompleto.responsavelCEP || '',
-                    responsavelUF: alunoCompleto.responsavel_uf || alunoCompleto.responsavelUF || '',
-                    responsavelEndereco: alunoCompleto.responsavel_endereco || alunoCompleto.responsavelEndereco || '',
-                    responsavelNumero: alunoCompleto.responsavel_numero || alunoCompleto.responsavelNumero || '',
-                    responsavelComplemento: alunoCompleto.responsavel_complemento || alunoCompleto.responsavelComplemento || '',
-                    responsavelBairro: alunoCompleto.responsavel_bairro || alunoCompleto.responsavelBairro || '',
-                    responsavelCidade: alunoCompleto.responsavel_cidade || alunoCompleto.responsavelCidade || '',
-                    responsavelEmail: alunoCompleto.responsavel_email || alunoCompleto.responsavelEmail || '',
-                    responsavelTelefone: alunoCompleto.responsavel_telefone || alunoCompleto.responsavelTelefone || '',
-                }));
+                    responsavelNome: alunoCompleto.responsavel_nome || '',
+                    responsavelCPF: alunoCompleto.responsavel_cpf || '',
+                    responsavelCEP: alunoCompleto.responsavel_cep || '',
+                    responsavelUF: alunoCompleto.responsavel_uf || '',
+                    responsavelEndereco: alunoCompleto.responsavel_endereco || '',
+                    responsavelNumero: alunoCompleto.responsavel_numero || '',
+                    responsavelComplemento: alunoCompleto.responsavel_complemento || '',
+                    responsavelBairro: alunoCompleto.responsavel_bairro || '',
+                    responsavelCidade: alunoCompleto.responsavel_cidade || '',
+                    responsavelEmail: alunoCompleto.responsavel_email || '',
+                    responsavelTelefone: alunoCompleto.responsavel_telefone || '',
+                };
+                console.log('Novo formData para responsáveis:', {
+                    responsavelNome: novoFormData.responsavelNome,
+                    responsavelCPF: novoFormData.responsavelCPF,
+                    responsavelEmail: novoFormData.responsavelEmail,
+                    responsavelTelefone: novoFormData.responsavelTelefone,
+                });
+                setFormData(novoFormData);
             } catch (error) {
                 console.error('Erro ao carregar dados completos do aluno:', error);
             }
@@ -626,6 +671,20 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
             return next;
         });
     }, [matriculas]);
+
+    // Carrega assinaturas das matrículas do aluno
+    useEffect(() => {
+        const carregarAssinaturas = async () => {
+            try {
+                const assinaturas = await gestaoApi.fetchAssinaturasDoAluno(aluno.id);
+                console.log('Assinaturas carregadas:', assinaturas);
+                // Opcionalmente, você pode guardar isso em um estado se precisar
+            } catch (error) {
+                console.error('Erro ao carregar assinaturas:', error);
+            }
+        };
+        carregarAssinaturas();
+    }, [aluno.id]);
 
     const resetNovaMatricula = () => {
         setNovaMatricula({ ano: '', unidade: '', modalidade: '', turma: '' });
@@ -710,6 +769,7 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
 
         setSaving(true);
         try {
+            // Atualiza dados principais do aluno
             const payload = sanitizeAlunoPayload({
                 nome: formData.nome_aluno,
                 nome_aluno: formData.nome_aluno,
@@ -721,24 +781,32 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                         ? formData.turmas[0]
                         : formData.nome_turma || null,
                 turmas: formData.turmas || null,
+            });
+
+            await gestaoApi.updateAluno(aluno.id, payload);
+
+            // Salva dados de filiação (usando ID do aluno, apesar do nome da coluna)
+            await gestaoApi.upsertFiliacao(aluno.id, {
                 nome_pai: formData.nomePai || null,
                 celular_pai: formData.celularPai || null,
                 nome_mae: formData.nomeMae || null,
                 celular_mae: formData.celularMae || null,
-                responsavel_nome: formData.responsavelNome || null,
-                responsavel_cpf: formData.responsavelCPF || null,
-                responsavel_cep: formData.responsavelCEP || null,
-                responsavel_uf: formData.responsavelUF || null,
-                responsavel_endereco: formData.responsavelEndereco || null,
-                responsavel_numero: formData.responsavelNumero || null,
-                responsavel_complemento: formData.responsavelComplemento || null,
-                responsavel_bairro: formData.responsavelBairro || null,
-                responsavel_cidade: formData.responsavelCidade || null,
-                responsavel_email: formData.responsavelEmail || null,
-                responsavel_telefone: formData.responsavelTelefone || null,
             });
 
-            await gestaoApi.updateAluno(aluno.id, payload);
+            // Salva dados do responsável financeiro (usando ID do aluno)
+            await gestaoApi.upsertResponsavelFinanceiro(aluno.id, {
+                nome: formData.responsavelNome || null,
+                cpf: formData.responsavelCPF || null,
+                cep: formData.responsavelCEP || null,
+                uf: formData.responsavelUF || null,
+                endereco: formData.responsavelEndereco || null,
+                numero: formData.responsavelNumero || null,
+                complemento: formData.responsavelComplemento || null,
+                bairro: formData.responsavelBairro || null,
+                cidade: formData.responsavelCidade || null,
+                email: formData.responsavelEmail || null,
+                telefone: formData.responsavelTelefone || null,
+            });
 
             alert('Aluno atualizado com sucesso!');
             onSave();
@@ -759,6 +827,7 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     { id: 'matricula', label: 'Matrícula' },
                     { id: 'responsaveis', label: 'Responsáveis' },
                     { id: 'financeiro', label: 'Financeiro' },
+                    { id: 'assinatura', label: 'Assinatura' },
                 ].map(tab => (
                     <button
                         key={tab.id}
@@ -1222,6 +1291,51 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     </div>
                 )}
 
+                {/* Aba: Assinatura */}
+                {activeTab === 'assinatura' && (
+                    <div className="space-y-3">
+                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-3">Assinaturas em Matrículas</h3>
+                            <p className="text-xs text-gray-500 mb-3">Clique em "Ver" para visualizar a assinatura da matrícula</p>
+                            <div className="space-y-2">
+                                {matriculas && matriculas.length > 0 ? (
+                                    matriculas.map((mat) => (
+                                        <div key={mat.turmaId} className="flex items-center justify-between bg-white p-3 rounded border border-gray-200">
+                                            <div className="flex-1">
+                                                <p className="text-xs font-medium text-gray-800">{mat.turmaNome}</p>
+                                                <p className="text-xs text-gray-500">{mat.unidadeNome} - {mat.modalidadeNome}</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    try {
+                                                        const assinaturas = await gestaoApi.fetchAssinaturasDoAluno(aluno.id);
+                                                        const assinaturaDaTurma = assinaturas.find(a => a.numero_matricula);
+                                                        if (assinaturaDaTurma && assinaturaDaTurma.assinatura_canvas) {
+                                                            setAssinaturaSelecionada(assinaturaDaTurma);
+                                                            setShowAssinatura(true);
+                                                        } else {
+                                                            alert('Nenhuma assinatura encontrada para esta matrícula');
+                                                        }
+                                                    } catch (error) {
+                                                        console.error('Erro ao buscar assinatura:', error);
+                                                        alert('Erro ao carregar assinatura');
+                                                    }
+                                                }}
+                                                className="px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded hover:bg-blue-600 transition"
+                                            >
+                                                Ver
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-xs text-gray-500 text-center py-4">Nenhuma matrícula vinculada</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Botões */}
                 <div className="flex justify-end space-x-3 pt-3">
                     <button
@@ -1240,6 +1354,58 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                     </button>
                 </div>
             </form>
+
+            {/* Modal de Visualização da Assinatura */}
+            {showAssinatura && assinaturaSelecionada && (
+                <Modal 
+                    title="Visualizar Assinatura" 
+                    onClose={() => {
+                        setShowAssinatura(false);
+                        setAssinaturaSelecionada(null);
+                    }} 
+                    maxWidth="max-w-2xl"
+                >
+                    <div className="space-y-3">
+                        <div className="text-center">
+                            <p className="text-xs text-gray-600 mb-3">Matrícula: {assinaturaSelecionada.numero_matricula}</p>
+                            {assinaturaSelecionada.assinatura_canvas ? (
+                                <img 
+                                    src={assinaturaSelecionada.assinatura_canvas} 
+                                    alt="Assinatura" 
+                                    className="max-w-full h-auto border border-gray-300 rounded mx-auto"
+                                    style={{ maxHeight: '300px' }}
+                                />
+                            ) : (
+                                <p className="text-xs text-gray-500">Nenhuma assinatura disponível</p>
+                            )}
+                        </div>
+                        <div className="flex justify-end gap-2 pt-3">
+                            <button
+                                onClick={() => {
+                                    if (assinaturaSelecionada.assinatura_canvas) {
+                                        const link = document.createElement('a');
+                                        link.href = assinaturaSelecionada.assinatura_canvas;
+                                        link.download = `assinatura_${assinaturaSelecionada.numero_matricula}.png`;
+                                        link.click();
+                                    }
+                                }}
+                                className="px-4 py-2 bg-green-500 text-white text-xs font-semibold rounded hover:bg-green-600 transition"
+                            >
+                                Baixar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowAssinatura(false);
+                                    setAssinaturaSelecionada(null);
+                                }}
+                                className="px-4 py-2 bg-gray-300 text-gray-700 text-xs font-semibold rounded hover:bg-gray-400 transition"
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </Modal>
     );
 };
@@ -1256,6 +1422,7 @@ const GestaoAlunosTable = () => {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [editingAluno, setEditingAluno] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const carregarDados = useCallback(async () => {
         if (!escolaId) {
@@ -1322,8 +1489,21 @@ const GestaoAlunosTable = () => {
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-gray-800">Gestão de Alunos</h2>
+            </div>
+            
+            {/* Busca e Ações */}
+            <div className="flex justify-between items-center gap-3">
+                <div className="flex-1 max-w-md">
+                    <input
+                        type="text"
+                        placeholder="Buscar por nome ou matrícula..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                </div>
                 <div className="space-x-2">
                     <button
                         onClick={() => setShowUploadModal(true)}
@@ -1364,8 +1544,20 @@ const GestaoAlunosTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {alunos.map((aluno) => (
-                                <tr key={aluno.id} className="border-b hover:bg-gray-50 transition">
+                            {alunos
+                                .filter((aluno) => {
+                                    if (!searchTerm.trim()) return true;
+                                    const termo = searchTerm.toLowerCase();
+                                    const nome = (aluno.nome_aluno || aluno.nome || '').toLowerCase();
+                                    const matricula = (aluno.matricula || '').toLowerCase();
+                                    return nome.includes(termo) || matricula.includes(termo);
+                                })
+                                .map((aluno) => (
+                                <tr 
+                                    key={aluno.id} 
+                                    onClick={() => handleEditAluno(aluno)}
+                                    className="border-b hover:bg-gray-50 transition cursor-pointer"
+                                >
                                     <td className="px-4 py-2 text-gray-800">{aluno.matricula || '—'}</td>
                                     <td className="px-4 py-2 text-gray-800">{aluno.nome_aluno || '—'}</td>
                                     <td className="px-4 py-2 text-gray-600">
@@ -1378,14 +1570,20 @@ const GestaoAlunosTable = () => {
                                     </td>
                                     <td className="px-4 py-2 space-x-2">
                                         <button
-                                            onClick={() => handleEditAluno(aluno)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditAluno(aluno);
+                                            }}
                                             className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
                                             title="Editar"
                                         >
                                             <FontAwesomeIcon icon={faEdit} />
                                         </button>
                                         <button
-                                            onClick={() => handleDeleteAluno(aluno.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteAluno(aluno.id);
+                                            }}
                                             className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
                                             title="Deletar"
                                         >

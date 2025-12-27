@@ -15,12 +15,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_ID
 };
 
-// DEBUG: Verificar se variáveis estão sendo carregadas
-console.log('Firebase Config carregado:', {
-  projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain,
-  hasApiKey: !!firebaseConfig.apiKey
-});
+// DEBUG logs removidos para evitar ruído em produção/dev
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -28,16 +23,6 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 // Dev-only: log the firebase project config to help debug mismatched projects/rules
-if (import.meta.env.DEV) {
-  try {
-    console.info('Firebase config (dev):', {
-      projectId: firebaseConfig.projectId,
-      authDomain: firebaseConfig.authDomain,
-      apiKey: firebaseConfig.apiKey ? '***' : undefined
-    });
-  } catch (e) {
-    // ignore
-  }
-}
+// Logs de configuração desabilitados
 
 export { db, auth, storage };

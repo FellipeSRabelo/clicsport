@@ -1,11 +1,11 @@
 // src/modules/gestao/GestãoProfessores.jsx
 import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase/firebaseConfig'; // CORRIGIDO: Volta dois níveis
-import { collection, query, getDocs, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext'; // CORRIGIDO: Volta dois níveis
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faEdit, faSpinner, faTimes, faSave } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../../components/Modal'; // CORRIGIDO: Caminho correto
+import * as gestaoApi from '../../supabase/gestaoApi';
+import { v4 as uuidv4 } from 'uuid';
 
 // Utilitários simples de formatação
 const onlyDigits = (v) => (v || '').replace(/\D/g, '');
@@ -40,6 +40,7 @@ const GestaoProfessores = () => {
     const [professores, setProfessores] = useState([]);
     const [turmas, setTurmas] = useState([]); // Lista de turmas para o dropdown
     const [modalidades, setModalidades] = useState([]); // Lista de modalidades com nome
+    const [professorTurmas, setProfessorTurmas] = useState([]); // Vínculos professor-turma
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,69 +58,38 @@ const GestaoProfessores = () => {
         email: '',
     });
 
-    // 1. Fetch de Dados Mestres (Turmas e Professores)
+    // 1. Fetch de Dados Mestres (Turmas e Professores) via Supabase
     useEffect(() => {
         if (!escolaId) return;
 
         const init = async () => {
             setErrorMsg(null);
             setLoading(true);
-
-            // Professores
-            const professoresRef = collection(db, 'escolas', escolaId, 'professores');
-
-
-            let unsubscribeProf = null;
             try {
-                unsubscribeProf = onSnapshot(professoresRef, (snapshot) => {
-                    const profData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    setProfessores(profData);
-                    setLoading(false);
-                }, (error) => {
-                    console.error("Erro ao listar professores (onSnapshot):", error);
-                    setLoading(false);
-                    setErrorMsg('Erro ao escutar atualizações de professores.');
-                    try { if (unsubscribeProf) unsubscribeProf(); } catch (e) { console.error('Erro ao cancelar onSnapshot professores:', e); }
-                });
-            } catch (err) {
-                console.error('Falha ao inicializar onSnapshot para professores:', err);
+                const [profsData, turmasData, profTurmasData] = await Promise.all([
+                    gestaoApi.fetchProfessores(escolaId),
+                    gestaoApi.fetchTurmas(escolaId),
+                    gestaoApi.fetchAllProfessorTurmas(escolaId),
+                ]);
+                setProfessores(profsData || []);
+                setTurmas(turmasData || []);
+                setProfessorTurmas(profTurmasData || []);
                 setLoading(false);
-                setErrorMsg('Falha interna ao inicializar listener de professores.');
-            }
-
-            // Turmas
-            const turmasRef = collection(db, 'escolas', escolaId, 'turmas');
-            let unsubscribeTurmas = null;
-            try {
-                unsubscribeTurmas = onSnapshot(turmasRef, (snapshot) => {
-                    setTurmas(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-                }, (error) => {
-                    console.error("Erro ao listar turmas (onSnapshot):", error);
-                    setErrorMsg('Erro ao escutar atualizações de turmas.');
-                    try { if (unsubscribeTurmas) unsubscribeTurmas(); } catch (e) { console.error('Erro ao cancelar onSnapshot turmas:', e); }
-                });
             } catch (err) {
-                console.error('Falha ao inicializar onSnapshot para turmas (professores):', err);
+                console.error('Erro ao carregar professores/turmas (Supabase):', err);
+                setErrorMsg('Erro ao carregar dados.');
+                setLoading(false);
             }
 
-            // Modalidades
-            const modalidadesRef = collection(db, 'escolas', escolaId, 'modalidades');
-            let unsubscribeModalidades = null;
+            // Modalidades (via Supabase)
             try {
-                unsubscribeModalidades = onSnapshot(modalidadesRef, (snapshot) => {
-                    setModalidades(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-                }, (error) => {
-                    console.error("Erro ao listar modalidades:", error);
-                });
+                const mods = await gestaoApi.fetchModalidades(escolaId);
+                setModalidades(mods || []);
             } catch (err) {
-                console.error('Falha ao inicializar onSnapshot para modalidades:', err);
+                console.error('Erro ao carregar modalidades (Supabase):', err);
             }
 
-            return () => {
-                try { if (unsubscribeProf) unsubscribeProf(); } catch (e) { console.error('Erro cleanup unsubscribeProf:', e); }
-                try { if (unsubscribeTurmas) unsubscribeTurmas(); } catch (e) { console.error('Erro cleanup unsubscribeTurmas:', e); }
-                try { if (unsubscribeModalidades) unsubscribeModalidades(); } catch (e) { console.error('Erro cleanup unsubscribeModalidades:', e); }
-            };
+            return () => {};
         };
 
         const cleanupPromise = init();
@@ -131,21 +101,21 @@ const GestaoProfessores = () => {
         if (professor) {
             setCurrentProfessor(professor);
             setFormData({ 
-                name: professor.name || '',
-                modalidades: professor.modalidades || professor.disciplines || [],
-                diasDisponiveis: professor.diasDisponiveis || professor.horarios || [],
-                turnosDisponiveis: professor.turnosDisponiveis || [],
+                name: professor.nome || professor.name || '',
+                modalidades: professor.modalidades || [],
+                diasDisponiveis: professor.dias_disponiveis || professor.diasDisponiveis || [],
+                turnosDisponiveis: professor.turnos_disponiveis || professor.turnosDisponiveis || [],
                 classes: professor.classes || [],
-                tipoPessoa: professor.tipoPessoa || 'PF',
+                tipoPessoa: professor.tipo_pessoa || professor.tipoPessoa || 'PF',
                 documento: professor.documento || '',
-                endereco: professor.endereco || '',
+                observacao: professor.observacao || '',
                 celular: professor.celular || '',
                 email: professor.email || '',
             });
         } else {
             setCurrentProfessor(null);
             setFormData({
-                name: '', modalidades: [], diasDisponiveis: [], turnosDisponiveis: [], classes: [], tipoPessoa: 'PF', documento: '', endereco: '', celular: '', email: ''
+                name: '', modalidades: [], diasDisponiveis: [], turnosDisponiveis: [], classes: [], tipoPessoa: 'PF', documento: '', observacao: '', celular: '', email: ''
             });
         }
         setIsModalOpen(true);
@@ -158,40 +128,71 @@ const GestaoProfessores = () => {
 
         setLoading(true);
         try {
-            const profCollectionRef = collection(db, 'escolas', escolaId, 'professores');
-            // Prepara dados para salvar (documento somente dígitos; celular somente dígitos)
+            // Prepara dados para salvar no Supabase (schema: uid, escola_id, email, nome, modalidades, dias_disponiveis, turnos_disponiveis, tipo_pessoa, documento, celular, observacao)
             const toSave = {
-                ...formData,
-                documento: onlyDigits(formData.documento),
-                celular: onlyDigits(formData.celular),
+                escola_id: escolaId,
+                email: (formData.email || '').trim(),
+                nome: (formData.name || '').trim(),
+                modalidades: formData.modalidades || [],
+                dias_disponiveis: formData.diasDisponiveis || [],
+                turnos_disponiveis: formData.turnosDisponiveis || [],
+                tipo_pessoa: formData.tipoPessoa || 'PF',
+                documento: onlyDigits(formData.documento || ''),
+                celular: onlyDigits(formData.celular || ''),
+                observacao: formData.observacao || '',
             };
-            if (currentProfessor) {
-                // Editar
-                await setDoc(doc(profCollectionRef, currentProfessor.id), toSave, { merge: true });
-                alert(`Professor ${formData.name} atualizado com sucesso!`);
+            
+            // uid será gerado pelo Supabase via gen_random_uuid() apenas no INSERT
+            if (currentProfessor?.uid) {
+                // Na edição, usar uid como identificador
+                await gestaoApi.updateProfessorByUid(currentProfessor.uid, toSave);
+                alert(`Professor ${toSave.nome} atualizado com sucesso!`);
             } else {
-                // Criar (ID gerado automaticamente pelo Firestore)
-                await setDoc(doc(profCollectionRef), toSave);
-                alert(`Professor ${formData.name} cadastrado com sucesso!`);
+                // Na criação, gerar uid manualmente
+                const professorComUid = {
+                    ...toSave,
+                    uid: uuidv4(),
+                };
+                await gestaoApi.createProfessor(professorComUid);
+                alert(`Professor ${toSave.nome} cadastrado com sucesso!`);
             }
             
             setIsModalOpen(false);
+            // Recarregar lista
+            try {
+                const [profsData, profTurmasData] = await Promise.all([
+                    gestaoApi.fetchProfessores(escolaId),
+                    gestaoApi.fetchAllProfessorTurmas(escolaId),
+                ]);
+                setProfessores(profsData || []);
+                setProfessorTurmas(profTurmasData || []);
+            } catch (e2) {
+                console.error('Erro ao recarregar professores:', e2);
+            }
         } catch (error) {
             console.error("Erro ao salvar professor:", error);
-            alert("Falha ao salvar professor. Verifique o console.");
+            console.error("Detalhes do erro:", JSON.stringify(error, null, 2));
+            const errorMsg = error?.message || error?.error?.message || error?.details || "Erro desconhecido";
+            alert(`Falha ao salvar professor.\n\nErro: ${errorMsg}\n\nVerifique se todos os campos estão corretos e se o email é válido.`);
         } finally {
             setLoading(false);
         }
     };
     
     // Lógica de Deletar
-    const handleDelete = async (profId, profName) => {
+    const handleDelete = async (profUid, profName) => {
         if (!escolaId || !window.confirm(`Tem certeza que deseja deletar o professor ${profName}?`)) return;
 
         setLoading(true);
         try {
-            await deleteDoc(doc(db, 'escolas', escolaId, 'professores', profId));
+            await gestaoApi.deleteProfessorByUid(profUid);
             alert(`Professor ${profName} deletado com sucesso.`);
+            const [profsData, profTurmasData] = await Promise.all([
+                gestaoApi.fetchProfessores(escolaId),
+                gestaoApi.fetchAllProfessorTurmas(escolaId),
+            ]);
+            setProfessores(profsData || []);
+            setProfessorTurmas(profTurmasData || []);
         } catch (error) {
             console.error("Erro ao deletar professor:", error);
             alert("Falha ao deletar professor.");
@@ -238,8 +239,12 @@ const GestaoProfessores = () => {
                             </tr>
                         ) : (
                             professores.map((prof) => (
-                                <tr key={prof.id} className="hover:bg-gray-50">
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-clic-secondary">{prof.name}</td>
+                                <tr 
+                                    key={prof.id} 
+                                    onClick={() => handleOpenModal(prof)}
+                                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                >
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-clic-secondary">{prof.nome || prof.name}</td>
                                     <td className="px-3 py-2 text-sm text-gray-900">
                                         <div className="flex flex-wrap gap-1">
                                             {(prof.modalidades || []).slice(0, 2).map(m => (
@@ -255,31 +260,51 @@ const GestaoProfessores = () => {
                                         {prof.email || '-'}
                                     </td>
                                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-600">
-                                        <span className={`px-2 py-0.5 text-xs rounded ${prof.tipoPessoa === 'PJ' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>
-                                            {prof.tipoPessoa || 'PF'}
+                                        <span className={`px-2 py-0.5 text-xs rounded ${(prof.tipo_pessoa || prof.tipoPessoa) === 'PJ' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>
+                                            {prof.tipo_pessoa || prof.tipoPessoa || 'PF'}
                                         </span>
                                     </td>
                                     <td className="px-3 py-2 text-sm text-gray-600">
                                         <div className="text-xs">
-                                            {prof.diasDisponiveis && prof.diasDisponiveis.length > 0 ? (
-                                                <div className="mb-1">
-                                                    <span className="font-medium">Dias:</span> {prof.diasDisponiveis.slice(0, 3).map(d => d.substring(0, 3)).join(', ')}
-                                                    {prof.diasDisponiveis.length > 3 && ` +${prof.diasDisponiveis.length - 3}`}
-                                                </div>
-                                            ) : null}
-                                            {prof.turnosDisponiveis && prof.turnosDisponiveis.length > 0 ? (
-                                                <div>
-                                                    <span className="font-medium">Turnos:</span> {prof.turnosDisponiveis.map(t => t.charAt(0)).join(', ')}
-                                                </div>
-                                            ) : null}
-                                            {(!prof.diasDisponiveis || prof.diasDisponiveis.length === 0) && (!prof.turnosDisponiveis || prof.turnosDisponiveis.length === 0) ? '-' : null}
+                                            {(() => {
+                                                const dias = prof.dias_disponiveis || prof.diasDisponiveis || [];
+                                                const turnos = prof.turnos_disponiveis || prof.turnosDisponiveis || [];
+                                                return (
+                                                    <>
+                                                        {dias.length > 0 && (
+                                                            <div className="mb-1">
+                                                                <span className="font-medium">Dias:</span> {dias.slice(0, 3).map(d => d.substring(0, 3)).join(', ')}
+                                                                {dias.length > 3 && ` +${dias.length - 3}`}
+                                                            </div>
+                                                        )}
+                                                        {turnos.length > 0 && (
+                                                            <div>
+                                                                <span className="font-medium">Turnos:</span> {turnos.map(t => t.charAt(0)).join(', ')}
+                                                            </div>
+                                                        )}
+                                                        {!dias.length && !turnos.length && '-'}
+                                                    </>
+                                                );
+                                            })()}
                                         </div>
                                     </td>
                                     <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium text-center space-x-3">
-                                        <button onClick={() => handleOpenModal(prof)} className="text-clic-primary hover:text-yellow-600">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleOpenModal(prof);
+                                            }} 
+                                            className="text-clic-primary hover:text-yellow-600"
+                                        >
                                             <FontAwesomeIcon icon={faEdit} />
                                         </button>
-                                        <button onClick={() => handleDelete(prof.id, prof.name)} className="text-red-500 hover:text-red-700">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDelete(prof.uid, prof.nome || prof.name);
+                                            }} 
+                                            className="text-red-500 hover:text-red-700"
+                                        >
                                             <FontAwesomeIcon icon={faTrash} />
                                         </button>
                                     </td>
@@ -337,8 +362,8 @@ const GestaoProfessores = () => {
                                     className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm"
                                 >
                                     <option value="">Adicionar modalidade...</option>
-                                    {modalidades.filter(m => !formData.modalidades.includes(m.name)).map(mod => (
-                                        <option key={mod.id} value={mod.name}>{mod.name}</option>
+                                    {modalidades.filter(m => !formData.modalidades.includes(m.nome)).map(mod => (
+                                        <option key={mod.id} value={mod.nome}>{mod.nome}</option>
                                     ))}
                                 </select>
                             </div>
@@ -392,19 +417,24 @@ const GestaoProfessores = () => {
                             </div>
                         </div>
 
-                        {/* Turmas vinculadas (somente visualização) */}
+                                                {/* Turmas vinculadas (somente visualização) */}
                         <div>
                             <label className="block text-xs font-medium text-gray-700">Turmas vinculadas</label>
                             <div className="mt-1 flex flex-wrap gap-1.5">
-                                {(formData.classes || []).length === 0 ? (
-                                    <span className="text-[12px] text-gray-500">Nenhuma turma vinculada.</span>
-                                ) : (
-                                    formData.classes.map(cls => (
-                                        <span key={cls} className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                                            {cls}
-                                        </span>
-                                    ))
-                                )}
+                                                                {(() => {
+                                                                        const vinculadas = (professorTurmas || [])
+                                                                            .filter(v => currentProfessor?.id && v.professor_id === currentProfessor.id)
+                                                                            .map(v => turmas.find(t => t.id === v.turma_id)?.nome)
+                                                                            .filter(Boolean);
+                                                                        if (!vinculadas.length) {
+                                                                            return <span className="text-[12px] text-gray-500">Nenhuma turma vinculada.</span>;
+                                                                        }
+                                                                        return vinculadas.map(nome => (
+                                                                            <span key={nome} className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                                                                {nome}
+                                                                            </span>
+                                                                        ));
+                                                                })()}
                             </div>
                             <p className="text-[11px] text-gray-500 mt-1">A vinculação de turmas é feita em outro fluxo.</p>
                         </div>
@@ -445,15 +475,16 @@ const GestaoProfessores = () => {
                             </div>
                         </div>
 
-                        {/* Endereço e Email */}
+                        {/* Observação e Email */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-xs font-medium text-gray-700">Endereço</label>
-                                <input
-                                    type="text"
-                                    value={formData.endereco}
-                                    onChange={(e) => setFormData(prev => ({...prev, endereco: e.target.value}))}
+                                <label className="block text-xs font-medium text-gray-700">Observação</label>
+                                <textarea
+                                    value={formData.observacao}
+                                    onChange={(e) => setFormData(prev => ({...prev, observacao: e.target.value}))}
                                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-sm"
+                                    rows="2"
+                                    placeholder="Observações sobre o professor..."
                                 />
                             </div>
                             <div>

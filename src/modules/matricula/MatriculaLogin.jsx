@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { ArrowLeft } from 'lucide-react';
 
-const MatriculaLogin = ({ escolaId, onBack }) => {
+const MatriculaLogin = ({ escolaId, onBack, returnPath = '/matricula/renovacao' }) => {
   const { loginWithGoogle } = useSupabaseAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -14,8 +14,8 @@ const MatriculaLogin = ({ escolaId, onBack }) => {
       setError('');
       // Armazena escola_id para redirecionamento pós-login
       localStorage.setItem('pendingEscolaId', escolaId);
-      localStorage.setItem('loginReturnPath', '/matricula/renovacao');
-      await loginWithGoogle('/matricula/renovacao');
+      localStorage.setItem('loginReturnPath', returnPath);
+      await loginWithGoogle(returnPath);
     } catch (e) {
       console.error('Erro no login:', e);
       setError('Não foi possível abrir o login. Tente novamente.');

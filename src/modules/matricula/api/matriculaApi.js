@@ -281,3 +281,29 @@ export const atualizarStatusMatricula = async (matriculaId, status) => {
   if (error) throw error;
   return data;
 };
+
+/**
+ * Lista matrículas vinculadas a um responsável (por e-mail),
+ * incluindo dados do aluno e da turma.
+ */
+export const fetchMatriculasDoResponsavel = async (email) => {
+  // 1) Buscar registros de responsável financeiro pelo e-mail
+  const { data: rfList, error: rfError } = await supabase
+    .from('responsavel_financeiro')
+    .select('id, matricula_id, email')
+    .eq('email', email);
+
+  if (rfError) throw rfError;
+  const matriculaIds = (rfList || []).map((r) => r.matricula_id).filter(Boolean);
+  if (matriculaIds.length === 0) return [];
+
+  // 2) Buscar matrículas correspondentes e juntar aluno e turma
+  const { data: matriculas, error: matError } = await supabase
+    .from('matriculas')
+    .select('id, escola_id, numero_matricula, ano, sequencial, status, aluno_id, turma_id, alunos(*), turmas(*)')
+    .in('id', matriculaIds)
+    .order('id', { ascending: false });
+
+  if (matError) throw matError;
+  return matriculas || [];
+};

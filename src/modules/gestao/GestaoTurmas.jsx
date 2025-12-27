@@ -224,6 +224,7 @@ const GestaoTurmas = () => {
     const [abaModalAtiva, setAbaModalAtiva] = useState('alunos'); // 'alunos' ou 'professores'
     const [turmaParaVerAlunos, setTurmaParaVerAlunos] = useState(null);
     const [currentTurma, setCurrentTurma] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const [formData, setFormData] = useState({
         name: '',
@@ -455,9 +456,16 @@ const GestaoTurmas = () => {
 
     return (
         <div className="bg-white p-3 rounded-lg">
-            <div className="flex justify-end space-x-2 mb-4">
+            <div className="flex justify-between items-center mb-4">
+                <input
+                    type="text"
+                    placeholder="Buscar turma por nome..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clic-primary"
+                />
                 <button onClick={() => handleOpenModal()}
-                    className="flex items-center px-3 py-1.5 text-sm bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 transition">
+                    className="flex items-center px-3 py-1.5 text-sm bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 transition ml-2">
                     <FontAwesomeIcon icon={faPlus} className="mr-1.5 text-xs" /> Nova Turma
                 </button>
             </div>
@@ -481,8 +489,12 @@ const GestaoTurmas = () => {
                         {turmas.length === 0 ? (
                             <tr><td colSpan="8" className="px-3 py-3 text-center text-sm text-gray-500">Nenhuma turma cadastrada.</td></tr>
                         ) : (
-                            turmas.map(turma => (
-                                <tr key={turma.id} className="hover:bg-gray-50">
+                            turmas.filter((turma) => {
+                                if (!searchTerm.trim()) return true;
+                                const termo = searchTerm.toLowerCase();
+                                return turma.nome.toLowerCase().includes(termo);
+                            }).map(turma => (
+                                <tr key={turma.id} onClick={() => handleOpenModal(turma)} className="hover:bg-gray-50 transition cursor-pointer">
                                     <td className="px-3 py-2 text-sm font-medium text-clic-secondary">{turma.nome}</td>
                                     <td className="px-3 py-2 text-sm text-gray-900">{getNomeUnidade(turma.unidade_id)} - {getNomeModalidade(turma.modalidade_id)}</td>
                                     <td className="px-3 py-2 text-sm text-gray-500">{turma.ano}</td>
@@ -491,13 +503,13 @@ const GestaoTurmas = () => {
                                     <td className="px-3 py-2 text-sm text-gray-500">{contarAlunosDaTurma(turma.id)}/{turma.limite_alunos}</td>
                                     <td className="px-3 py-2 text-sm text-gray-500">R$ {turma.mensalidade?.toFixed(2) || '0.00'}</td>
                                     <td className="px-3 py-2 text-right text-sm space-x-2">
-                                        <button onClick={() => handleVerAlunos(turma)} className="text-blue-500 hover:text-blue-700" title="Ver Alunos">
+                                        <button onClick={(e) => { e.stopPropagation(); handleVerAlunos(turma); }} className="text-blue-500 hover:text-blue-700" title="Ver Alunos">
                                             <FontAwesomeIcon icon={faUsers} className="text-sm" />
                                         </button>
-                                        <button onClick={() => handleOpenModal(turma)} className="text-clic-primary hover:text-yellow-600" title="Editar">
+                                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(turma); }} className="text-clic-primary hover:text-yellow-600" title="Editar">
                                             <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                         </button>
-                                        <button onClick={() => handleDelete(turma.id, turma.nome)} className="text-red-500 hover:text-red-700" title="Deletar">
+                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(turma.id, turma.nome); }} className="text-red-500 hover:text-red-700" title="Deletar">
                                             <FontAwesomeIcon icon={faTrash} className="text-sm" />
                                         </button>
                                     </td>

@@ -1,34 +1,66 @@
 // src/modules/matricula/MatriculaBifurcacao.jsx
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import ModalMatriculaInfo from './ModalMatriculaInfo';
 import MatriculaLogin from './MatriculaLogin';
 import MatriculaNovoCadastro from './MatriculaNovoCadastro';
 
 const MatriculaBifurcacao = ({ escolaId: escolaIdProp }) => {
   const { escolaId: escolaIdParam } = useParams();
-  const escolaId = escolaIdProp || escolaIdParam;
-  const [step, setStep] = useState('info'); // info | escolha | login | novo
+  const location = useLocation();
+  const { currentUser } = useSupabaseAuth();
+  const escolaIdLocal = typeof window !== 'undefined' ? localStorage.getItem('pendingEscolaId') : null;
+  const escolaId = escolaIdProp || escolaIdParam || escolaIdLocal;
+  const [step, setStep] = useState('info'); // info | escolha | login | loginNovo | novo
   const [temCadastro, setTemCadastro] = useState(null);
 
   const handleContinueInfo = () => {
     setStep('escolha');
   };
 
-  const handleEscolhaLogin = () => {
+  // loginWithGoogle não é usado aqui; currentUser já foi obtido acima
+  const handleEscolhaLogin = async () => {
     setTemCadastro(true);
+    // Se já está logado, vai direto ao dashboard
+    if (currentUser) {
+      window.location.href = '/responsavel';
+      return;
+    }
+    // Senão, abre tela de login e volta ao dashboard após login
     setStep('login');
   };
 
   const handleEscolhaNovo = () => {
     setTemCadastro(false);
-    setStep('novo');
+    setStep('loginNovo');
   };
 
   const handleBackToEscolha = () => {
     setStep('escolha');
     setTemCadastro(null);
   };
+
+  // Ajusta passo automaticamente conforme rota e sessão
+  useEffect(() => {
+    const path = location.pathname;
+    const isNova = path.endsWith('/matricula/nova');
+    const isRenovacao = path.endsWith('/matricula/renovacao');
+
+    if (isNova) {
+      // Se já está logado, vai direto para o formulário novo
+      setStep(currentUser ? 'novo' : 'loginNovo');
+      setTemCadastro(false);
+      return;
+    }
+
+    if (isRenovacao) {
+      // Sem fluxo dedicado de renovação ainda → se logado, direciona para novo
+      setStep(currentUser ? 'novo' : 'login');
+      setTemCadastro(true);
+      return;
+    }
+  }, [location.pathname, currentUser]);
 
   return (
     <div>
@@ -50,9 +82,9 @@ const MatriculaBifurcacao = ({ escolaId: escolaIdProp }) => {
                 onClick={handleEscolhaLogin}
                 className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition"
               >
-                ✓ Já tenho cadastro
+                ✓ Já tenho cadastro (ir para meu painel)
               </button>
-              <p className="text-gray-500">Quero renovar minha matrícula</p>
+              <p className="text-gray-500">Acesse o painel para renovar ou matricular outro filho</p>
 
               <div className="border-t-2 border-gray-200 my-6"></div>
 
@@ -72,6 +104,15 @@ const MatriculaBifurcacao = ({ escolaId: escolaIdProp }) => {
         <MatriculaLogin 
           escolaId={escolaId}
           onBack={handleBackToEscolha}
+          returnPath={'/responsavel'}
+        />
+      )}
+
+      {step === 'loginNovo' && (
+        <MatriculaLogin 
+          escolaId={escolaId}
+          onBack={handleBackToEscolha}
+          returnPath={'/matricula/nova'}
         />
       )}
 

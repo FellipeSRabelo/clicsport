@@ -17,6 +17,9 @@ import CadastroResponsavelOAuth from './modules/achados/CadastroResponsavelOAuth
 import Pesquisas from './modules/pesquisas/Pesquisas';
 import PublicPesquisa from './modules/pesquisas/PublicPesquisa';
 import MatriculaBifurcacao from './modules/matricula/MatriculaBifurcacao';
+import NovaMatricula from './modules/responsavel/NovaMatricula';
+import RenovacaoMatricula from './modules/responsavel/RenovacaoMatricula';
+import DashboardResponsavel from './modules/responsavel/DashboardResponsavel';
 
 // Componente Wrapper para Rotas Protegidas
 const PrivateRoute = ({ element: Element, role, ...rest }) => {
@@ -42,11 +45,11 @@ const PrivateRoute = ({ element: Element, role, ...rest }) => {
     return <Navigate to="/" replace />;
   }
 
-  // 2.1 Responsável deve ir direto para Achados
+  // 2.1 Responsável deve ir direto para o Dashboard
   const path = window.location.pathname.split('/')[1]; 
   const moduleName = path.toLowerCase();
   if (userRole === 'responsavel' && moduleName === 'app') {
-    return <Navigate to="/achados" replace />;
+    return <Navigate to="/responsavel" replace />;
   }
 
   // 3. Logado, mas sem permissão de role (Gestão)
@@ -92,7 +95,8 @@ const AppRoutes = () => {
 
       {/* Rota Pública - Matrícula Online */}
       <Route path="/matricula/:escolaId" element={<MatriculaBifurcacao escolaId={null} />} />
-      <Route path="/matricula/renovacao" element={<MatriculaBifurcacao escolaId={null} />} />
+      {/* Renovação migrou para o painel do responsável */}
+      <Route path="/matricula/renovacao" element={<Navigate to="/responsavel" replace />} />
       <Route path="/matricula/nova" element={<MatriculaBifurcacao escolaId={null} />} />
 
       {/* Rota Pública - Acesso a Pesquisa */}
@@ -103,6 +107,11 @@ const AppRoutes = () => {
       
       {/* Rotas Protegidas (Dashboard Padrão) */}
       <Route path="/app" element={<PrivateRoute element={Dashboard} />} />
+
+      {/* Dashboard do Responsável e matrículas pelo painel */}
+      <Route path="/responsavel" element={<PrivateRoute element={DashboardResponsavel} />} />
+      <Route path="/responsavel/matriculas/nova" element={<PrivateRoute element={NovaMatricula} />} />
+      <Route path="/responsavel/matriculas/renovacao" element={<PrivateRoute element={RenovacaoMatricula} />} />
 
       {/* Módulo de Gestão (SÓ GESTOR - Sempre acessível se logado como gestor) */}
       <Route path="/gestao" element={<PrivateRoute element={Gestao} role="gestor" />} />
