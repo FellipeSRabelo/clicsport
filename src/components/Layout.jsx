@@ -1,5 +1,5 @@
 // src/components/Layout.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import MenuLateral from './MenuLateral';
 import TopBar from './TopBar';
 import { useSupabaseAuth } from '../supabase/SupabaseAuthContext';
@@ -8,7 +8,7 @@ import ErrorBoundary from './ErrorBoundary';
 
 const Layout = ({ children }) => {
   const { loading, currentUser, escolaId, modulosAtivos, userRole } = useSupabaseAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
   // Mapeia rotas para títulos
@@ -23,8 +23,15 @@ const Layout = ({ children }) => {
   // Obtém o título baseado na rota atual
   const pageTitle = routeTitles[location.pathname] || 'Dashboard';
 
-  // Para usuários não gestores em Achados, escondemos menu lateral e topbar
-  const hideChrome = location.pathname.startsWith('/achados') && userRole !== 'gestor';
+  // Mantém sidebar fechada por padrão para responsáveis (mobile-first)
+  // IMPORTANTE: useEffect deve vir ANTES de qualquer return condicional
+  useEffect(() => {
+    if (userRole === 'responsavel') {
+      setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
+    }
+  }, [userRole]);
   
   if (loading) {
     return (
@@ -34,38 +41,34 @@ const Layout = ({ children }) => {
     );
   }
 
-  // Layout simplificado para responsáveis em Achados
-  if (hideChrome) {
-    return (
-      <div className="min-h-screen bg-gray-100">
-        <ErrorBoundary>
-          {children ?? <Outlet />}
-        </ErrorBoundary>
-      </div>
-    );
-  }
-
   return (
-    // Layout com Sidebar sobre TopBar + Conteúdo
-    <div className="flex h-screen bg-white"> 
+    <div className="flex h-screen bg-white relative">
 
-      {/* Menu Lateral - Fixo à esquerda */}
-      <div className="flex-shrink-0 transition-all duration-300">
-        <MenuLateral isCompact={!sidebarOpen} />
+      {/* Overlay mobile */}
+      {sidebarOpen && userRole === 'responsavel' && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Menu Lateral - responsivo */}
+      <div
+        className={`fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 md:relative md:translate-x-0 md:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:transition-none`}
+      >
+        <MenuLateral isCompact={false} />
       </div>
 
       {/* Coluna direita: TopBar + Conteúdo */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
-        {/* TopBar */}
         <TopBar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} title={pageTitle} />
 
         {/* Conteúdo Principal (Scrollável) */}
-        <div className="flex-1 overflow-y-auto bg-gray-100"> 
-          <main className="p-8 flex justify-start items-start"> 
+        <div className="flex-1 overflow-y-auto bg-gray-100">
+          <main className="p-4 md:p-8 flex justify-start items-start">
             <div className="w-full max-w-none">
               <ErrorBoundary>
-                {children ?? <Outlet />} {/* RENDERIZA O CONTEÚDO DA ROTA FILHA */}
+                {children ?? <Outlet />}
               </ErrorBoundary>
             </div>
           </main>

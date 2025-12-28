@@ -2,170 +2,179 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../../firebase/AuthContext';
-import { db } from '../../firebase/firebaseConfig';
-import { collection, addDoc, serverTimestamp, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
+import { supabase } from '../../supabase/supabaseConfig';
 import { useNavigate, useParams } from 'react-router-dom';
-import { resolveCampaignsRoot } from './campaignsPath';
 
 export default function NovaCampanha() {
-  const { escolaId } = useAuth();
+  const { escolaId } = useSupabaseAuth();
   const navigate = useNavigate();
   const { campaignId } = useParams();
   const isEdit = Boolean(campaignId);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Estados para turmas e ciclos
-  const [ciclos, setCiclos] = useState([]);
+  // Estados para filtros e dados
+  const [unidades, setUnidades] = useState([]);
+  const [modalidades, setModalidades] = useState([]);
   const [turmas, setTurmas] = useState([]);
   const [professores, setProfessores] = useState([]);
-  const [selectedCiclos, setSelectedCiclos] = useState(new Set());
+  
+  const [selectedUnidades, setSelectedUnidades] = useState(new Set());
+  const [selectedModalidades, setSelectedModalidades] = useState(new Set());
   const [selectedTurmasIds, setSelectedTurmasIds] = useState(new Set());
-  const [campaignsRoot, setCampaignsRoot] = useState('escolas');
-  const [prefillDone, setPrefillDone] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     type: 'professores',
     targetTurmasIds: [],
-    questions: [{ text: '', type: 'scale5' }]
+    questions: [{ text: '', type: 'scale5', professor_id: '' }]
   });
 
-  // Buscar ciclos e turmas ao carregar
+  // Buscar dados ao carregar
   useEffect(() => {
     const fetchData = async () => {
-      if (!escolaId) return;
+      if (!escolaId) {
+        setError('Escola não identificada');
+        return;
+      }
       
       try {
         setLoading(true);
-        const root = await resolveCampaignsRoot(db, escolaId);
-        setCampaignsRoot(root);
 
-        const turmasQuery = query(collection(db, 'escolas', escolaId, 'turmas'));
-        const turmasSnap = await getDocs(turmasQuery);
-        const turmasData = turmasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log('Turmas carregadas:', turmasData);
-        setTurmas(turmasData);
+        // Buscar unidades
+        const { data: unidadesData, error: unidadesError } = await supabase
+          .from('unidades')
+          .select('*')
+          .eq('escola_id', escolaId)
+          .order('nome');
+
+        if (unidadesError) throw unidadesError;
+        setUnidades(unidadesData || []);
         
-        try {
-          const ciclosQuery = query(collection(db, 'escolas', escolaId, 'ciclos'));
-          const ciclosSnap = await getDocs(ciclosQuery);
-          const ciclosData = ciclosSnap.docs.map(doc => doc.data().name || doc.id).filter(Boolean);
-          console.log('Ciclos carregados:', ciclosData);
-          setCiclos(ciclosData);
-        } catch (err) {
-          console.warn('Não foi possível carregar ciclos como coleção, tentando extrair das turmas:', err);
-          if (turmasData && turmasData.length > 0) {
-            const ciclosUnicos = [...new Set(
-              turmasData
-                .map(t => t.cycle || t.ciclo)
-                .filter(c => c && c.trim() !== '')
-            )].sort();
-            console.log('Ciclos extraídos das turmas:', ciclosUnicos);
-            setCiclos(ciclosUnicos);
-          }
-        }
+        // Buscar modalidades
+        const { data: modalidadesData, error: modalidadesError } = await supabase
+          .from('modalidades')
+          .select('*')
+          .eq('escola_id', escolaId)
+          .order('nome');
+
+        if (modalidadesError) throw modalidadesError;
+        setModalidades(modalidadesData || []);
         
-        const profsQuery = query(collection(db, 'escolas', escolaId, 'professores'));
-        const profsSnap = await getDocs(profsQuery);
-        const profsData = profsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log('Professores carregados:', profsData);
-        setProfessores(profsData);
+        // Buscar turmas
+        const { data: turmasData, error: turmasError } = await supabase
+          .from('turmas')
+          .select('*')
+          .eq('escola_id', escolaId)
+          .order('nome');
 
-        if (isEdit && !prefillDone) {
-          const campaignRef = doc(db, root, escolaId, 'campaigns', campaignId);
-          const campaignSnap = await getDoc(campaignRef);
+        if (turmasError) throw turmasError;
+        setTurmas(turmasData || []);
+        
+        // Buscar professores
+        const { data: profsData, error: profsError } = await supabase
+          .from('professores')
+          .select('*')
+          .eq('escola_id', escolaId)
+          .order('nome');
 
-          if (!campaignSnap.exists()) {
+        if (profsError) throw profsError;
+        setProfessores(profsData || []);
+
+        // Se for edição, carregar dados da campanha
+        if (isEdit && campaignId) {
+          const { data: campaignData, error: campaignError } = await supabase
+            .from('campanhas')
+            .select('*')
+            .eq('id', campaignId)
+            .eq('escola_id', escolaId)
+            .single();
+
+          if (campaignError) {
             setError('Campanha não encontrada.');
-          } else {
-            const data = campaignSnap.data() || {};
-            const preselectedTurmas = new Set(data.targetTurmasIds || []);
-            const ciclosSelecionados = new Set(
-              turmasData
-                .filter(t => preselectedTurmas.has(t.id))
-                .map(t => t.cycle || t.ciclo)
-                .filter(Boolean)
-            );
+            return;
+          }
+
+          if (campaignData) {
+            const targetTurmasIds = campaignData.target_turmas_ids || [];
+            const turmasSelected = (turmasData || []).filter(t => targetTurmasIds.includes(t.id));
+            const unidadesSet = new Set(turmasSelected.map(t => t.unidade_id).filter(Boolean));
+            const modalidadesSet = new Set(turmasSelected.map(t => t.modalidade_id).filter(Boolean));
 
             setFormData({
-              title: data.title || '',
-              description: data.description || '',
-              type: data.type || 'professores',
-              targetTurmasIds: data.targetTurmasIds || [],
-              questions: Array.isArray(data.questions) && data.questions.length > 0
-                ? data.questions
+              title: campaignData.title || '',
+              description: campaignData.description || '',
+              type: campaignData.type || 'professores',
+              targetTurmasIds: targetTurmasIds,
+              questions: Array.isArray(campaignData.questions) && campaignData.questions.length > 0
+                ? campaignData.questions
                 : [{ text: '', type: 'scale5' }]
             });
-            setSelectedTurmasIds(preselectedTurmas);
-            setSelectedCiclos(ciclosSelecionados);
+            setSelectedTurmasIds(new Set(targetTurmasIds));
+            setSelectedUnidades(unidadesSet);
+            setSelectedModalidades(modalidadesSet);
           }
-
-          setPrefillDone(true);
         }
       } catch (err) {
         console.error('Erro ao buscar dados:', err);
-        setError('Erro ao carregar ciclos e turmas');
+        setError('Erro ao carregar dados. Verifique a conexão.');
       } finally {
         setLoading(false);
       }
     };
     
     fetchData();
-  }, [escolaId, isEdit, campaignId, prefillDone]);
+  }, [escolaId, isEdit, campaignId]);
 
-  // Quando ciclos são selecionados, atualizar turmas disponíveis
-  const handleCicloToggle = (ciclo) => {
-    const newCiclos = new Set(selectedCiclos);
-    if (newCiclos.has(ciclo)) {
-      newCiclos.delete(ciclo);
-    } else {
-      newCiclos.add(ciclo);
-    }
-    setSelectedCiclos(newCiclos);
-  };
-
-  // Turmas filtradas pelos ciclos selecionados
-  const turmasFiltradas = selectedCiclos.size > 0 
-    ? turmas.filter(t => selectedCiclos.has(t.cycle || t.ciclo))
+  // Filtrar modalidades por unidades selecionadas
+  const modalidadesFiltradas = selectedUnidades.size > 0
+    ? modalidades.filter(m => selectedUnidades.has(m.unidade_id))
     : [];
+
+  // Filtrar turmas por unidades e modalidades selecionadas
+  const turmasFiltradas = turmas.filter(t => {
+    const matchUnidade = selectedUnidades.size === 0 || selectedUnidades.has(t.unidade_id);
+    const matchModalidade = selectedModalidades.size === 0 || selectedModalidades.has(t.modalidade_id);
+    return matchUnidade && matchModalidade;
+  });
 
   // Obter professores das turmas selecionadas
   const professoresdaTurma = useMemo(() => {
     if (selectedTurmasIds.size === 0) return [];
 
-    const selectedTurmas = turmas.filter((t) => selectedTurmasIds.has(t.id));
+    const { data: profTurmas } = supabase
+      .from('professor_turmas')
+      .select('professor_id, professores(*)')
+      .in('turma_id', Array.from(selectedTurmasIds));
 
-    // 1) Match por campo turmasIds em cada professor (modelo preferido)
-    const byTurmaId = professores.filter((prof) =>
-      Array.isArray(prof.turmasIds) && prof.turmasIds.some((id) => selectedTurmasIds.has(id))
+    // Retorna synchronously - será substituído por proper async
+    return professores.filter(prof =>
+      Array.isArray(prof.turmas_ids) && 
+      prof.turmas_ids.some(id => selectedTurmasIds.has(id))
     );
-    if (byTurmaId.length > 0) return byTurmaId;
+  }, [selectedTurmasIds, professores]);
 
-    // 2) Match por classes/nome da turma gravado no professor (prof.classes) comparando com turma.name
-    const turmaNames = new Set(selectedTurmas.map((t) => (t.name || t.nome || '').trim().toLowerCase()).filter(Boolean));
-    const byClassName = professores.filter((prof) =>
-      Array.isArray(prof.classes) && prof.classes.some((cls) => turmaNames.has(String(cls).trim().toLowerCase()))
-    );
-    if (byClassName.length > 0) return byClassName;
+  const handleUnidadeToggle = (unidadeId) => {
+    const newUnidades = new Set(selectedUnidades);
+    if (newUnidades.has(unidadeId)) {
+      newUnidades.delete(unidadeId);
+    } else {
+      newUnidades.add(unidadeId);
+    }
+    setSelectedUnidades(newUnidades);
+  };
 
-    // 3) Fallback: usar lista de teachers (nomes) gravada na turma e cruzar por nome do professor
-    const teacherNames = new Set(
-      selectedTurmas
-        .flatMap((t) => Array.isArray(t.teachers) ? t.teachers : [])
-        .filter(Boolean)
-        .map((name) => name.trim().toLowerCase())
-    );
-
-    if (teacherNames.size === 0) return [];
-
-    return professores.filter((prof) => {
-      const name = (prof.name || prof.nome || '').trim().toLowerCase();
-      return name && teacherNames.has(name);
-    });
-  }, [selectedTurmasIds, professores, turmas]);
+  const handleModalidadeToggle = (modalidadeId) => {
+    const newModalidades = new Set(selectedModalidades);
+    if (newModalidades.has(modalidadeId)) {
+      newModalidades.delete(modalidadeId);
+    } else {
+      newModalidades.add(modalidadeId);
+    }
+    setSelectedModalidades(newModalidades);
+  };
 
   const handleTurmaToggle = (turmaId) => {
     const newTurmas = new Set(selectedTurmasIds);
@@ -192,7 +201,7 @@ export default function NovaCampanha() {
   const handleAddQuestion = () => {
     setFormData(prev => ({
       ...prev,
-      questions: [...prev.questions, { text: '', type: 'scale5' }]
+      questions: [...prev.questions, { text: '', type: 'scale5', professor_id: '' }]
     }));
   };
 
@@ -230,49 +239,73 @@ export default function NovaCampanha() {
         return;
       }
 
+      if (formData.type === 'professores') {
+        const questoesInvalidas = formData.questions.filter(q => !q.professor_id);
+        if (questoesInvalidas.length > 0) {
+          setError('Para campanhas de avaliação de professores, selecione um professor para cada pergunta');
+          setLoading(false);
+          return;
+        }
+      }
+
       if (formData.questions.length === 0) {
         setError('Adicione pelo menos uma pergunta');
         setLoading(false);
         return;
       }
 
-      const root = campaignsRoot || 'escolas';
-      const campaignRef = collection(db, root, escolaId, 'campaigns');
+      const campaignPayload = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        target_turmas_ids: Array.from(selectedTurmasIds),
+        target_professores_ids: professoresdaTurma.map(p => p.id),
+        questions: formData.questions,
+        status: 'active'
+      };
 
       if (isEdit) {
-        const docRef = doc(db, root, escolaId, 'campaigns', campaignId);
-        await updateDoc(docRef, {
-          title: formData.title,
-          description: formData.description,
-          type: formData.type,
-          targetTurmasIds: formData.targetTurmasIds,
-          targetProfessoresIds: Array.from(professoresdaTurma).map(p => p.id),
-          questions: formData.questions
-        });
+        const { error: updateError } = await supabase
+          .from('campanhas')
+          .update(campaignPayload)
+          .eq('id', campaignId)
+          .eq('escola_id', escolaId);
+
+        if (updateError) throw updateError;
         alert('Campanha atualizada com sucesso!');
       } else {
-        await addDoc(campaignRef, {
-          title: formData.title,
-          description: formData.description,
-          type: formData.type,
-          targetTurmasIds: formData.targetTurmasIds,
-          targetProfessoresIds: Array.from(professoresdaTurma).map(p => p.id),
-          questions: formData.questions,
-          status: 'active',
-          createdAt: serverTimestamp(),
-          responses: []
-        });
+        const { error: insertError } = await supabase
+          .from('campanhas')
+          .insert([{
+            ...campaignPayload,
+            escola_id: escolaId
+          }]);
+
+        if (insertError) throw insertError;
         alert('Campanha criada com sucesso!');
       }
 
-      navigate('/pesquisas/lista');
+      navigate('/pesquisas');
     } catch (err) {
-      console.error('Erro ao criar campanha:', err);
+      console.error('Erro ao salvar campanha:', err);
       setError('Erro ao salvar campanha. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
+
+  if (!escolaId) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Escola não identificada</p>
+          <button onClick={() => navigate('/')} className="text-blue-600 hover:underline">
+            Voltar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -286,7 +319,7 @@ export default function NovaCampanha() {
             Detalhes da Campanha
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Título da Campanha *
@@ -339,53 +372,80 @@ export default function NovaCampanha() {
           )}
         </div>
 
-        {/* Público Alvo */}
+        {/* Público Alvo - Unidades, Modalidades, Turmas */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             <i className="fa-solid fa-circle text-clic-primary mr-2"></i>
             Público Alvo
           </h2>
 
-        {/* Filtro por Ciclo */}
+          {/* Seleção de Unidades */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Filtrar por Ciclo:
+              1. Selecione as Unidades *
             </label>
-            {ciclos.length === 0 ? (
-              <div className="p-4 border border-yellow-300 rounded-lg bg-yellow-50 text-yellow-800 text-sm">
-                <i className="fa-solid fa-exclamation-triangle mr-2"></i>
-                Nenhum ciclo disponível. Verifique se as turmas têm o campo "ciclo" preenchido.
-                {loading && ' (Carregando...)'}
-              </div>
-            ) : (
+            {unidades.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {ciclos.map(ciclo => (
+                {unidades.map(unidade => (
                   <button
-                    key={ciclo}
+                    key={unidade.id}
                     type="button"
-                    onClick={() => handleCicloToggle(ciclo)}
+                    onClick={() => handleUnidadeToggle(unidade.id)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
-                      selectedCiclos.has(ciclo)
+                      selectedUnidades.has(unidade.id)
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     }`}
                   >
-                    {ciclo}
+                    {unidade.nome}
                   </button>
                 ))}
               </div>
+            ) : (
+              <p className="text-gray-500 text-sm">Nenhuma unidade disponível</p>
+            )}
+          </div>
+
+          {/* Seleção de Modalidades */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              2. Selecione as Modalidades *
+            </label>
+            {selectedUnidades.size > 0 && modalidadesFiltradas.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {modalidadesFiltradas.map(modalidade => (
+                  <button
+                    key={modalidade.id}
+                    type="button"
+                    onClick={() => handleModalidadeToggle(modalidade.id)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      selectedModalidades.has(modalidade.id)
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                    }`}
+                  >
+                    {modalidade.nome}
+                  </button>
+                ))}
+              </div>
+            ) : selectedUnidades.size === 0 ? (
+              <p className="text-gray-500 text-sm">Selecione unidades primeiro</p>
+            ) : (
+              <p className="text-gray-500 text-sm">Nenhuma modalidade disponível para as unidades selecionadas</p>
             )}
           </div>
 
           {/* Seleção de Turmas */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Turmas (Público-Alvo) *
-              </label>
-              {turmasFiltradas.length > 0 ? (
-                <div className="space-y-2 border border-gray-300 rounded-lg p-4 bg-gray-50 max-h-64 overflow-y-auto">
-                  {turmasFiltradas.map(turma => (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              3. Selecione as Turmas *
+            </label>
+            {selectedUnidades.size > 0 && turmasFiltradas.length > 0 ? (
+              <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 max-h-64 overflow-y-auto space-y-2">
+                {turmasFiltradas.map(turma => {
+                  const unidadeNome = unidades.find(u => u.id === turma.unidade_id)?.nome || '';
+                  const modalidadeNome = modalidades.find(m => m.id === turma.modalidade_id)?.nome || '';
+                  return (
                     <label key={turma.id} className="flex items-center cursor-pointer hover:bg-gray-100 p-2 rounded">
                       <input
                         type="checkbox"
@@ -393,41 +453,23 @@ export default function NovaCampanha() {
                         onChange={() => handleTurmaToggle(turma.id)}
                         className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className="ml-2 text-sm text-gray-700">{turma.name}</span>
+                      <span className="ml-2 text-sm text-gray-700">
+                        {turma.nome} - {unidadeNome} / {modalidadeNome}
+                      </span>
                     </label>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm">
-                  Selecione um ciclo para ver as turmas disponíveis.
-                </div>
-              )}
-              {selectedTurmasIds.size > 0 && (
-                <p className="mt-2 text-sm text-blue-600">
-                  {selectedTurmasIds.size} turma(s) selecionada(s)
-                </p>
-              )}
-            </div>
-
-            {/* Professores da Turma */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Professores a serem avaliados
-              </label>
-              {professoresdaTurma.length > 0 ? (
-                <div className="space-y-2 border border-gray-300 rounded-lg p-4 bg-blue-50 max-h-64 overflow-y-auto">
-                  {professoresdaTurma.map(prof => (
-                    <div key={prof.id} className="text-sm text-gray-700 p-2 bg-white rounded border border-blue-200">
-                      {prof.name || prof.nome || prof.email || prof.id}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm">
-                  Selecione as turmas (Público-Alvo) para listar os professores vinculados às turmas ou cadastrados com classes.
-                </div>
-              )}
-            </div>
+                  );
+                })}
+              </div>
+            ) : selectedUnidades.size === 0 ? (
+              <p className="text-gray-500 text-sm">Selecione unidades e modalidades primeiro</p>
+            ) : (
+              <p className="text-gray-500 text-sm">Nenhuma turma disponível para as opções selecionadas</p>
+            )}
+            {selectedTurmasIds.size > 0 && (
+              <p className="mt-2 text-sm text-blue-600">
+                {selectedTurmasIds.size} turma(s) selecionada(s)
+              </p>
+            )}
           </div>
         </div>
 
@@ -452,9 +494,29 @@ export default function NovaCampanha() {
                   </button>
                 </div>
 
+                {formData.type === 'professores' && (
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Professor (para esta pergunta)
+                    </label>
+                    <select
+                      value={question.professor_id || ''}
+                      onChange={(e) => handleQuestionChange(index, 'professor_id', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Selecione um professor...</option>
+                      {professores.map(prof => (
+                        <option key={prof.id} value={prof.id}>
+                          {prof.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <input
                   type="text"
-                  placeholder="Escreva o texto da pergunta aqui..."
+                  placeholder={formData.type === 'professores' ? "Ex: Como você avalia seu professor?" : "Escreva o texto da pergunta aqui..."}
                   value={question.text}
                   onChange={(e) => handleQuestionChange(index, 'text', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"

@@ -1,21 +1,10 @@
 // src/modules/pesquisas/PublicPesquisa.jsx
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db } from '../../firebase/firebaseConfig';
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  getDoc,
-  doc,
-  addDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
-import { resolveCampaignsRoot } from './campaignsPath';
-import Toast from './components/Toast';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
+import { supabase } from '../../supabase/supabaseConfig';
 
 // Simple star input for 1-5 ratings
 const StarRating = ({ value = 0, onChange }) => {
@@ -26,7 +15,7 @@ const StarRating = ({ value = 0, onChange }) => {
           key={score}
           type="button"
           onClick={() => onChange(score)}
-          className={`text-2xl leading-none ${score <= value ? 'text-yellow-400' : 'text-gray-300'}`}
+          className={`text-2xl leading-none transition-colors ${score <= value ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`}
           aria-label={`${score} estrelas`}
         >
           ★
@@ -36,279 +25,251 @@ const StarRating = ({ value = 0, onChange }) => {
   );
 };
 
-const initialAccessState = {
-  loading: false,
-  error: null,
-  success: false,
-};
-
-export default function PublicPesquisa() {
-  const { escolaId, campaignId } = useParams();
+function PublicPesquisa() {
+  const { campaignId } = useParams();
   const navigate = useNavigate();
+  const { currentUser, userRole, escolaId } = useSupabaseAuth();
 
-  const [accessState, setAccessState] = useState(initialAccessState);
-  const [matricula, setMatricula] = useState('');
-  const [aluno, setAluno] = useState(null);
   const [campaign, setCampaign] = useState(null);
-  const [professores, setProfessores] = useState([]);
-  const [answers, setAnswers] = useState({}); // { [profId]: { [qIndex]: value, comments?: string } }
+  const [alunosDisponiveis, setAlunosDisponiveis] = useState([]);
+  const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+  const [turmasSelecionadas, setTurmasSelecionadas] = useState([]);
+  const [turmaSelecionada, setTurmaSelecionada] = useState(null);
+  const [professoresMap, setProfessoresMap] = useState({});
+  const [respostasFeitas, setRespostasFeitas] = useState({});
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [submitDone, setSubmitDone] = useState(false);
-  const [globalError, setGlobalError] = useState(null);
-  const [toastError, setToastError] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [showAlunoSelection, setShowAlunoSelection] = useState(true);
+  const [answers, setAnswers] = useState({});
 
-  // Carrega campanha, turmas e professores (com fallback por nomes de professores salvos na turma)
+  // Carregar campanha
   useEffect(() => {
     const loadCampaign = async () => {
-      if (!escolaId || !campaignId) return;
-      setGlobalError(null);
       try {
-        const root = await resolveCampaignsRoot(db, escolaId);
-        const campaignRef = doc(db, root, escolaId, 'campaigns', campaignId);
-        const snap = await getDoc(campaignRef);
-        if (!snap.exists()) {
-          setGlobalError('Pesquisa não encontrada.');
+        const { data, error: err } = await supabase
+          .from('campanhas')
+          .select('*')
+          .eq('id', campaignId)
+          .single();
+
+        if (err || !data) {
+          setError('Campanha não encontrada');
+          setLoading(false);
           return;
         }
 
-        const data = { id: snap.id, ...snap.data() };
         setCampaign(data);
-
-        const profIds = Array.isArray(data.targetProfessoresIds) ? data.targetProfessoresIds : [];
-        let resolvedProfs = [];
-
-        // 1) Tentar pelos IDs gravados na campanha
-        if (profIds.length > 0) {
-          const professorsPromises = profIds.map(async (profId) => {
-            const ref = doc(db, 'escolas', escolaId, 'professores', profId);
-            const profSnap = await getDoc(ref);
-            if (!profSnap.exists()) return { id: profId, name: 'Professor(a)' };
-            const profData = profSnap.data() || {};
-            return { id: profId, name: profData.name || profData.nome || 'Professor(a)' };
+        // Buscar professores para mapeamento
+        if (Array.isArray(data.target_professores_ids) && data.target_professores_ids.length > 0) {
+          const { data: profsData } = await supabase
+            .from('professores')
+            .select('id, nome, name')
+            .in('id', data.target_professores_ids);
+          const map = {};
+          (profsData || []).forEach(p => {
+            map[p.id] = p.nome || p.name;
           });
-          resolvedProfs = await Promise.all(professorsPromises);
+          setProfessoresMap(map);
         }
-
-        const turmaIds = Array.isArray(data.targetTurmasIds) ? data.targetTurmasIds : [];
-
-        // 2) Fallback: derivar via turmas -> campo teachers (nomes) + cruzar com professores cadastrados (classes ou nome)
-        if (resolvedProfs.length === 0 && turmaIds.length > 0) {
-          const turmasQuery = query(collection(db, 'escolas', escolaId, 'turmas'));
-          const turmasSnap = await getDocs(turmasQuery);
-          const turmasMap = new Map();
-          turmasSnap.docs.forEach((docSnap) => turmasMap.set(docSnap.id, docSnap.data()));
-
-          const teacherNames = new Set();
-          turmaIds.forEach((id) => {
-            const turma = turmasMap.get(id);
-            if (turma && Array.isArray(turma.teachers)) {
-              turma.teachers
-                .filter(Boolean)
-                .map((n) => n.trim())
-                .forEach((n) => teacherNames.add(n));
-            }
-          });
-
-          // Cruzar com professores cadastrados que tenham classes (nomes) correspondentes
-          const professoresRef = collection(db, 'escolas', escolaId, 'professores');
-          const professoresSnap = await getDocs(professoresRef);
-          const allProfs = professoresSnap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
-
-          const turmaNames = new Set(
-            turmaIds
-              .map((id) => turmasMap.get(id))
-              .filter(Boolean)
-              .map((t) => (t.name || t.nome || '').trim().toLowerCase())
-              .filter(Boolean)
-          );
-
-          const matchedByClass = allProfs.filter((prof) =>
-            Array.isArray(prof.classes) && prof.classes.some((cls) => turmaNames.has(String(cls).trim().toLowerCase()))
-          );
-
-          const matchedByTeacherName = allProfs.filter((prof) => {
-            const name = (prof.name || prof.nome || '').trim();
-            return name && teacherNames.has(name);
-          });
-
-          const combined = [...matchedByClass, ...matchedByTeacherName];
-
-          if (combined.length > 0) {
-            resolvedProfs = combined.map((prof) => ({
-              id: prof.id,
-              name: prof.name || prof.nome || prof.id,
-            }));
-          } else if (teacherNames.size > 0) {
-            // Se ainda não encontrou prof cadastrado, usa nomes da turma mesmo assim
-            resolvedProfs = Array.from(teacherNames).map((name) => ({ id: name, name }));
-          }
-        }
-
-        setProfessores(resolvedProfs);
+        setLoading(false);
       } catch (err) {
-        console.error('[PublicPesquisa] erro ao carregar campanha:', err);
-        setGlobalError('Erro ao carregar a pesquisa.');
+        setError('Erro ao carregar campanha');
+        setLoading(false);
       }
     };
+    if (campaignId) loadCampaign();
+  }, [campaignId]);
 
-    loadCampaign();
-  }, [escolaId, campaignId]);
-
-  const handleAccess = async (e) => {
-    e.preventDefault();
-    if (!matricula.trim()) return;
-    setAccessState({ loading: true, error: null, success: false });
-    setGlobalError(null);
-
-    try {
-      // TRAVA 0: Verificar se a pesquisa está aberta
-      if (campaign && campaign.status !== 'active') {
-        setAccessState({ loading: false, error: 'Esta pesquisa está fechada e não aceita mais respostas.', success: false });
+  // Buscar alunos do responsável autenticado via responsavel_financeiro
+  useEffect(() => {
+    const loadAlunos = async () => {
+      if (!currentUser) {
+        setError('Você precisa estar logado como responsável para responder esta pesquisa');
         return;
       }
 
-      const alunosRef = collection(db, 'escolas', escolaId, 'alunos');
-      const q = query(alunosRef, where('matricula', '==', matricula.trim()));
-      const snap = await getDocs(q);
+      try {
+        // Buscar matrículas vinculadas ao responsável via responsavel_financeiro
+        const { data: rfList, error: rfError } = await supabase
+          .from('responsavel_financeiro')
+          .select('matricula_id')
+          .eq('email', currentUser.email);
 
-      if (snap.empty) {
-        setAccessState({ loading: false, error: 'Matrícula não encontrada. Verifique e tente novamente.', success: false });
-        return;
+        if (rfError) {
+          setError('Erro ao carregar suas matrículas');
+          return;
+        }
+
+        const matriculaIds = (rfList || []).map(r => r.matricula_id).filter(Boolean);
+        if (matriculaIds.length === 0) {
+          setAlunosDisponiveis([]);
+          return;
+        }
+
+        // Buscar alunos vinculados ao responsável via matriculas
+        const { data: matriculasData, error: matError } = await supabase
+          .from('matriculas')
+          .select('alunos(id, nome, matricula), turmas(id, nome, unidade_id, modalidade_id), status')
+          .in('id', matriculaIds)
+          .eq('status', 'pago');
+
+        if (matError) {
+          setError('Erro ao carregar alunos vinculados');
+          return;
+        }
+
+        // Buscar respostas já feitas para esta campanha
+        const { data: respostasData, error: respostasError } = await supabase
+          .from('respostas_pesquisa')
+          .select('aluno_id, turma_id')
+          .eq('campanha_id', campaignId);
+
+        let respostasMap = {};
+        if (respostasError) {
+          // Fallback: buscar sem turma_id
+          const { data: respostasDataFallback } = await supabase
+            .from('respostas_pesquisa')
+            .select('aluno_id')
+            .eq('campanha_id', campaignId);
+          (respostasDataFallback || []).forEach(resposta => {
+            if (resposta.aluno_id) respostasMap[resposta.aluno_id] = true;
+          });
+        } else {
+          (respostasData || []).forEach(resposta => {
+            if (resposta.aluno_id && resposta.turma_id) {
+              respostasMap[`${resposta.aluno_id}-${resposta.turma_id}`] = true;
+            }
+          });
+        }
+        setRespostasFeitas(respostasMap);
+
+        // Processar dados para structure: { aluno: { ...}, turmas: [ {...}, {...}] }
+        const alunosMap = new Map();
+        (matriculasData || []).forEach(mat => {
+          const aluno = mat.alunos;
+          if (aluno && !alunosMap.has(aluno.id)) {
+            alunosMap.set(aluno.id, {
+              id: aluno.id,
+              nome: aluno.nome,
+              matricula: aluno.matricula,
+              turmas: [],
+              respondido: respostasMap[aluno.id] || false
+            });
+          }
+          if (aluno && mat.turmas) {
+            alunosMap.get(aluno.id).turmas.push(mat.turmas);
+          }
+        });
+        setAlunosDisponiveis(Array.from(alunosMap.values()));
+      } catch (err) {
+        setError('Erro ao carregar seus alunos');
       }
+    };
+    loadAlunos();
+  }, [currentUser, userRole, escolaId, campaignId]);
 
-      const alunoDoc = snap.docs[0];
-      const alunoData = alunoDoc.data();
-
-      // TRAVA 1: Verificar se aluno está vinculado a uma turma
-      const turmaNome = String(alunoData.nome_turma || alunoData.turma || '');
-      if (!turmaNome || turmaNome.trim() === '') {
-        setAccessState({ loading: false, error: 'Você não está vinculado a nenhuma turma. Contate a administração.', success: false });
-        return;
-      }
-
-      // TRAVA 2: Verificar se aluno já respondeu esta pesquisa
-      const root = await resolveCampaignsRoot(db, escolaId);
-      const campaignRef = doc(db, root, escolaId, 'campaigns', campaignId);
-      const responsesSnap = await getDocs(collection(campaignRef, 'responses'));
-      
-      const jaRespondeu = responsesSnap.docs.some((docSnap) => {
-        const respData = docSnap.data();
-        return respData.alunoId === alunoDoc.id;
-      });
-
-      if (jaRespondeu) {
-        setAccessState({ loading: false, error: 'Você já respondeu esta pesquisa. Cada aluno pode responder apenas uma vez.', success: false });
-        return;
-      }
-
-      setAluno({ id: alunoDoc.id, ...alunoData });
-      setAccessState({ loading: false, error: null, success: true });
-    } catch (err) {
-      console.error('[PublicPesquisa] erro ao validar matrícula:', err);
-      setAccessState({ loading: false, error: 'Erro ao validar matrícula.', success: false });
-    }
+  const handleSelecionarAluno = (aluno) => {
+    setAlunoSelecionado(aluno);
+    setTurmasSelecionadas(aluno.turmas || []);
+    setTurmaSelecionada(null);
+    setAnswers({});
+    setShowAlunoSelection(false);
   };
 
-  const questions = useMemo(() => {
-    if (!campaign?.questions) return [];
-    return campaign.questions;
-  }, [campaign]);
-
-  const setAnswer = (profId, qIndex, value) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [profId]: {
-        ...(prev[profId] || {}),
-        [qIndex]: value,
-      },
-    }));
-  };
-
-  const setComment = (profId, value) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [profId]: {
-        ...(prev[profId] || {}),
-        comment: value,
-      },
-    }));
-  };
-
-  const validateForm = () => {
-    if (professores.length === 0) return true; // nothing to rate
-    for (const prof of professores) {
-      const profAnswers = answers[prof.id] || {};
-      for (let i = 0; i < questions.length; i++) {
-        const q = questions[i];
-        if (q.type === 'scale5' && !profAnswers[i]) return false;
-      }
-    }
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!aluno || !campaign) return;
-    if (!validateForm()) {
-      setToastError('Responda todas as perguntas de avaliação.');
-      setShowToast(true);
+  const handleSelecionarTurma = (turma) => {
+    const jaRespondeuTurma = respostasFeitas[`${alunoSelecionado.id}-${turma.id}`];
+    if (jaRespondeuTurma) {
+      setError(`Você já respondeu esta pesquisa para ${alunoSelecionado.nome} na turma ${turma.nome}`);
       return;
     }
+    setTurmaSelecionada(turma);
+    const initialAnswers = {};
+    if (Array.isArray(campaign?.questions)) {
+      campaign.questions.forEach((_, index) => {
+        initialAnswers[index] = '';
+      });
+    }
+    setAnswers(initialAnswers);
+    setShowAlunoSelection(false);
+  };
 
-    setSubmitting(true);
-    setGlobalError(null);
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!alunoSelecionado || !turmaSelecionada || !campaign) {
+      setError('Dados incompletos');
+      return;
+    }
     try {
-      const root = await resolveCampaignsRoot(db, escolaId);
-      const campaignRef = doc(db, root, escolaId, 'campaigns', campaignId);
-
-      const baseAluno = {
-        alunoId: aluno.id,
-        alunoNome: aluno.nome_aluno || aluno.nome || 'Aluno',
-        alunoMatricula: aluno.matricula,
-        turmaNome: aluno.nome_turma || aluno.turma || '-',
-        ciclo: aluno.ciclo || null,
-      };
-
-      const payloads = professores.length > 0 ? professores : [{ id: 'na', name: 'Geral' }];
-
-      await Promise.all(
-        payloads.map((prof) => {
-          const profAnswers = answers[prof.id] || {};
-          const formatted = questions.map((_, idx) => profAnswers[idx] ?? '');
-          const docData = {
-            ...baseAluno,
-            professorId: prof.id,
-            professorNome: prof.name,
-            answers: formatted,
-            comment: profAnswers.comment || '',
-            createdAt: serverTimestamp(),
-            campaignId,
-          };
-          return addDoc(collection(campaignRef, 'responses'), docData);
-        })
-      );
-
-      setSubmitDone(true);
+      setSubmitting(true);
+      setError(null);
+      if (Array.isArray(campaign.questions)) {
+        for (let i = 0; i < campaign.questions.length; i++) {
+          if (!answers[i]) {
+            setError(`Responda a pergunta ${i + 1}`);
+            setSubmitting(false);
+            return;
+          }
+        }
+      }
+      const { data: existingResponse } = await supabase
+        .from('respostas_pesquisa')
+        .select('id')
+        .eq('campanha_id', campaignId)
+        .eq('aluno_id', alunoSelecionado.id)
+        .eq('turma_id', turmaSelecionada.id)
+        .maybeSingle();
+      if (existingResponse) {
+        setError('Você já respondeu a esta pesquisa para esta turma');
+        setSubmitting(false);
+        return;
+      }
+      const { error: insertError } = await supabase
+        .from('respostas_pesquisa')
+        .insert([{
+          campanha_id: campaignId,
+          aluno_id: alunoSelecionado.id,
+          aluno_nome: alunoSelecionado.nome,
+          aluno_matricula: alunoSelecionado.matricula,
+          turma_id: turmaSelecionada.id,
+          turma_nome: turmaSelecionada.nome,
+          escola_id: escolaId,
+          respostas: answers
+        }]);
+      if (insertError) throw insertError;
+      setSuccess(true);
+      setTimeout(() => {
+        setShowAlunoSelection(true);
+        setAlunoSelecionado(null);
+        setTurmaSelecionada(null);
+        setAnswers({});
+        setSuccess(false);
+      }, 2000);
     } catch (err) {
-      console.error('[PublicPesquisa] erro ao salvar resposta:', err);
-      setGlobalError('Não foi possível enviar suas respostas. Tente novamente.');
+      setError('Erro ao enviar respostas. Tente novamente.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (submitDone) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#f6f7fb] flex items-center justify-center px-4 py-10">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Obrigado!</h1>
-          <p className="text-gray-600 mb-6">Suas respostas foram enviadas com sucesso.</p>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-          >
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin text-4xl mb-4">⏳</div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!campaign) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-red-50">
+        <div className="text-center">
+          <p className="text-red-600 text-lg mb-4">{error || 'Campanha não encontrada'}</p>
+          <button onClick={() => navigate('/')} className="text-blue-600 hover:underline">
             Voltar
           </button>
         </div>
@@ -316,120 +277,181 @@ export default function PublicPesquisa() {
     );
   }
 
-  // Tela de acesso por matrícula
-  if (!aluno) {
+  if (!currentUser || userRole !== 'responsavel') {
     return (
-      <div className="min-h-screen bg-[#f6f7fb] flex items-center justify-center px-4 py-10">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-          <h1 className="text-2xl font-bold text-center text-gray-900 mb-4">Acesso à Pesquisa</h1>
-          <p className="text-center text-gray-600 mb-8 text-sm">
-            Para iniciar a pesquisa, por favor, digite seu número de matrícula.
+      <div className="min-h-screen flex items-center justify-center bg-yellow-50">
+        <div className="text-center">
+          <p className="text-yellow-700 text-lg mb-4">
+            Você precisa estar logado como responsável para responder esta pesquisa
           </p>
-          <form onSubmit={handleAccess} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Número de Matrícula</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={matricula}
-                onChange={(e) => setMatricula(e.target.value.replace(/\D/g, ''))}
-                placeholder="000000"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            {accessState.error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
-                {accessState.error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={accessState.loading || !matricula.trim()}
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg disabled:opacity-60"
-            >
-              {accessState.loading ? 'Validando...' : 'Acessar'}
-            </button>
-          </form>
+          <button onClick={() => navigate('/login')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Fazer Login
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb] px-4 py-6">
-      <div className="max-w-3xl mx-auto space-y-4">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <p className="text-sm text-gray-500 mb-1">Olá, {aluno.nome_aluno || aluno.nome || 'Aluno'}!</p>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{campaign?.title || 'Pesquisa'}</h1>
-          <p className="text-gray-600 text-sm">Por favor, avalie conforme as perguntas abaixo.</p>
-          {campaign?.description && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-gray-700 text-sm whitespace-pre-wrap">{campaign.description}</p>
-            </div>
-          )}
-        </div>
-
-        {globalError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">
-            {globalError}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 text-white">
+            <h1 className="text-3xl font-bold mb-2">{campaign.title}</h1>
+            {campaign.description && (
+              <p className="text-blue-100">{campaign.description}</p>
+            )}
           </div>
-        )}
 
-        <Toast
-          isOpen={showToast}
-          type="error"
-          message={toastError}
-          onClose={() => setShowToast(false)}
-          duration={4000}
-        />
+          <div className="p-8">
+            {error && (
+              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                ✅ Resposta registrada com sucesso!
+              </div>
+            )}
 
-        {professores.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-5 text-gray-600 text-sm">
-            Nenhum professor vinculado a esta pesquisa.
-          </div>
-        ) : (
-          professores.map((prof) => (
-            <div key={prof.id} className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
-              <h2 className="text-xl font-bold text-blue-700">{prof.name}</h2>
-              {questions.map((q, idx) => (
-                <div key={idx} className="space-y-2">
-                  <p className="text-sm font-semibold text-gray-800">{idx + 1}. {q.text}</p>
-                  {q.type === 'scale5' ? (
-                    <StarRating value={(answers[prof.id] || {})[idx] || 0} onChange={(val) => setAnswer(prof.id, idx, val)} />
-                  ) : (
-                    <textarea
-                      rows={3}
-                      value={(answers[prof.id] || {}).comment || ''}
-                      onChange={(e) => setComment(prof.id, e.target.value)}
-                      placeholder="Deixe seu comentário..."
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  )}
+            {showAlunoSelection ? (
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Selecione qual aluno deseja avaliar:</h2>
+                {alunosDisponiveis.length === 0 ? (
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800">
+                    <p className="font-semibold mb-2">⚠️ Nenhum aluno disponível</p>
+                    <p className="text-sm">
+                      Você não possui alunos com matrícula ativa no sistema. 
+                      Verifique se a matrícula foi confirmada e o pagamento foi processado.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {alunosDisponiveis.map(aluno => (
+                      <div key={aluno.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => handleSelecionarAluno(aluno)}
+                          className="w-full p-4 hover:bg-blue-50 transition text-left"
+                        >
+                          <h3 className="font-semibold text-gray-800">{aluno.nome}</h3>
+                          <p className="text-sm text-gray-500">Matrícula: {aluno.matricula}</p>
+                          <p className="text-xs text-gray-400 mt-2">
+                            {aluno.turmas?.length || 0} turma(s) vinculada(s)
+                          </p>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : alunoSelecionado && !turmaSelecionada ? (
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">
+                  Selecione qual turma de {alunoSelecionado.nome}:
+                </h2>
+                <div className="space-y-3">
+                  {turmasSelecionadas.map(turma => {
+                    const jaRespondeu = respostasFeitas[`${alunoSelecionado.id}-${turma.id}`];
+                    return (
+                      <button
+                        key={turma.id}
+                        onClick={() => handleSelecionarTurma(turma)}
+                        disabled={jaRespondeu}
+                        className={`w-full p-4 border rounded-lg transition text-left ${
+                          jaRespondeu
+                            ? 'border-gray-300 bg-gray-50 cursor-not-allowed opacity-60'
+                            : 'border-gray-200 hover:bg-blue-50 hover:border-blue-400 cursor-pointer'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-gray-800">{turma.nome}</h3>
+                          {jaRespondeu && (
+                            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                              ✓ Respondido
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          ))
-        )}
-
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={submitting || submitDone}
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg disabled:opacity-60"
-          >
-            {submitting ? 'Enviando respostas...' : 'Enviar respostas'}
-          </button>
+                <button
+                  onClick={() => navigate('/responsavel/pesquisas')}
+                  className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                >
+                  Voltar
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-gray-600">
+                    Respondendo para: <span className="font-bold">{alunoSelecionado?.nome}</span> - Turma: <span className="font-bold">{turmaSelecionada?.nome}</span>
+                  </p>
+                </div>
+                
+                {Array.isArray(campaign.questions) && campaign.questions.map((question, index) => {
+                  let questionText = question.text;
+                  if (question.professor_id && professoresMap[question.professor_id]) {
+                    questionText = `${question.text} - Professor: ${professoresMap[question.professor_id]}`;
+                  }
+                  return (
+                    <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
+                      <label className="block font-medium text-gray-800 mb-4">
+                        {index + 1}. {questionText}
+                      </label>
+                      {question.type === 'scale5' ? (
+                        <StarRating
+                          value={parseInt(answers[index]) || 0}
+                          onChange={(value) => setAnswers(prev => ({
+                            ...prev,
+                            [index]: String(value)
+                          }))}
+                        />
+                      ) : (
+                        <textarea
+                          value={answers[index] || ''}
+                          onChange={(e) => setAnswers(prev => ({
+                            ...prev,
+                            [index]: e.target.value
+                          }))}
+                          placeholder="Sua resposta..."
+                          rows={3}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+                
+                <div className="flex gap-3 mt-8">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTurmaSelecionada(null);
+                      setShowAlunoSelection(false);
+                    }}
+                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+                  >
+                    {submitting ? 'Enviando...' : 'Enviar Respostas'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-
-      <Toast
-        isOpen={showToast}
-        type="error"
-        message={toastError}
-        onClose={() => setShowToast(false)}
-        duration={4000}
-      />
     </div>
   );
 }
+
+export default PublicPesquisa;

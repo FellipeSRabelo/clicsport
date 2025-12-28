@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { supabase } from '../../supabase/supabaseConfig';
-import { User, LogOut, FileText, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { User, FileText, AlertCircle, CheckCircle, Clock, Plus, RefreshCcw } from 'lucide-react';
 
 const DashboardResponsavel = () => {
   const { currentUser, signOut, userEmail } = useSupabaseAuth();
@@ -128,9 +128,9 @@ const DashboardResponsavel = () => {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      ativo: { bg: 'bg-green-100', text: 'text-green-800', icon: CheckCircle, label: 'Ativo' },
+      pago: { bg: 'bg-green-100', text: 'text-green-800', icon: CheckCircle, label: 'Ativo' },
       pendente: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: Clock, label: 'Pendente' },
-      inativo: { bg: 'bg-red-100', text: 'text-red-800', icon: AlertCircle, label: 'Inativo' },
+      cancelado: { bg: 'bg-red-100', text: 'text-red-800', icon: AlertCircle, label: 'Inativo' },
     };
     const config = statusMap[status] || statusMap.pendente;
     const Icon = config.icon;
@@ -147,40 +147,31 @@ const DashboardResponsavel = () => {
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Painel do Responsável</h1>
               <p className="text-gray-600 mt-1">{userEmail}</p>
             </div>
-            <div className="flex gap-3">
+            <div className="hidden md:flex gap-2">
               <a
                 href="/responsavel/matriculas/nova"
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition text-sm"
               >
                 Nova Matrícula
               </a>
               <a
                 href="/responsavel/matriculas/renovacao"
-                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition text-sm"
               >
                 Renovar Matrícula
               </a>
-            <button
-              onClick={() => {
-                signOut();
-              }}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-            >
-              <LogOut size={18} />
-              Sair
-            </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Conteúdo */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-2 md:px-4 py-4 pb-24 md:pb-6">
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <div className="text-center">
@@ -210,23 +201,25 @@ const DashboardResponsavel = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Resumo de Alunos */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="text-3xl font-bold text-blue-600">{alunos.length}</div>
-                <p className="text-gray-600 text-sm mt-2">Aluno(s) Vinculado(s)</p>
-              </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="text-3xl font-bold text-green-600">
-                  {alunos.filter(a => a.status === 'ativo').length}
+            {/* Resumo de Alunos (único card com 3 colunas) */}
+            <div className="bg-white rounded-lg shadow p-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center">
+                  <div className="text-xl md:text-2xl font-bold text-blue-600">{alunos.length}</div>
+                  <p className="text-gray-600 text-xs md:text-sm mt-1">Vinculados</p>
                 </div>
-                <p className="text-gray-600 text-sm mt-2">Aluno(s) Ativo(s)</p>
-              </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="text-3xl font-bold text-yellow-600">
-                  {alunos.filter(a => a.status !== 'ativo').length}
+                <div className="text-center">
+                  <div className="text-xl md:text-2xl font-bold text-green-600">
+                    {alunos.filter(a => a.status === 'pago').length}
+                  </div>
+                  <p className="text-gray-600 text-xs md:text-sm mt-1">Ativos</p>
                 </div>
-                <p className="text-gray-600 text-sm mt-2">Pendente(s)</p>
+                <div className="text-center">
+                  <div className="text-xl md:text-2xl font-bold text-yellow-600">
+                    {alunos.filter(a => a.status !== 'pago').length}
+                  </div>
+                  <p className="text-gray-600 text-xs md:text-sm mt-1">Pendentes</p>
+                </div>
               </div>
             </div>
 
@@ -234,7 +227,7 @@ const DashboardResponsavel = () => {
             <div className="space-y-4">
               {alunos.map((aluno) => (
                 <div key={aluno.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">
-                  <div className="p-6">
+                  <div className="p-4">
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <h3 className="text-xl font-bold text-gray-900">{aluno.nome_completo}</h3>
@@ -323,12 +316,12 @@ const DashboardResponsavel = () => {
                   </div>
 
                   {/* Footer do Card */}
-                  <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex gap-3">
+                  <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 flex gap-2">
                     <button className="flex items-center gap-2 flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition text-center justify-center">
                       <FileText size={18} />
                       Ver Documentos
                     </button>
-                    <button className="flex items-center gap-2 flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition text-center justify-center">
+                    <button className="flex items-center gap-2 flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition text-center justify-center text-sm">
                       Ver Mais Detalhes
                     </button>
                   </div>
@@ -337,6 +330,28 @@ const DashboardResponsavel = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Barra de Ação Fixa (Mobile) */}
+      <div className="fixed bottom-0 inset-x-0 md:hidden bg-white/95 backdrop-blur border-t border-gray-200 shadow-lg">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-2">
+          <a
+            href="/responsavel/matriculas/nova"
+            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition text-sm font-semibold"
+            aria-label="Nova Matrícula"
+          >
+            <Plus size={18} />
+            Nova Matrícula
+          </a>
+          <a
+            href="/responsavel/matriculas/renovacao"
+            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition text-sm font-semibold"
+            aria-label="Renovar Matrícula"
+          >
+            <RefreshCcw size={18} />
+            Renovar
+          </a>
+        </div>
       </div>
     </div>
   );

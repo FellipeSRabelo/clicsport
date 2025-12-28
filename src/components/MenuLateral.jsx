@@ -17,16 +17,22 @@ const MenuLateral = ({ isCompact = false }) => {
     
     // Módulos Ativos (Controlados pelo Supabase)
     (modulosAtivos.achados !== false) && { name: 'Achados e Perdidos', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno', 'responsavel'], key: 'achados' },
-    modulosAtivos.pesquisas && { 
-      name: 'Pesquisas', 
-      icon: faBook, 
-      roles: ['gestor', 'aluno'],
+    modulosAtivos.pesquisas && {
+      name: 'Pesquisas',
+      icon: faBook,
+      roles: ['gestor', 'aluno', 'responsavel'],
       key: 'pesquisas',
-      submenu: [
-        { name: 'Dashboard', path: '/pesquisas' },
-        { name: 'Nova Campanha', path: '/pesquisas/nova-campanha' },
-        { name: 'Minhas Pesquisas', path: '/pesquisas/lista' },
-      ]
+      submenu: (
+        userRole === 'responsavel'
+          ? [
+              { name: 'Disponíveis', path: '/responsavel/pesquisas' },
+            ]
+          : [
+              { name: 'Dashboard', path: '/pesquisas' },
+              { name: 'Nova Campanha', path: '/pesquisas/nova-campanha' },
+              { name: 'Minhas Pesquisas', path: '/pesquisas/lista' },
+            ]
+      )
     },
     
   ].filter(item => {

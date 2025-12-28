@@ -10,7 +10,7 @@ const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
     const [displayTitle, setDisplayTitle] = useState(title);
     const menuRef = useRef(null);
     const navigate = useNavigate();
-    const { logout, modulosAtivos, modulosPermitidos, userRole } = useSupabaseAuth();
+    const { logout, modulosAtivos, modulosPermitidos, userRole, currentUser } = useSupabaseAuth();
 
     // Atualiza o título quando a prop muda
     useEffect(() => {
@@ -23,7 +23,7 @@ const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
             { name: 'Dashboard', path: '/app', icon: faHome, roles: ['gestor', 'aluno', 'responsavel'], key: 'dashboard' },
             { name: 'Gestão', path: '/gestao', icon: faUsers, roles: ['gestor'], key: 'gestao' },
             (modulosAtivos?.achados !== false) && { name: 'Achados', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno', 'responsavel'], key: 'achados' },
-            modulosAtivos?.pesquisas && { name: 'Pesquisas', path: '/pesquisas', icon: faBook, roles: ['gestor', 'aluno'], key: 'pesquisas' },
+            modulosAtivos?.pesquisas && { name: 'Pesquisas', path: userRole === 'responsavel' ? '/responsavel/pesquisas' : '/pesquisas', icon: faBook, roles: ['gestor', 'aluno', 'responsavel'], key: 'pesquisas' },
             { name: 'Escola', path: '/gestao?tab=config', icon: faTools, roles: ['gestor'], key: 'config' },
         ].filter(Boolean).filter(item => {
             // Se for gestor, verifica modulosPermitidos
@@ -79,7 +79,7 @@ const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
             <div className="flex items-center space-x-3">
                 <button
                     onClick={onMenuToggle}
-                    className="text-gray-700 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
+                    className="md:hidden text-gray-700 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
                     aria-label="Toggle menu"
                 >
                     <FontAwesomeIcon icon={faBars} size="sm" />
@@ -142,12 +142,19 @@ const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
                                 ))}
                             </div>
                             <div className="border-t pt-2">
-                                <button
-                                    onClick={handleConfiguracoes}
-                                    className="w-full text-left px-2 py-1.5 hover:bg-gray-100 text-gray-700 text-sm rounded"
-                                >
-                                    Configurações da Escola
-                                </button>
+                                {currentUser?.email && (
+                                    <div className="px-2 py-1.5 text-xs text-gray-500 border-b mb-1">
+                                        {currentUser.email}
+                                    </div>
+                                )}
+                                {userRole === 'gestor' && (
+                                  <button
+                                      onClick={handleConfiguracoes}
+                                      className="w-full text-left px-2 py-1.5 hover:bg-gray-100 text-gray-700 text-sm rounded"
+                                  >
+                                      Configurações da Escola
+                                  </button>
+                                )}
                                 <button
                                     onClick={handleLogout}
                                     className="w-full text-left px-2 py-1.5 hover:bg-gray-100 text-gray-700 text-sm rounded"

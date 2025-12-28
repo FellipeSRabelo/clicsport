@@ -1,32 +1,19 @@
 // src/modules/pesquisas/ListaPesquisas.jsx
-'use client';
-
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../firebase/AuthContext';
-import { db } from '../../firebase/firebaseConfig';
+import React, { useState, useEffect } from 'react';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
+import { supabase } from '../../supabase/supabaseConfig';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQrcode, faLink, faTrash, faTriangleExclamation, faPlus, faSpinner, faPenToSquare, faEye } from '@fortawesome/free-solid-svg-icons';
-import {
-  collection,
-  query,
-  getDocs,
-  onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc
-} from 'firebase/firestore';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import Modal from './components/Modal';
 import StatusToggle from './components/StatusToggle';
 import QRCodeDisplay from './components/QRCodeDisplay';
-import { resolveCampaignsRoot } from './campaignsPath';
 
 export default function ListaPesquisas() {
-  const { currentUser, escolaId } = useAuth();
+  const { escolaId } = useSupabaseAuth();
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState([]);
-  const [campaignsRoot, setCampaignsRoot] = useState('escolas');
   const [turmas, setTurmas] = useState(new Map());
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [loadingTurmas, setLoadingTurmas] = useState(true);
@@ -38,156 +25,89 @@ export default function ListaPesquisas() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const qrCodeRef = useRef(null);
-  const isMountedRef = useRef(true);
-  const swappedRootRef = useRef(false);
 
-  // Cleanup ref on unmount
-  useEffect(() => {
-    // Em dev (StrictMode) o effect monta/desmonta duas vezes; garanta que o flag volte a true
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  // Buscar Campanhas
+  // Buscar Campanhas do Supabase
   useEffect(() => {
     if (!escolaId) {
       console.log('[ListaPesquisas] escolaId não definido:', escolaId);
       return;
     }
 
-    let unsubscribe = null;
-    let cancelled = false;
+    let subscription;
 
     const fetchCampaigns = async () => {
       setLoadingCampaigns(true);
       try {
-        const chosenPath = await resolveCampaignsRoot(db, escolaId);
-        if (cancelled) return;
+        // Realtime subscription
+        subscription = supabase
+          .channel(`campanhas-${escolaId}`)
+          .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'campanhas',
+            filter: `escola_id=eq.${escolaId}`
+          }, (payload) => {
+            console.log('[ListaPesquisas] Mudança detectada:', payload);
+            fetchData();
+          })
+          .subscribe();
 
-        setCampaignsRoot(chosenPath);
-        console.log('[ListaPesquisas] chosenPath:', chosenPath);
-
-        const q = query(collection(db, chosenPath, escolaId, 'campaigns'));
-        console.log('[ListaPesquisas] Query path:', chosenPath, escolaId);
-        console.log('[ListaPesquisas] Registrando onSnapshot...');
-
-        const handleSnapshot = (snapshot) => {
-          try {
-            console.log('[ListaPesquisas] onSnapshot disparado');
-            if (!isMountedRef.current) {
-              console.warn('[ListaPesquisas] ignorando snapshot: componente desmontado');
-              return;
-            }
-
-            if (!snapshot || !Array.isArray(snapshot.docs)) {
-              console.error('[ListaPesquisas] snapshot inválido ou sem docs');
-              setError('Snapshot inválido');
-              setLoadingCampaigns(false);
-              return;
-            }
-
-            console.log('[ListaPesquisas] snapshot.docs.length:', snapshot.docs.length);
-
-            if (snapshot.docs.length === 0 && !swappedRootRef.current) {
-              console.warn('[ListaPesquisas] Nenhuma campanha encontrada, checando caminho alternativo...');
-              const altRoot = chosenPath === 'escolas' ? 'schools' : 'escolas';
-              swappedRootRef.current = true;
-
-              getDocs(query(collection(db, altRoot, escolaId, 'campaigns')))
-                .then((altSnap) => {
-                  if (!isMountedRef.current) return;
-                  if (!altSnap.empty) {
-                    console.info('[ListaPesquisas] Dados encontrados em caminho alternativo, alternando para', altRoot);
-                    setCampaignsRoot(altRoot);
-                    if (typeof unsubscribe === 'function') unsubscribe();
-
-                    const altQuery = query(collection(db, altRoot, escolaId, 'campaigns'));
-                    unsubscribe = onSnapshot(altQuery, (altSnapshot) => {
-                      if (!isMountedRef.current) return;
-                      console.log('[ListaPesquisas] onSnapshot alternativo length:', altSnapshot.docs.length);
-                      const campaignsDataAlt = altSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                      setCampaigns(campaignsDataAlt);
-                      setLoadingCampaigns(false);
-                    }, (altErr) => {
-                      console.error('[ListaPesquisas] Erro no onSnapshot alternativo:', altErr);
-                      if (!isMountedRef.current) return;
-                      setError('Não foi possível carregar as campanhas.');
-                      setLoadingCampaigns(false);
-                    });
-                  } else {
-                    console.warn('[ListaPesquisas] Caminho alternativo também vazio');
-                    setCampaigns([]);
-                    setLoadingCampaigns(false);
-                  }
-                })
-                .catch((altErr) => {
-                  console.error('[ListaPesquisas] Erro ao tentar caminho alternativo:', altErr);
-                  setError('Não foi possível carregar as campanhas.');
-                  setLoadingCampaigns(false);
-                });
-              return;
-            }
-
-            const campaignsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            console.log('[ListaPesquisas] campaignsData:', JSON.stringify(campaignsData, null, 2));
-            setCampaigns(campaignsData);
-            setLoadingCampaigns(false);
-          } catch (err) {
-            console.error('[ListaPesquisas] Erro ao processar snapshot:', err);
-            setError('Erro ao processar campanhas. Veja o console.');
-            setLoadingCampaigns(false);
-          }
-        };
-
-        unsubscribe = onSnapshot(q, handleSnapshot, (err) => {
-          console.error('[ListaPesquisas] Erro no onSnapshot:', err);
-          if (!isMountedRef.current) return;
-          setError("Não foi possível carregar as campanhas.");
-          setLoadingCampaigns(false);
-        });
+        await fetchData();
       } catch (err) {
-        if (!isMountedRef.current) return;
         console.error('Erro ao listar campanhas:', err);
         setError('Não foi possível carregar as campanhas.');
         setLoadingCampaigns(false);
       }
     };
 
+    const fetchData = async () => {
+      const { data, error: fetchError } = await supabase
+        .from('campanhas')
+        .select('*')
+        .eq('escola_id', escolaId)
+        .order('created_at', { ascending: false });
+
+      if (fetchError) {
+        console.error('[ListaPesquisas] Erro ao buscar:', fetchError);
+        setError('Não foi possível carregar as campanhas.');
+      } else {
+        console.log('[ListaPesquisas] Dados carregados:', data);
+        setCampaigns(data || []);
+      }
+      setLoadingCampaigns(false);
+    };
+
     fetchCampaigns();
     return () => {
-      cancelled = true;
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
+      if (subscription) {
+        supabase.removeChannel(subscription);
       }
     };
   }, [escolaId]);
 
-  // Buscar Turmas
+  // Buscar Turmas (Supabase)
   useEffect(() => {
     if (!escolaId) return;
 
     const fetchTurmas = async () => {
       setLoadingTurmas(true);
       try {
-        const turmasQuery = query(collection(db, 'escolas', escolaId, 'turmas'));
-        const snap = await getDocs(turmasQuery);
-        if (!isMountedRef.current) return;
-        
+        const { data, error } = await supabase
+          .from('turmas')
+          .select('id, nome')
+          .eq('escola_id', escolaId);
+
+        if (error) throw error;
+
         const turmasMap = new Map();
-        snap.docs.forEach(doc => {
-          turmasMap.set(doc.id, doc.data().name);
+        (data || []).forEach(t => {
+          turmasMap.set(t.id, t.nome);
         });
         setTurmas(turmasMap);
       } catch (err) {
-        if (!isMountedRef.current) return;
         console.error("Erro ao listar turmas:", err);
       } finally {
-        if (isMountedRef.current) {
-          setLoadingTurmas(false);
-        }
+        setLoadingTurmas(false);
       }
     };
 
@@ -207,13 +127,26 @@ export default function ListaPesquisas() {
     const newStatus = campaign.status === 'active' ? 'inactive' : 'active';
 
     setIsToggling(campaign.id);
+    
+    // Atualizar estado local imediatamente (otimistic update)
+    setCampaigns(campaigns.map(c => 
+      c.id === campaign.id ? { ...c, status: newStatus } : c
+    ));
+
     try {
-      const campaignRef = doc(db, campaignsRoot, escolaId, 'campaigns', campaign.id);
-      await updateDoc(campaignRef, {
-        status: newStatus
-      });
+      const { error } = await supabase
+        .from('campanhas')
+        .update({ status: newStatus })
+        .eq('id', campaign.id);
+
+      if (error) throw error;
     } catch (err) {
+      console.error('[ListaPesquisas] Erro ao atualizar status:', err);
       alert("Ocorreu um erro ao atualizar o status.");
+      // Reverter ao status anterior em caso de erro
+      setCampaigns(campaigns.map(c => 
+        c.id === campaign.id ? { ...c, status: campaign.status } : c
+      ));
     } finally {
       setIsToggling(null);
     }
@@ -246,12 +179,17 @@ export default function ListaPesquisas() {
   };
 
   const handleDelete = async () => {
-    if (!currentUser || !campaignToDelete) return;
+    if (!campaignToDelete) return;
 
     setIsDeleting(true);
     try {
-      const campaignRef = doc(db, campaignsRoot, escolaId, 'campaigns', campaignToDelete.id);
-      await deleteDoc(campaignRef);
+      const { error } = await supabase
+        .from('campanhas')
+        .delete()
+        .eq('id', campaignToDelete.id);
+
+      if (error) throw error;
+
       setIsDeleteModalOpen(false);
       setCampaignToDelete(null);
     } catch (err) {
@@ -315,19 +253,11 @@ export default function ListaPesquisas() {
                     <td className="px-4 py-3 text-center whitespace-nowrap text-sm text-gray-600">
                       {getTipoText(camp.type)}
                     </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap text-sm text-gray-600 max-w-xs truncate" title={getTurmaNames(camp.targetTurmasIds)}>
-                      {getTurmaNames(camp.targetTurmasIds)}
+                    <td className="px-4 py-3 text-center whitespace-nowrap text-sm text-gray-600 max-w-xs truncate" title={getTurmaNames(camp.target_turmas_ids)}>
+                      {getTurmaNames(camp.target_turmas_ids)}
                     </td>
                     <td className="px-4 py-3 text-center whitespace-nowrap text-sm text-gray-600">
-                      {camp.createdAt
-                        ? (camp.createdAt.toDate
-                            ? format(camp.createdAt.toDate(), 'dd/MM/yyyy')
-                            : (camp.createdAt instanceof Date
-                                ? format(camp.createdAt, 'dd/MM/yyyy')
-                                : (typeof camp.createdAt === 'string'
-                                    ? camp.createdAt
-                                    : '---')))
-                        : '---'}
+                      {camp.created_at ? format(new Date(camp.created_at), 'dd/MM/yyyy') : '---'}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end gap-1">
@@ -395,7 +325,7 @@ export default function ListaPesquisas() {
       )}
 
       <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}>
-        <QRCodeDisplay qrRef={qrCodeRef} url={currentQrUrl} />
+        <QRCodeDisplay url={currentQrUrl} />
       </Modal>
 
       <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>

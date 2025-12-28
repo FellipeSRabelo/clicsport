@@ -1363,17 +1363,16 @@ const EditAlunoModal = ({ aluno, escolaId, unidades, modalidades, turmas, onClos
                         setShowAssinatura(false);
                         setAssinaturaSelecionada(null);
                     }} 
-                    maxWidth="max-w-2xl"
+                    maxWidth="max-w-4xl"
                 >
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         <div className="text-center">
                             <p className="text-xs text-gray-600 mb-3">Matrícula: {assinaturaSelecionada.numero_matricula}</p>
                             {assinaturaSelecionada.assinatura_canvas ? (
                                 <img 
                                     src={assinaturaSelecionada.assinatura_canvas} 
                                     alt="Assinatura" 
-                                    className="max-w-full h-auto border border-gray-300 rounded mx-auto"
-                                    style={{ maxHeight: '300px' }}
+                                    className="w-full h-auto max-h-[70vh] border border-gray-300 rounded mx-auto object-contain"
                                 />
                             ) : (
                                 <p className="text-xs text-gray-500">Nenhuma assinatura disponível</p>

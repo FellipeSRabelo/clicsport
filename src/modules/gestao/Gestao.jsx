@@ -8,6 +8,7 @@ import GestaoTurmas from './GestaoTurmas';
 import GestaoProfessores from './GestaoProfessores'; 
 import GestaoAlunosTable from './GestaoAlunosTable'; 
 import GestaoEscola from './GestaoEscola';
+import GestaoMatriculas from './GestaoMatriculas';
 
 
 const Gestao = () => {
@@ -33,6 +34,7 @@ const Gestao = () => {
     const tabs = [
         // CADASTROS CORE (Obrigatório)
         { id: 'alunos', name: 'Alunos e Importação', icon: faGraduationCap, component: GestaoAlunosTable }, 
+        { id: 'matriculas', name: 'Matrículas', icon: faBook, component: GestaoMatriculas },
         { id: 'turmas', name: 'Turmas', icon: faUsers, component: GestaoTurmas },
         { id: 'professores', name: 'Professores', icon: faChalkboardTeacher, component: GestaoProfessores },
         { id: 'config', name: 'Configurações', icon: faTools, component: GestaoEscola },

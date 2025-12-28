@@ -13,11 +13,9 @@ const CanvasAssinatura = ({ onCapture, onClear }) => {
 
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = rect.width * ratio;
-      canvas.height = rect.height * ratio;
-      const ctx = canvas.getContext('2d');
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      // Mantém o canvas com o mesmo tamanho CSS para evitar deslocamento em touch
+      canvas.width = rect.width;
+      canvas.height = rect.height;
     };
 
     resizeCanvas();
@@ -54,7 +52,7 @@ const CanvasAssinatura = ({ onCapture, onClear }) => {
     const { x, y } = getCoordinates(e);
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = '#111827';
@@ -114,14 +112,13 @@ const CanvasAssinatura = ({ onCapture, onClear }) => {
       </p>
       <canvas
         ref={canvasRef}
-        width={600}
-        height={220}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
         className="border-2 border-gray-300 rounded-lg bg-white cursor-crosshair touch-none w-full h-48"
         style={{
+          touchAction: 'none',
           backgroundImage:
             'linear-gradient(to bottom, transparent calc(50% - 1px), #cbd5f5 calc(50% - 1px), #cbd5f5 calc(50% + 1px), transparent calc(50% + 1px))',
         }}

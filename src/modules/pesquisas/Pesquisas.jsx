@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '../../firebase/AuthContext';
+import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import ListaPesquisas from './ListaPesquisas';
@@ -13,10 +13,10 @@ import { faChartLine, faPlusCircle, faList } from '@fortawesome/free-solid-svg-i
 
 // Componente principal que faz o roteamento interno do módulo Pesquisas
 export default function Pesquisas() {
-  const { currentUser, escolaId, loading: authLoading } = useAuth();
+  const { currentUser, escolaId, loading: loading } = useSupabaseAuth();
   const location = useLocation();
 
-  if (authLoading) {
+  if (loading) {
     return <div className="flex justify-center items-center h-screen">Carregando...</div>;
   }
 

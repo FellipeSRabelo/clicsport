@@ -138,17 +138,58 @@ export const SupabaseAuthProvider = ({ children }) => {
 
         if (respData.escolas) {
           setEscolaNome(respData.escolas.nome);
-          // Garante que achados fique ativo para responsáveis
+          // Garante que achados e pesquisas fiquem ativos para responsáveis
           const ativos = respData.escolas.modulos_ativos || {};
-          setModulosAtivos({ ...ativos, achados: true });
+          setModulosAtivos({ ...ativos, achados: true, pesquisas: true });
         } else {
-          setModulosAtivos({ achados: true });
+          setModulosAtivos({ achados: true, pesquisas: true });
         }
 
         return { found: true, role: 'responsavel', data: respData };
       }
 
-      // 4) Se não encontrou, assume responsável genérico sem escola (limita acesso)
+      // 4) Tenta buscar escola via responsável_financeiro
+      console.log('⚠️ Responsável não cadastrado, buscando via matrículas...');
+      const { data: rfData } = await supabase
+        .from('responsavel_financeiro')
+        .select('matricula_id, matriculas(aluno_id, alunos(escola_id))')
+        .eq('email', user.email)
+        .limit(1)
+        .maybeSingle();
+
+      if (rfData && rfData.matriculas?.alunos?.escola_id) {
+        const foundEscolaId = rfData.matriculas.alunos.escola_id;
+        console.log('✅ Escola encontrada via matrícula:', foundEscolaId);
+        
+        // Criar registro de responsável automaticamente
+        const { data: newResp } = await supabase
+          .from('responsaveis')
+          .upsert({
+            uid: userId,
+            escola_id: foundEscolaId,
+            email: user.email,
+            nome_completo: user.user_metadata?.full_name || user.email,
+            ativo: true,
+          })
+          .select('*, escolas(*)')
+          .maybeSingle();
+
+        if (newResp) {
+          setEscolaId(newResp.escola_id);
+          setUserRole('responsavel');
+          setPapelAchados('responsavel');
+          if (newResp.escolas) {
+            setEscolaNome(newResp.escolas.nome);
+            const ativos = newResp.escolas.modulos_ativos || {};
+            setModulosAtivos({ ...ativos, achados: true, pesquisas: true });
+          } else {
+            setModulosAtivos({ achados: true, pesquisas: true });
+          }
+          return { found: true, role: 'responsavel', data: newResp };
+        }
+      }
+
+      // 5) Tenta via pendingEscolaId (fluxo de cadastro)
       console.log('⚠️ Usuário não cadastrado em gestores, professores ou responsáveis');
       const newResp = await ensureResponsavel(user);
       if (newResp) {
@@ -158,14 +199,14 @@ export const SupabaseAuthProvider = ({ children }) => {
         if (newResp.escolas) {
           setEscolaNome(newResp.escolas.nome);
           const ativos = newResp.escolas.modulos_ativos || {};
-          setModulosAtivos({ ...ativos, achados: true });
+          setModulosAtivos({ ...ativos, achados: true, pesquisas: true });
         } else {
-          setModulosAtivos({ achados: true });
+          setModulosAtivos({ achados: true, pesquisas: true });
         }
         return { found: true, role: 'responsavel', data: newResp };
       }
       setUserRole('responsavel');
-      setModulosAtivos({ achados: true });
+      setModulosAtivos({ achados: true, pesquisas: true });
       return { found: false, role: 'responsavel' };
 
     } catch (error) {
@@ -229,6 +270,7 @@ export const SupabaseAuthProvider = ({ children }) => {
 
   const value = {
     currentUser,
+    userEmail: currentUser?.email,
     user: {
       id: currentUser?.id,
       email: currentUser?.email,

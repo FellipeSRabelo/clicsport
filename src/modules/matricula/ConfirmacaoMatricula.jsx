@@ -3,6 +3,9 @@ import React from 'react';
 import { CheckCircle } from 'lucide-react';
 
 const ConfirmacaoMatricula = ({ matricula }) => {
+  const pixCode = matricula?.pix_copia_cola || '000201BR.GOV.BCB.PIX.EXEMPLO';
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(pixCode)}`;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-600 to-green-500 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
@@ -28,16 +31,30 @@ const ConfirmacaoMatricula = ({ matricula }) => {
           </p>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-6 mb-6 text-left">
-          <h3 className="font-bold text-gray-800 mb-3">Próximas Etapas:</h3>
-          <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
-            <li>Aguarde o link de pagamento por e-mail (PIX)</li>
-            <li>Efetue o pagamento da taxa de matrícula</li>
-            <li>
-              O professor entrará em contato em até 48h (verifique seu WhatsApp)
-            </li>
-            <li>Você será adicionado ao grupo de pais da turma</li>
-          </ol>
+        <div className="bg-gray-50 rounded-lg p-6 mb-6 text-left space-y-4">
+          <h3 className="font-bold text-gray-800">Pagamento da Matrícula</h3>
+          <p className="text-sm text-gray-700">Efetue o pagamento da taxa de matrícula via PIX (R$30,00).</p>
+
+          <div className="flex flex-col items-center gap-3">
+            <img src={qrSrc} alt="QR Code PIX" className="w-40 h-40 border border-gray-200 rounded-lg shadow-sm" />
+            <p className="text-xs text-gray-500 text-center">QR Code ilustrativo gerado a partir do PIX copia e cola.</p>
+          </div>
+
+          <div className="bg-white border border-dashed border-gray-300 rounded-lg p-3">
+            <p className="text-xs text-gray-600 mb-2 font-semibold">PIX copia e cola</p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 text-[11px] break-all text-gray-700 bg-gray-50 px-2 py-2 rounded border border-gray-200">
+                {pixCode}
+              </div>
+              <button
+                type="button"
+                onClick={() => navigator.clipboard?.writeText(pixCode)}
+                className="text-xs px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
         </div>
 
         <button
@@ -45,13 +62,6 @@ const ConfirmacaoMatricula = ({ matricula }) => {
           className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition"
         >
           Acessar Meu Painel
-        </button>
-
-        <button
-          onClick={() => (window.location.href = '/')}
-          className="w-full bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-400 transition mt-3"
-        >
-          Voltar ao Início
         </button>
 
         <p className="text-xs text-gray-500 mt-4">

@@ -20,6 +20,7 @@ import MatriculaBifurcacao from './modules/matricula/MatriculaBifurcacao';
 import NovaMatricula from './modules/responsavel/NovaMatricula';
 import RenovacaoMatricula from './modules/responsavel/RenovacaoMatricula';
 import DashboardResponsavel from './modules/responsavel/DashboardResponsavel';
+import PesquisasDisponiveis from './modules/responsavel/PesquisasDisponiveis';
 
 // Componente Wrapper para Rotas Protegidas
 const PrivateRoute = ({ element: Element, role, ...rest }) => {
@@ -100,10 +101,10 @@ const AppRoutes = () => {
       <Route path="/matricula/nova" element={<MatriculaBifurcacao escolaId={null} />} />
 
       {/* Rota Pública - Acesso a Pesquisa */}
-      <Route path="/p/:escolaId/:campaignId" element={<PublicPesquisa />} />
+      <Route path="/p/:escolaId/:campaignId" element={<Layout><PublicPesquisa /></Layout>} />
       
-      {/* Rota de ClicAchados (Com Layout e menu lateral) */}
-      <Route path="/achados" element={<Layout><Achados /></Layout>} />
+      {/* Rota de ClicAchados (Protegida) */}
+      <Route path="/achados" element={<PrivateRoute element={Achados} />} />
       
       {/* Rotas Protegidas (Dashboard Padrão) */}
       <Route path="/app" element={<PrivateRoute element={Dashboard} />} />
@@ -112,6 +113,7 @@ const AppRoutes = () => {
       <Route path="/responsavel" element={<PrivateRoute element={DashboardResponsavel} />} />
       <Route path="/responsavel/matriculas/nova" element={<PrivateRoute element={NovaMatricula} />} />
       <Route path="/responsavel/matriculas/renovacao" element={<PrivateRoute element={RenovacaoMatricula} />} />
+      <Route path="/responsavel/pesquisas" element={<PrivateRoute element={PesquisasDisponiveis} />} />
 
       {/* Módulo de Gestão (SÓ GESTOR - Sempre acessível se logado como gestor) */}
       <Route path="/gestao" element={<PrivateRoute element={Gestao} role="gestor" />} />
