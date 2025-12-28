@@ -1,16 +1,15 @@
 // src/modules/gestao/GestaoEscola.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
-import { db, storage } from '../../firebase/firebaseConfig';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { fetchEscola, updateEscola } from '../../supabase/gestaoApi';
+import { supabase } from '../../supabase/supabaseConfig';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faUpload, faSchool } from '@fortawesome/free-solid-svg-icons';
 
 const GestaoEscola = () => {
     const { user } = useSupabaseAuth();
     const escolaId = user?.escola_id; // Agora vem corretamente do contexto
-    const [escola, setEscola] = useState({ nome: '', razao_social: '', cnpj: '', cep: '', endereco: '', cidade: '', uf: '', email: '', site: '', telefone: '', logoUrl: '' });
+    const [escola, setEscola] = useState({ nome: '', razao_social: '', cnpj: '', cep: '', endereco: '', cidade: '', uf: '', email: '', site: '', telefone: '', logo_url: '' });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [logoFile, setLogoFile] = useState(null);
@@ -22,18 +21,18 @@ const GestaoEscola = () => {
     // Carrega dados da escola
     useEffect(() => {
         if (!escolaId) return;
-        const fetchEscola = async () => {
+        const fetchEscolaData = async () => {
             setLoading(true);
-            const escolaRef = doc(db, 'escolas', escolaId);
-            const docSnap = await getDoc(escolaRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                setEscola(data);
-                setPreviewUrl(data.logoUrl || '');
+            try {
+                const data = await fetchEscola(escolaId);
+                setEscola(data || {});
+                setPreviewUrl(data?.logo_url || '');
+            } catch (err) {
+                console.error('Erro ao buscar escola:', err);
             }
             setLoading(false);
         };
-        fetchEscola();
+        fetchEscolaData();
     }, [escolaId]);
 
     const handleFileChange = (e) => {
@@ -177,15 +176,12 @@ const GestaoEscola = () => {
         }
         // Basic validations
         const errors = [];
-        // email basic check
         if (escola.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(escola.email)) {
             errors.push('E-mail inválido.');
         }
-        // CNPJ must be 14 digits if provided
         if (escola.cnpj && escola.cnpj.replace(/\D/g, '').length !== 14) {
             errors.push('CNPJ deve conter 14 dígitos.');
         }
-        // CEP 8 digits if provided
         if (escola.cep && escola.cep.replace(/\D/g, '').length !== 8) {
             errors.push('CEP deve conter 8 dígitos.');
         }
@@ -195,16 +191,37 @@ const GestaoEscola = () => {
         }
         setSaving(true);
         try {
-            console.log('GestaoEscola: iniciando save - escolaId=', escolaId, 'nome=', escola.nome, 'logoFile=', !!logoFile);
-            let newLogoUrl = escola.logoUrl;
+            let newLogoUrl = escola.logo_url;
             let logoUpdated = false;
-
             if (logoFile) {
-                const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
-                if (isLocalhost) {
+                // Tenta upload para Supabase Storage
+                try {
+                    const resizedDataUrl = await fileToDataUrl(logoFile, { targetWidth: 300, targetHeight: 150 });
+                    if (!resizedDataUrl || typeof resizedDataUrl !== 'string' || !resizedDataUrl.startsWith('data:image/')) {
+                        alert('Erro ao processar a imagem da logo. Tente outro arquivo.');
+                        console.error('DataURL inválido:', resizedDataUrl);
+                        return;
+                    }
+                    const blob = dataURLToBlob(resizedDataUrl);
+                    console.log('Blob gerado para upload:', blob, 'Tamanho:', blob.size);
+                    if (!blob || blob.size === 0) {
+                        alert('Erro ao processar a imagem da logo (arquivo vazio). Tente outro arquivo.');
+                        console.error('Blob vazio:', blob);
+                        return;
+                    }
+                    const filename = `logo-300x150-${Date.now()}.png`;
+                    const { data, error } = await supabase.storage.from('escolas').upload(`${escolaId}/logo/${filename}`, blob, { upsert: true, contentType: 'image/png' });
+                    if (error) {
+                        alert('Erro ao fazer upload da logo: ' + error.message);
+                        console.error('Erro Supabase Storage:', error);
+                        return;
+                    }
+                    const { data: publicUrlData } = supabase.storage.from('escolas').getPublicUrl(`${escolaId}/logo/${filename}`);
+                    newLogoUrl = publicUrlData?.publicUrl || '';
+                    logoUpdated = true;
+                } catch (uploadErr) {
+                    // fallback: salva inline base64 se Storage falhar
                     try {
-                        console.log('GestaoEscola: localhost detected — using inline fallback (resized 300x150 PNG)');
                         const dataUrl = await fileToDataUrl(logoFile, { targetWidth: 300, targetHeight: 150 });
                         const approxBytes = Math.ceil((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4);
                         if (approxBytes <= 900000) {
@@ -212,62 +229,29 @@ const GestaoEscola = () => {
                             setFallbackSaved(true);
                             logoUpdated = true;
                         } else {
-                            console.warn('GestaoEscola: compressed image too large (kb):', Math.round(approxBytes/1024));
+                            console.warn('Imagem comprimida muito grande (kb):', Math.round(approxBytes/1024));
                         }
                     } catch (convErr) {
-                        console.error('GestaoEscola: error converting image to dataURL:', convErr);
-                    }
-                } else {
-                    // Try upload to Firebase Storage, but first resize to desired proportion (300x150)
-                    try {
-                        console.log('GestaoEscola: attempting storage upload (resized 300x150)...');
-                        // create resized dataURL at 300x150 and convert to Blob for upload
-                        const resizedDataUrl = await fileToDataUrl(logoFile, { targetWidth: 300, targetHeight: 150 });
-                        const blob = dataURLToBlob(resizedDataUrl);
-                        // standardized filename (PNG, 300x150)
-                        const filename = 'logo-300x150.png';
-                        const storageRef = ref(storage, `escolas/${escolaId}/logo/${filename}`);
-                        const uploadResult = await uploadBytes(storageRef, blob);
-                        newLogoUrl = await getDownloadURL(uploadResult.ref);
-                        logoUpdated = true;
-                    } catch (uploadErr) {
-                        console.error('GestaoEscola: upload failed, attempting inline fallback (300x150):', uploadErr);
-                        try {
-                            const dataUrl = await fileToDataUrl(logoFile, { targetWidth: 300, targetHeight: 150 });
-                            const approxBytes = Math.ceil((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4);
-                            if (approxBytes <= 900000) {
-                                newLogoUrl = dataUrl;
-                                setFallbackSaved(true);
-                                logoUpdated = true;
-                            } else {
-                                console.warn('GestaoEscola: compressed image too large (kb):', Math.round(approxBytes/1024));
-                            }
-                        } catch (convErr) {
-                            console.error('GestaoEscola: fallback conversion failed:', convErr);
-                        }
+                        console.error('Erro ao converter imagem para dataURL:', convErr);
                     }
                 }
             }
-
-            // Save Firestore document
-            const escolaRef = doc(db, 'escolas', escolaId);
-            console.log('GestaoEscola: saving document... logoUpdated=', logoUpdated, 'logoRemoved=', logoRemoved);
             const dataToSave = {
-                ...escola,
                 nome: escola.nome,
+                razao_social: escola.razao_social,
+                cnpj: escola.cnpj,
+                cep: escola.cep,
+                endereco: escola.endereco,
+                cidade: escola.cidade,
+                uf: escola.uf,
+                email: escola.email,
+                site: escola.site,
+                telefone: escola.telefone,
+                logo_url: logoUpdated ? newLogoUrl : (logoRemoved ? '' : escola.logo_url),
             };
-            if (logoUpdated) {
-                dataToSave.logoUrl = newLogoUrl;
-            } else if (logoRemoved) {
-                dataToSave.logoUrl = '';
-            }
-            await setDoc(escolaRef, dataToSave, { merge: true });
-            console.log('GestaoEscola: setDoc complete.');
-
-            // Update preview to final saved image (download URL or inline dataURL)
+            await updateEscola(escolaId, dataToSave);
             if (logoUpdated) setPreviewUrl(newLogoUrl || '');
             if (logoRemoved) setPreviewUrl('');
-
             alert('Dados da escola salvos com sucesso!');
             setLogoFile(null);
         } catch (error) {

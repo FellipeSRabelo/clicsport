@@ -456,7 +456,9 @@ const GestaoTurmas = () => {
 
     return (
         <div className="bg-white p-3 rounded-lg">
+            <h1 className="text-2xl font-bold text-clic-secondary mb-6">Gestão de Turmas</h1>
             <div className="flex justify-between items-center mb-4">
+                
                 <input
                     type="text"
                     placeholder="Buscar turma por nome..."
@@ -502,14 +504,17 @@ const GestaoTurmas = () => {
                                     <td className="px-3 py-2 text-sm text-gray-500">{turma.hora_inicio} às {turma.hora_termino}</td>
                                     <td className="px-3 py-2 text-sm text-gray-500">{contarAlunosDaTurma(turma.id)}/{turma.limite_alunos}</td>
                                     <td className="px-3 py-2 text-sm text-gray-500">R$ {turma.mensalidade?.toFixed(2) || '0.00'}</td>
-                                    <td className="px-3 py-2 text-right text-sm space-x-2">
-                                        <button onClick={(e) => { e.stopPropagation(); handleVerAlunos(turma); }} className="text-blue-500 hover:text-blue-700" title="Ver Alunos">
+                                    <td className="px-3 py-2 text-right text-sm space-x-0.5">
+                                        <button onClick={(e) => { e.stopPropagation(); handleVerAlunos(turma); }} 
+                                        className="bg-transparent text-gray-800 hover:text-blue-600 p-2 hover:border-transparent" title="Ver Alunos">
                                             <FontAwesomeIcon icon={faUsers} className="text-sm" />
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(turma); }} className="text-clic-primary hover:text-yellow-600" title="Editar">
+                                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(turma); }}
+                                         className="bg-transparent text-gray-800 hover:text-blue-600 p-2 hover:border-transparent" title="Editar">
                                             <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(turma.id, turma.nome); }} className="text-red-500 hover:text-red-700" title="Deletar">
+                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(turma.id, turma.nome); }}
+                                         className="bg-transparent text-gray-500 hover:text-red-600 p-2 hover:border-transparent" title="Deletar">
                                             <FontAwesomeIcon icon={faTrash} className="text-sm" />
                                         </button>
                                     </td>

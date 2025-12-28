@@ -1539,7 +1539,7 @@ const GestaoAlunosTable = () => {
                                 <th className="px-4 py-2 text-left font-semibold text-gray-700">Matrícula</th>
                                 <th className="px-4 py-2 text-left font-semibold text-gray-700">Nome</th>
                                 <th className="px-4 py-2 text-left font-semibold text-gray-700">Turmas</th>
-                                <th className="px-4 py-2 text-left font-semibold text-gray-700">Ações</th>
+                                <th className="px-4 py-2 text-center font-semibold text-gray-700">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1567,13 +1567,13 @@ const GestaoAlunosTable = () => {
                                                   .join(', ')
                                             : '—'}
                                     </td>
-                                    <td className="px-4 py-2 space-x-2">
+                                    <td className="px-2 py-2 space-x-0 text-center">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleEditAluno(aluno);
                                             }}
-                                            className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
+                                            className="px-1 py-1 bg-transparent text-gray-600 hover:text-blue-600 hover:border-gray-50 text-sm rounded transition"
                                             title="Editar"
                                         >
                                             <FontAwesomeIcon icon={faEdit} />
@@ -1583,7 +1583,7 @@ const GestaoAlunosTable = () => {
                                                 e.stopPropagation();
                                                 handleDeleteAluno(aluno.id);
                                             }}
-                                            className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                                            className="px-2 py-1 bg-transparent text-gray-600 hover:text-red-600 hover:border-gray-50 text-sm rounded transition"
                                             title="Deletar"
                                         >
                                             <FontAwesomeIcon icon={faTrash} />

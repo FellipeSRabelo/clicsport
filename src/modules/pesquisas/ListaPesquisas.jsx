@@ -203,7 +203,7 @@ export default function ListaPesquisas() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-4xl font-extrabold text-clic-secondary mb-6">Minhas Pesquisas</h1>
+        <h1 className="text-2xl font-bold text-clic-secondary mb-0">Minhas Pesquisas</h1>
         <button 
           onClick={() => navigate('/pesquisas/nova-campanha')}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 transition-colors text-sm font-semibold"
@@ -234,7 +234,7 @@ export default function ListaPesquisas() {
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Tipo</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Turmas</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Criada em</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Ações</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -260,12 +260,12 @@ export default function ListaPesquisas() {
                       {camp.created_at ? format(new Date(camp.created_at), 'dd/MM/yyyy') : '---'}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-1">
+                      <div className="flex justify-end gap-0">
                         <button
                           onClick={() => openQrModal(camp.id)}
                           className={`inline-flex items-center justify-center p-1.5 rounded transition-all ${
                             camp.status === 'active'
-                              ? 'text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer'
+                              ? 'text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer bg-transparent hover:border-blue-50 p-1'
                               : 'text-gray-300 cursor-not-allowed'
                           }`}
                           title="Gerar QR Code"
@@ -278,7 +278,7 @@ export default function ListaPesquisas() {
                           onClick={() => handleCopyLink(camp.id)}
                           className={`inline-flex items-center justify-center p-1.5 rounded transition-all ${
                             camp.status === 'active'
-                              ? 'text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer'
+                              ? 'text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer bg-transparent hover:border-blue-50 p-1'
                               : 'text-gray-300 cursor-not-allowed'
                           }`}
                           title="Copiar link da pesquisa"
@@ -293,7 +293,7 @@ export default function ListaPesquisas() {
 
                         <button
                           onClick={() => navigate(`/pesquisas/editar/${camp.id}`)}
-                          className="inline-flex items-center justify-center p-1.5 rounded transition-all text-gray-600 hover:bg-blue-50 hover:text-blue-700 cursor-pointer"
+                          className="text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer bg-transparent hover:border-blue-50 p-1"
                           title="Editar Pesquisa"
                         >
                           <FontAwesomeIcon icon={faPenToSquare} className="text-base" />
@@ -301,7 +301,7 @@ export default function ListaPesquisas() {
 
                         <button
                           onClick={() => navigate(`/pesquisas/resultados/${camp.id}`)}
-                          className="inline-flex items-center justify-center p-1.5 rounded transition-all text-gray-600 hover:bg-blue-50 hover:text-blue-700 cursor-pointer"
+                          className="text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer bg-transparent hover:border-blue-50 p-1"
                           title="Visualizar Respostas"
                         >
                           <FontAwesomeIcon icon={faEye} className="text-base" />
@@ -309,7 +309,7 @@ export default function ListaPesquisas() {
 
                         <button
                           onClick={() => openDeleteModal(camp)}
-                          className="inline-flex items-center justify-center p-1.5 rounded text-gray-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer"
+                          className="text-gray-600 hover:text-blue-700 hover:bg-blue-50 cursor-pointer bg-transparent hover:border-blue-50 p-1"
                           title="Excluir Pesquisa"
                         >
                           <FontAwesomeIcon icon={faTrash} className="text-base" />

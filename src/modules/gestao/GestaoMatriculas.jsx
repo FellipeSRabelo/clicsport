@@ -128,7 +128,7 @@ export default function GestaoMatriculas() {
 
   return (
     <div className="w-full">
-      <h1 className="text-4xl font-extrabold text-clic-secondary mb-6">Gestão de Matrículas</h1>
+      <h1 className="text-2xl font-bold text-clic-secondary mb-6">Gestão de Matrículas</h1>
       
       {error && (
         <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded">
@@ -144,21 +144,21 @@ export default function GestaoMatriculas() {
 
       {/* Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+        <div className="bg-white px-4 py-2 rounded-lg shadow border-l-4 border-green-500">
           <p className="text-gray-600 text-sm mb-1">Ativas</p>
-          <p className="text-3xl font-bold text-green-600">{matriculas.filter(m => m.status === 'pago').length}</p>
+          <p className="text-2xl font-semibold text-green-600">{matriculas.filter(m => m.status === 'pago').length}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
+        <div className="bg-white px-4 py-2 rounded-lg shadow border-l-4 border-yellow-500">
           <p className="text-gray-600 text-sm mb-1">Pendentes</p>
-          <p className="text-3xl font-bold text-yellow-600">{matriculas.filter(m => m.status === 'pendente').length}</p>
+          <p className="text-2xl font-semibold text-yellow-600">{matriculas.filter(m => m.status === 'pendente').length}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
+        <div className="bg-white px-4 py-2 rounded-lg shadow border-l-4 border-red-500">
           <p className="text-gray-600 text-sm mb-1">Inativas</p>
-          <p className="text-3xl font-bold text-red-600">{matriculas.filter(m => m.status === 'cancelado').length}</p>
+          <p className="text-2xl font-semibold text-red-600">{matriculas.filter(m => m.status === 'cancelado').length}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border-l-4 border-gray-500">
+        <div className="bg-white px-4 py-2 rounded-lg shadow border-l-4 border-gray-500">
           <p className="text-gray-600 text-sm mb-1">Total</p>
-          <p className="text-3xl font-bold text-gray-800">{matriculas.length}</p>
+          <p className="text-2xl font-semibold text-gray-800">{matriculas.length}</p>
         </div>
       </div>
 

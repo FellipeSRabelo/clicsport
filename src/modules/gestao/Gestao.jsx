@@ -33,7 +33,7 @@ const Gestao = () => {
     // Definindo as abas disponíveis para o Gestor
     const tabs = [
         // CADASTROS CORE (Obrigatório)
-        { id: 'alunos', name: 'Alunos e Importação', icon: faGraduationCap, component: GestaoAlunosTable }, 
+        { id: 'alunos', name: 'Alunos', icon: faGraduationCap, component: GestaoAlunosTable }, 
         { id: 'matriculas', name: 'Matrículas', icon: faBook, component: GestaoMatriculas },
         { id: 'turmas', name: 'Turmas', icon: faUsers, component: GestaoTurmas },
         { id: 'professores', name: 'Professores', icon: faChalkboardTeacher, component: GestaoProfessores },

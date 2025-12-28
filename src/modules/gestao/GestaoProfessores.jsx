@@ -207,6 +207,7 @@ const GestaoProfessores = () => {
 
     return (
         <div className="bg-white p-4 rounded-xl">
+            <h2 className="text-2xl font-bold mb-4 text-clic-secondary">Gestão de Professores</h2>
             {/* Botões de Ação */}
             <div className="flex justify-end space-x-3 mb-6">
                 <button
@@ -288,13 +289,13 @@ const GestaoProfessores = () => {
                                             })()}
                                         </div>
                                     </td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-right text-sm font-medium text-center space-x-3">
+                                    <td className="px-3 py-2 whitespace-nowrap text-center text-sm font-medium text-center space-x-0">
                                         <button 
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleOpenModal(prof);
                                             }} 
-                                            className="text-clic-primary hover:text-yellow-600"
+                                            className="text-gray-600 hover:text-blue-600 bg-transparent p-2 hover:border-gray-50"
                                         >
                                             <FontAwesomeIcon icon={faEdit} />
                                         </button>
@@ -303,7 +304,7 @@ const GestaoProfessores = () => {
                                                 e.stopPropagation();
                                                 handleDelete(prof.uid, prof.nome || prof.name);
                                             }} 
-                                            className="text-red-500 hover:text-red-700"
+                                            className="text-gray-600 hover:text-red-600 bg-transparent p-2 hover:border-gray-50"
                                         >
                                             <FontAwesomeIcon icon={faTrash} />
                                         </button>

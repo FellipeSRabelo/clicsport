@@ -1,5 +1,6 @@
 // src/components/MenuLateral.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useSupabaseAuth } from '../supabase/SupabaseAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +8,7 @@ import { faHome, faUsers, faBook, faSearch, faSignOutAlt, faChevronDown } from '
 
 const MenuLateral = ({ isCompact = false }) => {
   const { userRole, modulosAtivos, modulosPermitidos, logout, escolaId, escolaNome, escolaLoading } = useSupabaseAuth();
+  const navigate = useNavigate();
   const [expandedMenu, setExpandedMenu] = useState(null);
   const location = useLocation();
   
@@ -28,7 +30,6 @@ const MenuLateral = ({ isCompact = false }) => {
               { name: 'Disponíveis', path: '/responsavel/pesquisas' },
             ]
           : [
-              { name: 'Dashboard', path: '/pesquisas' },
               { name: 'Nova Campanha', path: '/pesquisas/nova-campanha' },
               { name: 'Minhas Pesquisas', path: '/pesquisas/lista' },
             ]
@@ -70,28 +71,39 @@ const MenuLateral = ({ isCompact = false }) => {
           if (hasSubmenu) {
             return (
               <div key={item.path || item.name}>
-                <button
-                  onClick={() => setExpandedMenu(expandedMenu === item.name ? null : item.name)}
-                  title={isCompact ? item.name : ''}
-                  className={`flex items-center justify-between rounded-lg transition duration-200 w-full ${
-                    isCompact ? 'p-2 justify-center' : 'p-2'
-                  } bg-transparent focus:outline-none focus:ring-0 ${
-                    isExpanded ? 'bg-clic-primary text-clic-primary font-bold' : 'hover:bg-gray-700 text-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 ${
-                      !isCompact ? 'mr-2' : ''
-                    }`} />
-                    {!isCompact && <span className="text-xs">{item.name}</span>}
-                  </div>
+                <div className="flex items-center w-full">
+                  <button
+                    onClick={() => {
+                      setExpandedMenu(item.name);
+                      if (item.key === 'pesquisas') {
+                        navigate('/pesquisas');
+                      }
+                    }}
+                    title={isCompact ? item.name : ''}
+                    className={`flex items-center flex-1 ${isCompact ? 'justify-center' : ''} rounded-lg transition duration-200 w-full ${
+                      isCompact ? 'p-2' : 'p-2'
+                    } bg-transparent focus:outline-none focus:ring-0 ${
+                      isExpanded ? 'bg-clic-primary text-clic-primary font-bold' : 'hover:bg-gray-700 text-gray-300'
+                    }`}
+                  >
+                    <span className={`flex items-center ${isCompact ? 'justify-center w-full' : ''}`}>
+                      <FontAwesomeIcon icon={item.icon} className={`w-4 h-4 ${!isCompact ? 'mr-2' : ''}`} />
+                      {!isCompact && <span className="text-xs">{item.name}</span>}
+                    </span>
+                  </button>
                   {!isCompact && (
-                    <FontAwesomeIcon 
-                      icon={faChevronDown} 
-                      className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                    />
+                    <button
+                      onClick={() => setExpandedMenu(isExpanded ? null : item.name)}
+                      className="ml-1 p-1 bg-transparent focus:outline-none"
+                      tabIndex={-1}
+                    >
+                      <FontAwesomeIcon 
+                        icon={faChevronDown} 
+                        className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {/* Submenu */}
                 {!isCompact && isExpanded && (

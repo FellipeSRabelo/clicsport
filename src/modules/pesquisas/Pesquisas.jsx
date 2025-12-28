@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Dashboard from './Dashboard';
@@ -15,6 +16,7 @@ import { faChartLine, faPlusCircle, faList } from '@fortawesome/free-solid-svg-i
 export default function Pesquisas() {
   const { currentUser, escolaId, loading: loading } = useSupabaseAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Carregando...</div>;
@@ -46,20 +48,21 @@ export default function Pesquisas() {
   return (
     <div>
       {/* Navegação por Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 bg-white rounded-t-xl shadow-md">
+      <div className="flex border-b border-gray-200 mb-6 bg-white rounded-t-xl shadow-md px-2 py-2">
         {tabs.map((tab) => (
-          <a
+          <button
             key={tab.id}
-            href={tab.path}
+            onClick={() => navigate(tab.path)}
             className={`flex-1 px-6 py-3 text-lg font-semibold whitespace-nowrap transition duration-200 flex items-center justify-center gap-2 ${
               activeTab === tab.id
-                ? 'border-b-4 border-clic-primary text-clic-secondary'
+                ? 'border-b-4 border-gray-800 border-t-gray-100 border-l-gray-100 border-r-gray-100 text-clic-secondary'
                 : 'text-gray-600 hover:text-gray-800'
             }`}
+            style={{ background: 'none', outline: 'none', cursor: 'pointer' }}
           >
             <FontAwesomeIcon icon={tab.icon} className="w-5 h-5" />
             <span>{tab.name}</span>
-          </a>
+          </button>
         ))}
       </div>
 

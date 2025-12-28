@@ -79,7 +79,7 @@ const TopBar = ({ onMenuToggle, title = 'Dashboard' }) => {
             <div className="flex items-center space-x-3">
                 <button
                     onClick={onMenuToggle}
-                    className="md:hidden text-gray-700 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
+                    className="text-gray-700 hover:text-clic-secondary transition bg-white p-1 h-7 w-7 flex items-center justify-center rounded focus:outline-none focus:ring-0"
                     aria-label="Toggle menu"
                 >
                     <FontAwesomeIcon icon={faBars} size="sm" />
