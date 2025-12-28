@@ -1,16 +1,28 @@
 // src/modules/gestao/GestaoEscola.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSupabaseAuth } from '../../supabase/SupabaseAuthContext';
+import { fetchGestorByUid, updateGestorDashboardCards } from '../../supabase/gestorApi';
 import { fetchEscola, updateEscola } from '../../supabase/gestaoApi';
 import { supabase } from '../../supabase/supabaseConfig';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faUpload, faSchool } from '@fortawesome/free-solid-svg-icons';
 
+// Lista de cards disponíveis para o dashboard do gestor
+const DASHBOARD_CARDS = [
+    { key: 'financeiro', label: 'Financeiro' },
+    { key: 'ingressos', label: 'Venda de Ingressos' },
+    { key: 'aulas', label: 'Aulas Experimentais' },
+    { key: 'alunos', label: 'Alunos' },
+    { key: 'achados', label: 'Achados e Perdidos' },
+    { key: 'pesquisas', label: 'Pesquisas' },
+];
+
 const GestaoEscola = () => {
     const { user } = useSupabaseAuth();
-    const escolaId = user?.escola_id; // Agora vem corretamente do contexto
+    const gestorUid = user?.id;
     const [escola, setEscola] = useState({ nome: '', razao_social: '', cnpj: '', cep: '', endereco: '', cidade: '', uf: '', email: '', site: '', telefone: '', logo_url: '' });
     const [loading, setLoading] = useState(true);
+    const [dashboardCards, setDashboardCards] = useState([]);
     const [saving, setSaving] = useState(false);
     const [logoFile, setLogoFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState('');
@@ -18,22 +30,40 @@ const GestaoEscola = () => {
     const [logoRemoved, setLogoRemoved] = useState(false);
     const fileInputRef = useRef(null);
 
-    // Carrega dados da escola
+    // Carrega dados do gestor e da escola
     useEffect(() => {
-        if (!escolaId) return;
-        const fetchEscolaData = async () => {
+        if (!gestorUid) return;
+        const fetchAll = async () => {
             setLoading(true);
             try {
-                const data = await fetchEscola(escolaId);
-                setEscola(data || {});
-                setPreviewUrl(data?.logo_url || '');
+                const gestor = await fetchGestorByUid(gestorUid);
+                // Cards do dashboard (por gestor)
+                if (gestor?.dashboard_cards && Array.isArray(gestor.dashboard_cards)) {
+                    setDashboardCards(gestor.dashboard_cards);
+                } else {
+                    setDashboardCards(DASHBOARD_CARDS.map(c => c.key));
+                }
+                // Dados da escola
+                if (gestor?.escola_id) {
+                    const escolaData = await fetchEscola(gestor.escola_id);
+                    setEscola(escolaData || {});
+                    setPreviewUrl(escolaData?.logo_url || '');
+                }
             } catch (err) {
-                console.error('Erro ao buscar escola:', err);
+                console.error('Erro ao buscar gestor/escola:', err);
             }
             setLoading(false);
         };
-        fetchEscolaData();
-    }, [escolaId]);
+        fetchAll();
+    }, [gestorUid]);
+    // Handler para seleção de cards do dashboard
+    const handleCardToggle = (key) => {
+        setDashboardCards((prev) =>
+            prev.includes(key)
+                ? prev.filter((k) => k !== key)
+                : [...prev, key]
+        );
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -168,75 +198,21 @@ const GestaoEscola = () => {
         return new Blob([u8arr], { type: mime });
     };
 
+    // Salva dados da escola e cards do dashboard
     const handleSave = async (e) => {
         e.preventDefault();
-        if (!escolaId || !escola.nome) {
-            alert('O nome da escola é obrigatório.');
+        if (dashboardCards.length === 0) {
+            alert('Selecione ao menos um card para o dashboard.');
             return;
         }
-        // Basic validations
-        const errors = [];
-        if (escola.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(escola.email)) {
-            errors.push('E-mail inválido.');
-        }
-        if (escola.cnpj && escola.cnpj.replace(/\D/g, '').length !== 14) {
-            errors.push('CNPJ deve conter 14 dígitos.');
-        }
-        if (escola.cep && escola.cep.replace(/\D/g, '').length !== 8) {
-            errors.push('CEP deve conter 8 dígitos.');
-        }
-        if (errors.length) {
-            alert('Corrija os seguintes erros:\n' + errors.join('\n'));
+        if (!escola.nome) {
+            alert('O nome da escola é obrigatório.');
             return;
         }
         setSaving(true);
         try {
-            let newLogoUrl = escola.logo_url;
-            let logoUpdated = false;
-            if (logoFile) {
-                // Tenta upload para Supabase Storage
-                try {
-                    const resizedDataUrl = await fileToDataUrl(logoFile, { targetWidth: 300, targetHeight: 150 });
-                    if (!resizedDataUrl || typeof resizedDataUrl !== 'string' || !resizedDataUrl.startsWith('data:image/')) {
-                        alert('Erro ao processar a imagem da logo. Tente outro arquivo.');
-                        console.error('DataURL inválido:', resizedDataUrl);
-                        return;
-                    }
-                    const blob = dataURLToBlob(resizedDataUrl);
-                    console.log('Blob gerado para upload:', blob, 'Tamanho:', blob.size);
-                    if (!blob || blob.size === 0) {
-                        alert('Erro ao processar a imagem da logo (arquivo vazio). Tente outro arquivo.');
-                        console.error('Blob vazio:', blob);
-                        return;
-                    }
-                    const filename = `logo-300x150-${Date.now()}.png`;
-                    const { data, error } = await supabase.storage.from('escolas').upload(`${escolaId}/logo/${filename}`, blob, { upsert: true, contentType: 'image/png' });
-                    if (error) {
-                        alert('Erro ao fazer upload da logo: ' + error.message);
-                        console.error('Erro Supabase Storage:', error);
-                        return;
-                    }
-                    const { data: publicUrlData } = supabase.storage.from('escolas').getPublicUrl(`${escolaId}/logo/${filename}`);
-                    newLogoUrl = publicUrlData?.publicUrl || '';
-                    logoUpdated = true;
-                } catch (uploadErr) {
-                    // fallback: salva inline base64 se Storage falhar
-                    try {
-                        const dataUrl = await fileToDataUrl(logoFile, { targetWidth: 300, targetHeight: 150 });
-                        const approxBytes = Math.ceil((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4);
-                        if (approxBytes <= 900000) {
-                            newLogoUrl = dataUrl;
-                            setFallbackSaved(true);
-                            logoUpdated = true;
-                        } else {
-                            console.warn('Imagem comprimida muito grande (kb):', Math.round(approxBytes/1024));
-                        }
-                    } catch (convErr) {
-                        console.error('Erro ao converter imagem para dataURL:', convErr);
-                    }
-                }
-            }
-            const dataToSave = {
+            // Salva dados da escola
+            await updateEscola(escola.id, {
                 nome: escola.nome,
                 razao_social: escola.razao_social,
                 cnpj: escola.cnpj,
@@ -247,15 +223,13 @@ const GestaoEscola = () => {
                 email: escola.email,
                 site: escola.site,
                 telefone: escola.telefone,
-                logo_url: logoUpdated ? newLogoUrl : (logoRemoved ? '' : escola.logo_url),
-            };
-            await updateEscola(escolaId, dataToSave);
-            if (logoUpdated) setPreviewUrl(newLogoUrl || '');
-            if (logoRemoved) setPreviewUrl('');
-            alert('Dados da escola salvos com sucesso!');
-            setLogoFile(null);
+                logo_url: escola.logo_url,
+            });
+            // Salva cards do dashboard por gestor
+            await updateGestorDashboardCards(gestorUid, dashboardCards);
+            alert('Dados da escola e preferências do dashboard salvos com sucesso!');
         } catch (error) {
-            console.error('Erro ao salvar dados da escola:', error);
+            console.error('Erro ao salvar:', error);
             alert('Falha ao salvar. Verifique o console para mais detalhes.');
         } finally {
             setSaving(false);
@@ -269,6 +243,25 @@ const GestaoEscola = () => {
     return (
         <div className="">
          <h2 className="text-left text-xl font-bold text-clic-secondary mb-4">Informações da Escola</h2>
+
+            {/* NOVO: Configuração dos cards do dashboard */}
+            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+                <h3 className="text-base font-semibold text-clic-secondary mb-2">Configurar cards do Dashboard</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    {DASHBOARD_CARDS.map(card => (
+                        <label key={card.key} className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={dashboardCards.includes(card.key)}
+                                onChange={() => handleCardToggle(card.key)}
+                                className="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded"
+                            />
+                            {card.label}
+                        </label>
+                    ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Selecione quais cards aparecerão no dashboard do gestor.</p>
+            </div>
 
             <form onSubmit={handleSave} className="">
                 <div className="flex gap-4">

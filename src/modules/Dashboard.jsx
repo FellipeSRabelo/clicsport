@@ -1,40 +1,64 @@
 // src/modules/Dashboard.jsx
+
 import React, { useEffect, useState } from 'react';
 import { useSupabaseAuth } from '../supabase/SupabaseAuthContext';
 import { fetchLatestCampanhas, fetchLatestOcorrencias, fetchTotalAlunosPorUnidade } from '../supabase/pesquisasApi';
+import { fetchGestorByUid } from '../supabase/gestorApi';
+import { fetchEscola } from '../supabase/gestaoApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faWallet, faTicketAlt, faChalkboardTeacher, faChartPie, faUsers, faCoins, faClipboardList, faCubes, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard = () => {
   const { user } = useSupabaseAuth();
-  const escolaId = user?.escola_id;
+  const gestorUid = user?.id;
   const [pesquisas, setPesquisas] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
   const [alunosPorUnidade, setAlunosPorUnidade] = useState([]);
+  const [dashboardCards, setDashboardCards] = useState(null);
+  const [escola, setEscola] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!escolaId) return;
+    if (!gestorUid) return;
     setLoading(true);
-    Promise.all([
-      fetchLatestCampanhas(escolaId),
-      fetchLatestOcorrencias(escolaId),
-      fetchTotalAlunosPorUnidade(escolaId)
-    ]).then(([pesq, ocorr, alunosUnidade]) => {
-      setPesquisas(pesq);
-      setOcorrencias(ocorr);
-      setAlunosPorUnidade(alunosUnidade);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [escolaId]);
+    // Busca dados do gestor e dados do dashboard
+    fetchGestorByUid(gestorUid)
+      .then((gestor) => {
+        setDashboardCards(Array.isArray(gestor?.dashboard_cards) ? gestor.dashboard_cards : null);
+        // Busca dados da escola para gráficos e exibição
+        const escolaId = gestor?.escola_id;
+        if (escolaId) {
+          fetchEscola(escolaId)
+            .then((escolaData) => {
+              setEscola(escolaData);
+            })
+            .catch(() => setEscola(null));
+          Promise.all([
+            fetchLatestCampanhas(escolaId),
+            fetchLatestOcorrencias(escolaId),
+            fetchTotalAlunosPorUnidade(escolaId)
+          ]).then(([pesq, ocorr, alunosUnidade]) => {
+            setPesquisas(pesq);
+            setOcorrencias(ocorr);
+            setAlunosPorUnidade(alunosUnidade);
+            setLoading(false);
+          }).catch(() => setLoading(false));
+        } else {
+          setEscola(null);
+          setLoading(false);
+        }
+      })
+      .catch(() => { setEscola(null); setLoading(false); });
+  }, [gestorUid]);
 
   // Cores para o gráfico de pizza
   const pieColors = ["#2563eb", "#60a5fa", "#1e293b", "#f59e42", "#10b981", "#f43f5e", "#a21caf"];
   const totalAlunos = alunosPorUnidade.reduce((acc, u) => acc + (u.total_alunos || u.total || 0), 0);
 
-  // Cards extras inteligentes
-  const cards = [
+  // Cards extras inteligentes (com chave para filtro)
+  const allCards = [
     {
+      key: 'financeiro',
       title: 'Financeiro',
       icon: faWallet,
       color: 'bg-blue-600',
@@ -42,6 +66,7 @@ const Dashboard = () => {
       description: 'Controle de mensalidades, receitas e despesas.'
     },
     {
+      key: 'ingressos',
       title: 'Venda de Ingressos',
       icon: faTicketAlt,
       color: 'bg-blue-600',
@@ -49,6 +74,7 @@ const Dashboard = () => {
       description: 'Gestão de eventos e venda de ingressos.'
     },
     {
+      key: 'aulas',
       title: 'Aulas Experimentais',
       icon: faChalkboardTeacher,
       color: 'bg-blue-600',
@@ -56,6 +82,7 @@ const Dashboard = () => {
       description: 'Agendamento e acompanhamento de aulas.'
     },
     {
+      key: 'alunos',
       title: 'Alunos',
       icon: faUsers,
       color: 'bg-blue-600',
@@ -63,6 +90,7 @@ const Dashboard = () => {
       description: 'Gestão completa dos alunos.'
     },
     {
+      key: 'achados',
       title: 'Achados e Perdidos',
       icon: faBoxOpen,
       color: 'bg-blue-600',
@@ -70,6 +98,7 @@ const Dashboard = () => {
       description: 'Ocorrências recentes de achados e perdidos.'
     },
     {
+      key: 'pesquisas',
       title: 'Pesquisas',
       icon: faClipboardList,
       color: 'bg-blue-600',
@@ -78,19 +107,24 @@ const Dashboard = () => {
     },
   ];
 
+  // Filtra os cards conforme configuração da escola
+  const cards = dashboardCards
+    ? allCards.filter(card => dashboardCards.includes(card.key))
+    : allCards;
+
   if (loading) {
     return <div className="flex justify-center items-center h-96"><FontAwesomeIcon icon={faChartPie} spin size="2x" className="text-blue-600" /></div>;
   }
 
   return (
     <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-clic-secondary mb-6">Dashboard do Gestor</h1>
+      <h1 className="text-2xl font-bold text-clic-secondary mb-6">Dashboard do Gestor</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Card: Últimas Pesquisas */}
         <div className="bg-white rounded-xl shadow-lg p-5 flex flex-col">
           <div className="flex items-center mb-2">
             <FontAwesomeIcon icon={faClipboardList} className="text-blue-600 mr-2" size="lg" />
-            <span className="font-bold text-lg">Últimas Pesquisas</span>
+            <span className="font-bold text-md">Últimas Pesquisas</span>
           </div>
           <ul className="flex-1">
             {pesquisas.length === 0 && <li className="text-gray-400 text-sm">Nenhuma pesquisa encontrada.</li>}
@@ -101,9 +135,11 @@ const Dashboard = () => {
               </li>
             ))}
           </ul>
-          <button className="mt-3 w-full py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition" onClick={() => window.location.href = '/app/pesquisas'}>
-            Ver todas as pesquisas
-          </button>
+          <div className="flex justify-end mt-3">
+            <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition w-full md:w-auto" onClick={() => window.location.href = '/app/pesquisas'}>
+              Ver todas as pesquisas
+            </button>
+          </div>
         </div>
 
         {/* Card: Últimas Ocorrências */}
