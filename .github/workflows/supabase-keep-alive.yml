@@ -1,0 +1,30 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # Roda a cada 3 dias à meia-noite (UTC)
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Permite rodar manualmente pelo botão no GitHub para testar
+
+jobs:
+  ping-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependências
+        run: npm install @supabase/supabase-js
+
+      - name: Executar script de ping
+        run: node scripts/keep_alive.js
+        env:
+          # Usamos secrets para não expor as chaves no código
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
