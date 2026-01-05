@@ -6,7 +6,7 @@ import { fetchResponsavel, insertItem } from '../../../supabase/achadosApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCamera, faImage } from '@fortawesome/free-solid-svg-icons';
 
-const ModalAdicionarItem = ({ isOpen, onClose }) => {
+const ModalAdicionarItem = ({ isOpen, onClose, onSuccess }) => {
   const { currentUser, escolaId } = useSupabaseAuth();
   const [formData, setFormData] = useState({
     nomeObjeto: '',
@@ -265,6 +265,12 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
       });
       setSelectedFile(null);
       setFileName('Nenhum arquivo');
+      
+      // Chamar callback de sucesso antes de fechar
+      if (onSuccess) {
+        onSuccess();
+      }
+      
       onClose();
     } catch (error) {
       console.error('[ModalAdicionarItem] Erro ao adicionar item:', error);

@@ -28,6 +28,12 @@ const ListaOcorrencias = () => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  // Forçar reload da lista
+  const handleReload = () => {
+    setReloadTrigger(prev => prev + 1);
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -74,7 +80,7 @@ const ListaOcorrencias = () => {
     };
     load();
     return () => { isMounted = false; };
-  }, [currentUser, escolaId]);
+  }, [currentUser, escolaId, reloadTrigger]);
 
   // Carrega dados do perfil
   useEffect(() => {
@@ -411,7 +417,11 @@ const ListaOcorrencias = () => {
       )}
 
       {/* MODAIS */}
-      <ModalAdicionarItem isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ModalAdicionarItem 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={handleReload}
+      />
       
       {selectedItem && (
         <ModalDetalhesItem
