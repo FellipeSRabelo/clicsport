@@ -154,15 +154,30 @@ function PublicPesquisa() {
               id: aluno.id,
               nome: aluno.nome,
               matricula: aluno.matricula,
-              turmas: [],
-              respondido: respostasMap[aluno.id] || false
+              turmas: []
             });
           }
           if (aluno && mat.turmas) {
             alunosMap.get(aluno.id).turmas.push(mat.turmas);
           }
         });
-        setAlunosDisponiveis(Array.from(alunosMap.values()));
+        
+        // Verificar quais alunos já responderam para TODAS as turmas
+        const alunosArray = Array.from(alunosMap.values()).map(aluno => {
+          const turmasRespondidas = aluno.turmas.filter(turma => 
+            respostasMap[`${aluno.id}-${turma.id}`]
+          ).length;
+          const todasRespondidas = turmasRespondidas === aluno.turmas.length && aluno.turmas.length > 0;
+          
+          return {
+            ...aluno,
+            todasRespondidas,
+            turmasRespondidas,
+            totalTurmas: aluno.turmas.length
+          };
+        });
+        
+        setAlunosDisponiveis(alunosArray);
       } catch (err) {
         setError('Erro ao carregar seus alunos');
       }
@@ -359,20 +374,46 @@ function PublicPesquisa() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {alunosDisponiveis.map(aluno => (
-                      <div key={aluno.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                        <button
-                          onClick={() => handleSelecionarAluno(aluno)}
-                          className="w-full p-4 hover:bg-blue-50 transition text-left"
-                        >
-                          <h3 className="font-semibold text-gray-800">{aluno.nome}</h3>
-                          <p className="text-sm text-gray-500">Matrícula: {aluno.matricula}</p>
-                          <p className="text-xs text-gray-400 mt-2">
-                            {aluno.turmas?.length || 0} turma(s) vinculada(s)
-                          </p>
-                        </button>
-                      </div>
-                    ))}
+                    {alunosDisponiveis.map(aluno => {
+                      const jaRespondeuTudo = aluno.todasRespondidas;
+                      return (
+                        <div key={aluno.id} className={`border rounded-lg overflow-hidden ${
+                          jaRespondeuTudo 
+                            ? 'border-green-300 bg-green-50' 
+                            : 'border-gray-200'
+                        }`}>
+                          <button
+                            onClick={() => !jaRespondeuTudo && handleSelecionarAluno(aluno)}
+                            disabled={jaRespondeuTudo}
+                            className={`w-full p-4 transition text-left ${
+                              jaRespondeuTudo
+                                ? 'cursor-not-allowed opacity-75'
+                                : 'hover:bg-blue-50 cursor-pointer'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-gray-800">{aluno.nome}</h3>
+                                <p className="text-sm text-gray-500">Matrícula: {aluno.matricula}</p>
+                                <p className="text-xs text-gray-400 mt-2">
+                                  {aluno.turmas?.length || 0} turma(s) vinculada(s)
+                                </p>
+                                {aluno.turmasRespondidas > 0 && (
+                                  <p className="text-xs text-blue-600 mt-1">
+                                    {aluno.turmasRespondidas} de {aluno.totalTurmas} turma(s) respondida(s)
+                                  </p>
+                                )}
+                              </div>
+                              {jaRespondeuTudo && (
+                                <span className="px-3 py-1 bg-green-600 text-white rounded-full text-xs font-semibold ml-2">
+                                  ✓ Completo
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
