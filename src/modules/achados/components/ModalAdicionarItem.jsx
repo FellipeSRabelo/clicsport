@@ -171,7 +171,6 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         foto_url: fotoUrl,
         status: 'active',
         found_by_owner: false,
-        owner: currentUser.id || currentUser.uid,
         owner_email: currentUser.email || 'Não informado',
         escola_id: escolaId
       });

@@ -44,7 +44,7 @@ const ListaOcorrencias = () => {
     const load = async () => {
       if (!currentUser || !escolaId) return;
       try {
-        const rows = await fetchItemsByOwner(escolaId, currentUser.id || currentUser.uid);
+        const rows = await fetchItemsByOwner(escolaId, currentUser.id || currentUser.uid, currentUser.email);
         // Normaliza campos
         const itemsData = rows.map(r => ({
           id: r.id,

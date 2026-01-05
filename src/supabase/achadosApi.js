@@ -1,14 +1,19 @@
 // src/supabase/achadosApi.js
 import { supabase } from './supabaseConfig';
 
-// Busca itens do responsável por escola
-export async function fetchItemsByOwner(escolaId, ownerUid) {
-  const { data, error } = await supabase
+// Busca itens do responsável por escola (busca por email ou todos da escola)
+export async function fetchItemsByOwner(escolaId, ownerUid, ownerEmail = null) {
+  let query = supabase
     .from('achados_perdidos')
     .select('*')
-    .eq('escola_id', escolaId)
-    .eq('owner', ownerUid)
-    .order('created_at', { ascending: false });
+    .eq('escola_id', escolaId);
+    
+  // Filtrar por email se disponível
+  if (ownerEmail) {
+    query = query.eq('owner_email', ownerEmail);
+  }
+  
+  const { data, error } = await query.order('created_at', { ascending: false });
   if (error) throw error;
   return data || [];
 }
