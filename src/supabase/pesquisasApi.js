@@ -14,43 +14,24 @@ export const fetchLatestCampanhas = async (escolaId, limit = 5) => {
 };
 
 export const fetchTotalAlunosPorUnidade = async (escolaId) => {
+  // Busca alunos agrupados por unidade, trazendo o nome da unidade
   const { data, error } = await supabase
     .from('alunos')
-    .select('unidade_id, unidades(nome), count', { count: 'exact' })
+    .select('unidade_id, unidades(nome)')
     .eq('escola_id', escolaId)
-    .not('unidade_id', 'is', null) // Garante que apenas alunos com unidade sejam contados
-    .rollup('count(id)'); // Conta todos os alunos
-    // .group('unidade_id, unidades.nome'); // Agrupado por unidade_id e nome da unidade
+    .not('unidade_id', 'is', null);
 
   if (error) throw error;
+  if (!data || data.length === 0) return [];
 
-  // O rollup retorna uma linha para o count total e outras para o group by,
-  // precisamos de uma query mais complexa para o group by direto com nome da unidade
-  // Por enquanto, farei um ajuste para pegar o total e depois outra para o agrupamento
-
-  // Para o gráfico de disco, precisamos do count por unidade.
-  // A abordagem de group by deve ser:
-  const { data: groupedData, error: groupedError } = await supabase
-    .from('alunos')
-    .select('unidade_id, unidades(nome), count', { count: 'exact' })
-    .eq('escola_id', escolaId)
-    .not('unidade_id', 'is', null)
-    .order('unidade_id')
-    .single(); // Isso não vai funcionar para group by, precisa de uma VIEW ou função
-
-  // Alternativa: Fetch de alunos e depois agrupar no cliente (menos eficiente para grandes volumes)
-  // Ou criar uma VIEW no Supabase:
-  // CREATE VIEW alunos_por_unidade AS
-  // SELECT
-  //   escola_id,
-  //   unidade_id,
-  //   (SELECT nome FROM unidades WHERE id = alunos.unidade_id) AS unidade_nome,
-  //   count(*) AS total_alunos
-  // FROM alunos
-  // GROUP BY escola_id, unidade_id;
-
-  // Por enquanto, vamos retornar um placeholder
-  return [{ unidade_nome: 'Principal', total_alunos: 50 }, { unidade_nome: 'Secundária', total_alunos: 50 }];
+  // Agrupa no cliente (caso o Supabase não suporte group by + join direto)
+  const agrupado = {};
+  data.forEach((aluno) => {
+    const nome = aluno.unidades?.nome || 'Sem Nome';
+    if (!agrupado[nome]) agrupado[nome] = 0;
+    agrupado[nome] += 1;
+  });
+  return Object.entries(agrupado).map(([unidade_nome, total_alunos]) => ({ unidade_nome, total_alunos }));
 };
 
 export const fetchLatestOcorrencias = async (escolaId, limit = 10) => {
