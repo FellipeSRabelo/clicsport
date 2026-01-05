@@ -212,7 +212,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
     e.preventDefault();
     setError('');
 
-    if (!formData.nomeObjeto || !formData.local || !formData.dataSumiço) {
+    if (!formData.nomeObjeto || !formData.local || !formData.dataSumico) {
       setError('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
