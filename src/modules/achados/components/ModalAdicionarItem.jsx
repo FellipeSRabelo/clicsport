@@ -11,7 +11,6 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     nomeObjeto: '',
     local: '',
-    dataSumiço: '',
     descricao: ''
   });
   const [responsavelData, setResponsavelData] = useState({
@@ -40,7 +39,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
           alunos(id, nome, matricula),
           turmas(id, nome)
         `)
-        .eq('responsavel_uid', currentUser.id || currentUser.uid)
+        .eq('responsavel_id', currentUser.id || currentUser.uid)
         .eq('escola_id', escolaId)
         .limit(1);
 
@@ -168,7 +167,6 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         nome_aluno: responsavelData.nomeAluno,
         turma: responsavelData.turmaAluno,
         local: formData.local,
-        data_sumico: formData.dataSumiço,
         descricao: formData.descricao,
         foto_url: fotoUrl,
         status: 'active',
@@ -182,7 +180,6 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
       setFormData({
         nomeObjeto: '',
         local: '',
-        dataSumiço: '',
         descricao: ''
       });
       setSelectedFile(null);
@@ -248,21 +245,6 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
               value={formData.local}
               onChange={handleChange}
               placeholder="Ex: Quadra, Sala 101, Pátio"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* DATA DO SUMIÇO */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Data que Sumiu <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="dataSumiço"
-              value={formData.dataSumiço}
-              onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
