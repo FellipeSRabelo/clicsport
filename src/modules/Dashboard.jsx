@@ -6,7 +6,7 @@ import { fetchLatestCampanhas, fetchLatestOcorrencias, fetchTotalAlunosPorUnidad
 import { fetchGestorByUid } from '../supabase/gestorApi';
 import { fetchEscola } from '../supabase/gestaoApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faWallet, faTicketAlt, faChalkboardTeacher, faChartPie, faUsers, faCoins, faClipboardList, faCubes, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faWallet, faTicketAlt, faChalkboardTeacher, faChartPie, faUsers, faCoins, faClipboardList, faCubes, faBoxOpen, faUserGraduate, faIdCard, faUsersRectangle, faPlus, faList } from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard = () => {
   const { user } = useSupabaseAuth();
@@ -55,55 +55,84 @@ const Dashboard = () => {
   const pieColors = ["#2563eb", "#60a5fa", "#1e293b", "#f59e42", "#10b981", "#f43f5e", "#a21caf"];
   const totalAlunos = alunosPorUnidade.reduce((acc, u) => acc + (u.total_alunos || u.total || 0), 0);
 
-  // Cards extras inteligentes (com chave para filtro)
+  // Cards de acesso rápido aos módulos
   const allCards = [
-    {
-      key: 'financeiro',
-      title: 'Financeiro',
-      icon: faWallet,
-      color: 'bg-blue-600',
-      link: '/app/financeiro',
-      description: 'Controle de mensalidades, receitas e despesas.'
-    },
-    {
-      key: 'ingressos',
-      title: 'Venda de Ingressos',
-      icon: faTicketAlt,
-      color: 'bg-blue-600',
-      link: '/app/ingressos',
-      description: 'Gestão de eventos e venda de ingressos.'
-    },
-    {
-      key: 'aulas',
-      title: 'Aulas Experimentais',
-      icon: faChalkboardTeacher,
-      color: 'bg-blue-600',
-      link: '/app/aulas-experimentais',
-      description: 'Agendamento e acompanhamento de aulas.'
-    },
     {
       key: 'alunos',
       title: 'Alunos',
-      icon: faUsers,
+      icon: faUserGraduate,
       color: 'bg-blue-600',
-      link: '/app/gestao/alunos',
-      description: 'Gestão completa dos alunos.'
+      link: '/gestao?tab=alunos'
+    },
+    {
+      key: 'matriculas',
+      title: 'Matrículas',
+      icon: faIdCard,
+      color: 'bg-green-600',
+      link: '/gestao?tab=matriculas'
+    },
+    {
+      key: 'turmas',
+      title: 'Turmas',
+      icon: faUsersRectangle,
+      color: 'bg-purple-600',
+      link: '/gestao?tab=turmas'
+    },
+    {
+      key: 'professores',
+      title: 'Professores',
+      icon: faChalkboardTeacher,
+      color: 'bg-indigo-600',
+      link: '/gestao?tab=professores'
     },
     {
       key: 'achados',
       title: 'Achados e Perdidos',
       icon: faBoxOpen,
-      color: 'bg-blue-600',
-      link: '/app/achados',
-      description: 'Ocorrências recentes de achados e perdidos.'
+      color: 'bg-orange-600',
+      link: '/achados'
     },
     {
       key: 'pesquisas',
       title: 'Pesquisas',
       icon: faClipboardList,
-      color: 'bg-blue-600',
-      link: '/app/pesquisas',
-      description: 'Pesquisas e enquetes para alunos e responsáveis.'
+      color: 'bg-teal-600',
+      link: '/pesquisas'
+    },
+    {
+      key: 'nova-pesquisa',
+      title: 'Nova Pesquisa',
+      icon: faPlus,
+      color: 'bg-cyan-600',
+      link: '/pesquisas/nova-campanha'
+    },
+    {
+      key: 'minhas-pesquisas',
+      title: 'Minhas Pesquisas',
+      icon: faList,
+      color: 'bg-blue-500',
+      link: '/pesquisas/lista'
+    },
+    {
+      key: 'financeiro',
+      title: 'Financeiro',
+      icon: faWallet,
+      color: 'bg-emerald-600',
+      link: '/financeiro'
+    },
+    {
+      key: 'ingressos',
+      title: 'Ingressos',
+      icon: faTicketAlt,
+      color: 'bg-pink-600',
+      link: '/ingressos'
+    },
+    {
+      key: 'aulas-experimentais',
+      title: 'Aulas Experimentais',
+      icon: faChalkboardTeacher,
+      color: 'bg-violet-600',
+      link: '/aulas-experimentais'
     },
   ];
 
@@ -202,19 +231,16 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Cards extras inteligentes */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
+      {/* Cards de acesso rápido */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
         {cards.map((card) => (
-          <div key={card.title} className={`rounded-xl shadow-lg p-5 flex flex-col items-start bg-white hover:shadow-2xl transition cursor-pointer border-t-4 ${card.color}`}
-            onClick={() => window.location.href = card.link}>
-            <div className="flex items-center mb-2">
-              <FontAwesomeIcon icon={card.icon} className="text-white bg-blue-600 rounded-full p-2 mr-2" size="lg" />
-              <span className="font-bold text-lg text-blue-700">{card.title}</span>
-            </div>
-            <span className="text-gray-600 text-sm mb-2">{card.description}</span>
-            <button className="mt-auto px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition">
-              Acessar módulo
-            </button>
+          <div 
+            key={card.title} 
+            className={`rounded-lg shadow-md p-4 flex flex-col items-center justify-center bg-white hover:shadow-xl hover:scale-105 transition-all cursor-pointer border-l-4 ${card.color} group`}
+            onClick={() => window.location.href = card.link}
+          >
+            <FontAwesomeIcon icon={card.icon} className={`text-4xl mb-3 ${card.color.replace('bg-', 'text-')} group-hover:scale-110 transition-transform`} />
+            <span className="font-semibold text-center text-gray-700 text-sm">{card.title}</span>
           </div>
         ))}
       </div>

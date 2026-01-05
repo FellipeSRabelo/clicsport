@@ -9,12 +9,17 @@ import { faSpinner, faUpload, faSchool } from '@fortawesome/free-solid-svg-icons
 
 // Lista de cards disponíveis para o dashboard do gestor
 const DASHBOARD_CARDS = [
-    { key: 'financeiro', label: 'Financeiro' },
-    { key: 'ingressos', label: 'Venda de Ingressos' },
-    { key: 'aulas', label: 'Aulas Experimentais' },
     { key: 'alunos', label: 'Alunos' },
+    { key: 'matriculas', label: 'Matrículas' },
+    { key: 'turmas', label: 'Turmas' },
+    { key: 'professores', label: 'Professores' },
     { key: 'achados', label: 'Achados e Perdidos' },
     { key: 'pesquisas', label: 'Pesquisas' },
+    { key: 'nova-pesquisa', label: 'Nova Pesquisa' },
+    { key: 'minhas-pesquisas', label: 'Minhas Pesquisas' },
+    { key: 'financeiro', label: 'Financeiro' },
+    { key: 'ingressos', label: 'Ingressos' },
+    { key: 'aulas-experimentais', label: 'Aulas Experimentais' },
 ];
 
 const GestaoEscola = () => {
