@@ -11,6 +11,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     nomeObjeto: '',
     local: '',
+    dataSumico: '',
     descricao: ''
   });
   const [responsavelData, setResponsavelData] = useState({
@@ -31,6 +32,32 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
 
   const loadResponsavelData = async () => {
     try {
+      console.log('Buscando matrículas para UID:', currentUser.id || currentUser.uid);
+      
+      // Primeiro, buscar o responsavel_id na tabela responsaveis usando o UID
+      const { data: responsavelData, error: respError } = await supabase
+        .from('responsaveis')
+        .select('id')
+        .eq('uid', currentUser.id || currentUser.uid)
+        .eq('escola_id', escolaId)
+        .maybeSingle();
+
+      if (respError) {
+        console.error('Erro ao buscar responsável:', respError);
+        throw respError;
+      }
+
+      if (!responsavelData) {
+        console.warn('Responsável não encontrado na tabela responsaveis');
+        setResponsavelData({
+          nomeAluno: 'Responsável não cadastrado',
+          turmaAluno: 'Faça o cadastro primeiro'
+        });
+        return;
+      }
+
+      console.log('Responsavel encontrado:', responsavelData.id);
+
       // Buscar matrículas do responsável para pegar o primeiro aluno
       const { data: matriculas, error: matError } = await supabase
         .from('matriculas')
@@ -39,11 +66,16 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
           alunos(id, nome, matricula),
           turmas(id, nome)
         `)
-        .eq('responsavel_id', currentUser.id || currentUser.uid)
+        .eq('responsavel_id', responsavelData.id)
         .eq('escola_id', escolaId)
         .limit(1);
 
-      if (matError) throw matError;
+      if (matError) {
+        console.error('Erro ao buscar matrículas:', matError);
+        throw matError;
+      }
+
+      console.log('Matrículas encontradas:', matriculas);
 
       if (matriculas && matriculas.length > 0) {
         const mat = matriculas[0];
@@ -157,6 +189,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         nome_aluno: responsavelData.nomeAluno,
         turma: responsavelData.turmaAluno,
         local: formData.local,
+        data_sumico: formData.dataSumico,
         foto_url: fotoUrl,
         owner_email: currentUser.email || 'Não informado'
       };
@@ -165,6 +198,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         titulo: formData.nomeObjeto,
         descricao: formData.descricao,
         status: 'aberto',
+        data_sumico: formData.dataSumico,
         evidencia: [evidenciaData],
         created_by: currentUser.id || currentUser.uid,
         escola_id: escolaId
@@ -174,6 +208,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
       setFormData({
         nomeObjeto: '',
         local: '',
+        dataSumico: '',
         descricao: ''
       });
       setSelectedFile(null);
@@ -239,6 +274,21 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
               value={formData.local}
               onChange={handleChange}
               placeholder="Ex: Quadra, Sala 101, Pátio"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* DATA DO SUMIÇO */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Quando sumiu <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="dataSumico"
+              value={formData.dataSumico}
+              onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
