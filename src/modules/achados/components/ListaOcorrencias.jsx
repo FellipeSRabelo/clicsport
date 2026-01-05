@@ -53,7 +53,7 @@ const ListaOcorrencias = () => {
           descricao: r.descricao,
           local: r.local,
           status: r.status,
-          criadoEm: r.criado_em ? new Date(r.criado_em) : null,
+          criadoEm: r.created_at ? new Date(r.created_at) : null,
           ownerFullName: r.owner_full_name,
           turma: r.turma,
           fotoUrl: r.foto_url,

@@ -32,16 +32,30 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
 
   const loadResponsavelData = async () => {
     try {
-      const data = await fetchResponsavel(escolaId, currentUser.id || currentUser.uid);
-      if (data) {
+      // Buscar matrículas do responsável para pegar o primeiro aluno
+      const { data: matriculas, error: matError } = await supabase
+        .from('matriculas')
+        .select(`
+          id,
+          alunos(id, nome, matricula),
+          turmas(id, nome)
+        `)
+        .eq('responsavel_uid', currentUser.id || currentUser.uid)
+        .eq('escola_id', escolaId)
+        .limit(1);
+
+      if (matError) throw matError;
+
+      if (matriculas && matriculas.length > 0) {
+        const mat = matriculas[0];
         setResponsavelData({
-          nomeAluno: data.aluno_nome || 'Não informado',
-          turmaAluno: data.turma_aluno || 'Não informado'
+          nomeAluno: mat.alunos?.nome || 'Não informado',
+          turmaAluno: mat.turmas?.nome || 'Não informado'
         });
       } else {
         setResponsavelData({
-          nomeAluno: 'Não encontrado (refaça o cadastro do responsável)',
-          turmaAluno: 'Não encontrado (refaça o cadastro do responsável)'
+          nomeAluno: 'Nenhum aluno vinculado',
+          turmaAluno: 'Nenhuma turma vinculada'
         });
       }
     } catch (error) {
@@ -161,7 +175,6 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         found_by_owner: false,
         owner: currentUser.id || currentUser.uid,
         owner_email: currentUser.email || 'Não informado',
-        criado_em: new Date().toISOString(),
         escola_id: escolaId
       });
 

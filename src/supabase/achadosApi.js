@@ -8,7 +8,7 @@ export async function fetchItemsByOwner(escolaId, ownerUid) {
     .select('*')
     .eq('escola_id', escolaId)
     .eq('owner', ownerUid)
-    .order('criado_em', { ascending: false });
+    .order('created_at', { ascending: false });
   if (error) throw error;
   return data || [];
 }
