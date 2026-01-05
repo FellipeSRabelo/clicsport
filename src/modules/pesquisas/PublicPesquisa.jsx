@@ -216,23 +216,12 @@ function PublicPesquisa() {
             return;
           }
           
-          // Se for pergunta de escala, verificar se tem nota
-          if (question.type === 'scale5') {
-            const rating = typeof answer === 'object' ? answer.rating : answer;
-            if (!rating || rating === '0') {
-              setError(`Selecione uma nota para a pergunta ${i + 1}`);
+          // Se for pergunta de texto e for obrigatória, verificar se foi preenchida
+          if (question.type === 'text' && question.obrigatorio) {
+            if (!answer.trim()) {
+              setError(`A pergunta ${i + 1} é obrigatória`);
               setSubmitting(false);
               return;
-            }
-            
-            // Se observação for obrigatória, verificar se foi preenchida
-            if (question.observacaoObrigatoria) {
-              const observation = typeof answer === 'object' ? answer.observation : '';
-              if (!observation || observation.trim() === '') {
-                setError(`O campo de observação da pergunta ${i + 1} é obrigatório`);
-                setSubmitting(false);
-                return;
-              }
             }
           }
         }
@@ -427,50 +416,29 @@ function PublicPesquisa() {
                         {index + 1}. {questionText}
                       </label>
                       {question.type === 'scale5' ? (
-                        <div className="space-y-3">
-                          <StarRating
-                            value={parseInt(answers[index]?.rating || answers[index]) || 0}
-                            onChange={(value) => setAnswers(prev => ({
-                              ...prev,
-                              [index]: typeof prev[index] === 'object' 
-                                ? { ...prev[index], rating: String(value) }
-                                : { rating: String(value), observation: '' }
-                            }))}
-                          />
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Observação {question.observacaoObrigatoria ? '(obrigatória)' : '(opcional)'}
-                              {question.observacaoObrigatoria && <span className="text-red-500 ml-1">*</span>}
-                            </label>
-                            <textarea
-                              value={answers[index]?.observation || ''}
-                              onChange={(e) => setAnswers(prev => ({
-                                ...prev,
-                                [index]: typeof prev[index] === 'object'
-                                  ? { ...prev[index], observation: e.target.value }
-                                  : { rating: '', observation: e.target.value }
-                              }))}
-                              placeholder={question.observacaoObrigatoria ? "Deixe sua observação (obrigatório)..." : "Deixe sua observação (opcional)..."}
-                              rows={2}
-                              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                question.observacaoObrigatoria 
-                                  ? 'border-blue-300 focus:ring-blue-500' 
-                                  : 'border-gray-300 focus:ring-blue-400'
-                              }`}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <textarea
-                          value={answers[index] || ''}
-                          onChange={(e) => setAnswers(prev => ({
+                        <StarRating
+                          value={parseInt(answers[index]) || 0}
+                          onChange={(value) => setAnswers(prev => ({
                             ...prev,
-                            [index]: e.target.value
+                            [index]: String(value)
                           }))}
-                          placeholder="Sua resposta..."
-                          rows={3}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                      ) : (
+                        <div>
+                          <textarea
+                            value={answers[index] || ''}
+                            onChange={(e) => setAnswers(prev => ({
+                              ...prev,
+                              [index]: e.target.value
+                            }))}
+                            placeholder="Sua resposta..."
+                            rows={3}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          {question.obrigatorio && (
+                            <p className="text-xs text-red-500 mt-1">* Campo obrigatório</p>
+                          )}
+                        </div>
                       )}
                     </div>
                   );
