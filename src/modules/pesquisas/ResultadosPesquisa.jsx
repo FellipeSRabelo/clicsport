@@ -107,7 +107,7 @@ export default function ResultadosPesquisa() {
       };
 
       responses.forEach(response => {
-        const answer = response.respostas ? response.respostas[qIndex] : null;
+        const answer = response.answers ? response.answers[qIndex] : null;
         
         if (answer) {
           stats[qIndex].totalResponses++;

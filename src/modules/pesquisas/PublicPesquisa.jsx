@@ -250,7 +250,7 @@ function PublicPesquisa() {
           turma_id: turmaSelecionada.id,
           turma_nome: turmaSelecionada.nome,
           escola_id: escolaId,
-          respostas: answers
+          answers: answers
         }]);
       
       if (insertError) {
@@ -263,7 +263,7 @@ function PublicPesquisa() {
           turma_id: turmaSelecionada.id,
           turma_nome: turmaSelecionada.nome,
           escola_id: escolaId,
-          respostas: answers
+          answers: answers
         });
         throw insertError;
       }
