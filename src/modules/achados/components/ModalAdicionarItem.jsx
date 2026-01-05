@@ -37,7 +37,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
       // Buscar responsável usando UID
       const { data: responsavelData, error: respError } = await supabase
         .from('responsaveis')
-        .select('id, aluno_id, aluno_nome, turma_aluno')
+        .select('id, aluno_id, aluno_nome, turma_aluno, email')
         .eq('uid', currentUser.id || currentUser.uid)
         .eq('escola_id', escolaId)
         .limit(1);
@@ -68,7 +68,7 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         return;
       }
 
-      // Buscar matrícula usando o responsavel_id
+      // OPÇÃO 1: Buscar matrícula usando o responsavel_id
       console.log('Buscando matrícula para responsavel_id:', resp.id);
       const { data: matriculas, error: matError } = await supabase
         .from('matriculas')
@@ -83,10 +83,9 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
 
       if (matError) {
         console.error('Erro ao buscar matrículas:', matError);
-        throw matError;
       }
 
-      console.log('Matrículas encontradas:', matriculas);
+      console.log('Matrículas encontradas via responsavel_id:', matriculas);
 
       if (matriculas && matriculas.length > 0) {
         const mat = matriculas[0];
@@ -94,12 +93,54 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
           nomeAluno: mat.alunos?.nome || 'Não informado',
           turmaAluno: mat.turmas?.nome || 'Não informado'
         });
-      } else {
-        setResponsavelData({
-          nomeAluno: 'Nenhum aluno vinculado',
-          turmaAluno: 'Vincule um aluno ao responsável'
-        });
+        return;
       }
+
+      // OPÇÃO 2: Se não encontrou, tentar pelo email do responsável financeiro
+      console.log('Tentando buscar via email:', resp.email || currentUser.email);
+      const { data: respFin, error: respFinError } = await supabase
+        .from('responsavel_financeiro')
+        .select('matricula_id')
+        .eq('email', resp.email || currentUser.email)
+        .limit(1);
+
+      if (respFinError) {
+        console.error('Erro ao buscar responsavel_financeiro:', respFinError);
+      }
+
+      console.log('Responsavel financeiro encontrado:', respFin);
+
+      if (respFin && respFin.length > 0 && respFin[0].matricula_id) {
+        const { data: matFinanceiro, error: matFinError } = await supabase
+          .from('matriculas')
+          .select(`
+            id,
+            alunos(id, nome, matricula),
+            turmas(id, nome)
+          `)
+          .eq('id', respFin[0].matricula_id)
+          .maybeSingle();
+
+        if (matFinError) {
+          console.error('Erro ao buscar matrícula via financeiro:', matFinError);
+        }
+
+        console.log('Matrícula encontrada via financeiro:', matFinanceiro);
+
+        if (matFinanceiro) {
+          setResponsavelData({
+            nomeAluno: matFinanceiro.alunos?.nome || 'Não informado',
+            turmaAluno: matFinanceiro.turmas?.nome || 'Não informado'
+          });
+          return;
+        }
+      }
+
+      // Se não encontrou nada
+      setResponsavelData({
+        nomeAluno: 'Nenhum aluno vinculado',
+        turmaAluno: 'Vincule um aluno ao responsável'
+      });
     } catch (error) {
       console.error('Erro ao carregar dados do responsável:', error);
       setResponsavelData({
