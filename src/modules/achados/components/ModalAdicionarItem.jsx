@@ -151,27 +151,22 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
         }
       }
 
-      // Gerar unique_id simples: último + 1
-      let nextId = Math.floor(Date.now() / 1000);
-      const { data: last } = await supabase
-        .from('achados_perdidos')
-        .select('unique_id')
-        .eq('escola_id', escolaId)
-        .order('unique_id', { ascending: false })
-        .limit(1);
-      if (last && last.length > 0) nextId = (last[0].unique_id || 0) + 1;
-
-      await insertItem({
-        unique_id: nextId,
+      // Preparar dados de evidência (informações do item)
+      const evidenciaData = {
         nome_objeto: formData.nomeObjeto,
         nome_aluno: responsavelData.nomeAluno,
         turma: responsavelData.turmaAluno,
         local: formData.local,
-        descricao: formData.descricao,
         foto_url: fotoUrl,
-        status: 'active',
-        found_by_owner: false,
-        owner_email: currentUser.email || 'Não informado',
+        owner_email: currentUser.email || 'Não informado'
+      };
+
+      await insertItem({
+        titulo: formData.nomeObjeto,
+        descricao: formData.descricao,
+        status: 'aberto',
+        evidencia: [evidenciaData],
+        created_by: currentUser.id || currentUser.uid,
         escola_id: escolaId
       });
 

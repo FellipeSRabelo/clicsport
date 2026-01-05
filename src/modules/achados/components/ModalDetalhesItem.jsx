@@ -143,11 +143,11 @@ const ModalDetalhesItem = ({ isOpen, onClose, item }) => {
         <div className="text-gray-700 space-y-3">
           <p className="flex">
             <strong className="w-32 flex-shrink-0">Objeto:</strong>
-            <span>{item.nomeObjeto || item.name || 'Não informado'}</span>
+            <span>{item.nomeObjeto || 'Não informado'}</span>
           </p>
           <p className="flex">
             <strong className="w-32 flex-shrink-0">Aluno:</strong>
-            <span>{item.nomeAluno || item.studentName || 'Não informado'}</span>
+            <span>{item.nomeAluno || 'Não informado'}</span>
           </p>
           <p className="flex">
             <strong className="w-32 flex-shrink-0">Turma:</strong>
@@ -155,24 +155,16 @@ const ModalDetalhesItem = ({ isOpen, onClose, item }) => {
           </p>
           <p className="flex">
             <strong className="w-32 flex-shrink-0">Onde:</strong>
-            <span>{item.local || item.location || 'Não informado'}</span>
-          </p>
-          <p className="flex">
-            <strong className="w-32 flex-shrink-0">Sumiu em:</strong>
-            <span>
-              {item.dataSumiço || item.disappearedDate
-                ? new Date((item.dataSumiço || item.disappearedDate) + 'T00:00:00-03:00').toLocaleDateString('pt-BR')
-                : 'Não informado'}
-            </span>
+            <span>{item.local || 'Não informado'}</span>
           </p>
           <p className="flex">
             <strong className="w-32 flex-shrink-0">Observação:</strong>
-            <span>{item.descricao || item.description || 'Nenhuma'}</span>
+            <span>{item.descricao || 'Nenhuma'}</span>
           </p>
           <p className="flex items-center">
             <strong className="w-32 flex-shrink-0">Foto:</strong>
-            {(item.fotoUrl || item.evidence) ? (
-              <a href={item.fotoUrl || item.evidence} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center">
+            {item.fotoUrl ? (
+              <a href={item.fotoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center">
                 <FontAwesomeIcon icon={faImage} className="mr-1" />
                 Ver imagem
               </a>
@@ -186,7 +178,7 @@ const ModalDetalhesItem = ({ isOpen, onClose, item }) => {
           </p>
         </div>
 
-        {isOwner && !showPhotoUpload && item.status !== 'Finalizado' && item.status !== 'Encontrado' && !item.foundByOwner && (
+        {isOwner && !showPhotoUpload && item.status !== 'fechado' && !item.foundByOwner && (
           <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4 border-t pt-4">
             {!item.foundByOwner && (
               <button

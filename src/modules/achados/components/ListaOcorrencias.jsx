@@ -45,21 +45,23 @@ const ListaOcorrencias = () => {
       if (!currentUser || !escolaId) return;
       try {
         const rows = await fetchItemsByOwner(escolaId, currentUser.id || currentUser.uid, currentUser.email);
-        // Normaliza campos
-        const itemsData = rows.map(r => ({
-          id: r.id,
-          nomeObjeto: r.nome_objeto || r.nomeObjeto || r.name,
-          nomeAluno: r.nome_aluno || r.nomeAluno || r.studentName,
-          descricao: r.descricao,
-          local: r.local,
-          status: r.status,
-          criadoEm: r.created_at ? new Date(r.created_at) : null,
-          ownerFullName: r.owner_full_name,
-          turma: r.turma,
-          fotoUrl: r.foto_url,
-          uniqueId: r.unique_id
-        }));
-        itemsData.sort((a, b) => (b.uniqueId || 0) - (a.uniqueId || 0));
+        // Normaliza campos - extrair dados de evidencia
+        const itemsData = rows.map(r => {
+          const primeiraEvidencia = Array.isArray(r.evidencia) && r.evidencia.length > 0 ? r.evidencia[0] : {};
+          return {
+            id: r.id,
+            nomeObjeto: r.titulo || primeiraEvidencia.nome_objeto,
+            nomeAluno: primeiraEvidencia.nome_aluno || 'Não informado',
+            descricao: r.descricao,
+            local: primeiraEvidencia.local,
+            status: r.status,
+            criadoEm: r.created_at ? new Date(r.created_at) : null,
+            turma: primeiraEvidencia.turma,
+            fotoUrl: primeiraEvidencia.foto_url,
+            foundByOwner: r.found_by_owner
+          };
+        });
+        itemsData.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         if (isMounted) {
           setItems(itemsData);
           setFilteredItems(itemsData);
