@@ -32,63 +32,60 @@ const ModalAdicionarItem = ({ isOpen, onClose }) => {
 
   const loadResponsavelData = async () => {
     try {
-      console.log('Buscando matrículas para UID:', currentUser.id || currentUser.uid);
+      console.log('Buscando responsável para UID:', currentUser.id || currentUser.uid);
       
-      // Primeiro, buscar o responsavel_id na tabela responsaveis usando o UID
+      // Buscar responsável usando UID (usar limit ao invés de maybeSingle para evitar erro de múltiplas linhas)
       const { data: responsavelData, error: respError } = await supabase
         .from('responsaveis')
-        .select('id')
+        .select('aluno_id, aluno_nome, turma_aluno')
         .eq('uid', currentUser.id || currentUser.uid)
         .eq('escola_id', escolaId)
-        .maybeSingle();
+        .limit(1);
 
       if (respError) {
         console.error('Erro ao buscar responsável:', respError);
         throw respError;
       }
 
-      if (!responsavelData) {
-        console.warn('Responsável não encontrado na tabela responsaveis');
-        setResponsavelData({
-          nomeAluno: 'Responsável não cadastrado',
-          turmaAluno: 'Faça o cadastro primeiro'
-        });
-        return;
+      console.log('Responsável encontrado:', responsavelData);
+
+      if (responsavelData && responsavelData.length > 0) {
+        const resp = responsavelData[0];
+        
+        // Se já tem os dados do aluno na tabela responsaveis
+        if (resp.aluno_nome && resp.turma_aluno) {
+          setResponsavelData({
+            nomeAluno: resp.aluno_nome,
+            turmaAluno: resp.turma_aluno
+          });
+          return;
+        }
+
+        // Se não tem, buscar pelo aluno_id
+        if (resp.aluno_id) {
+          const { data: alunoData, error: alunoError } = await supabase
+            .from('alunos')
+            .select('nome, nome_turma')
+            .eq('id', resp.aluno_id)
+            .maybeSingle();
+
+          if (alunoError) throw alunoError;
+
+          if (alunoData) {
+            setResponsavelData({
+              nomeAluno: alunoData.nome || 'Não informado',
+              turmaAluno: alunoData.nome_turma || 'Não informado'
+            });
+            return;
+          }
+        }
       }
 
-      console.log('Responsavel encontrado:', responsavelData.id);
-
-      // Buscar matrículas do responsável para pegar o primeiro aluno
-      const { data: matriculas, error: matError } = await supabase
-        .from('matriculas')
-        .select(`
-          id,
-          alunos(id, nome, matricula),
-          turmas(id, nome)
-        `)
-        .eq('responsavel_id', responsavelData.id)
-        .eq('escola_id', escolaId)
-        .limit(1);
-
-      if (matError) {
-        console.error('Erro ao buscar matrículas:', matError);
-        throw matError;
-      }
-
-      console.log('Matrículas encontradas:', matriculas);
-
-      if (matriculas && matriculas.length > 0) {
-        const mat = matriculas[0];
-        setResponsavelData({
-          nomeAluno: mat.alunos?.nome || 'Não informado',
-          turmaAluno: mat.turmas?.nome || 'Não informado'
-        });
-      } else {
-        setResponsavelData({
-          nomeAluno: 'Nenhum aluno vinculado',
-          turmaAluno: 'Nenhuma turma vinculada'
-        });
-      }
+      // Se não encontrou nada
+      setResponsavelData({
+        nomeAluno: 'Nenhum aluno vinculado',
+        turmaAluno: 'Vincule um aluno ao responsável'
+      });
     } catch (error) {
       console.error('Erro ao carregar dados do responsável:', error);
       setResponsavelData({
