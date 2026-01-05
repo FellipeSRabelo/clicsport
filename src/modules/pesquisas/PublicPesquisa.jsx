@@ -209,16 +209,18 @@ function PublicPesquisa() {
           const question = campaign.questions[i];
           const answer = answers[i];
           
-          // Verificar se há resposta
-          if (!answer) {
-            setError(`Responda a pergunta ${i + 1}`);
-            setSubmitting(false);
-            return;
+          // Perguntas de escala (5 estrelas) são sempre obrigatórias
+          if (question.type === 'scale5') {
+            if (!answer || answer === '0') {
+              setError(`Selecione uma nota para a pergunta ${i + 1}`);
+              setSubmitting(false);
+              return;
+            }
           }
           
-          // Se for pergunta de texto e for obrigatória, verificar se foi preenchida
+          // Perguntas de texto só são obrigatórias se marcadas como tal
           if (question.type === 'text' && question.obrigatorio) {
-            if (!answer.trim()) {
+            if (!answer || !answer.trim()) {
               setError(`A pergunta ${i + 1} é obrigatória`);
               setSubmitting(false);
               return;
@@ -250,7 +252,21 @@ function PublicPesquisa() {
           escola_id: escolaId,
           respostas: answers
         }]);
-      if (insertError) throw insertError;
+      
+      if (insertError) {
+        console.error('Erro ao inserir resposta:', insertError);
+        console.log('Dados enviados:', {
+          campanha_id: campaignId,
+          aluno_id: alunoSelecionado.id,
+          aluno_nome: alunoSelecionado.nome,
+          aluno_matricula: alunoSelecionado.matricula,
+          turma_id: turmaSelecionada.id,
+          turma_nome: turmaSelecionada.nome,
+          escola_id: escolaId,
+          respostas: answers
+        });
+        throw insertError;
+      }
       setSuccess(true);
       setTimeout(() => {
         setShowAlunoSelection(true);
@@ -260,7 +276,8 @@ function PublicPesquisa() {
         setSuccess(false);
       }, 2000);
     } catch (err) {
-      setError('Erro ao enviar respostas. Tente novamente.');
+      console.error('Erro completo:', err);
+      setError(err.message || 'Erro ao enviar respostas. Tente novamente.');
     } finally {
       setSubmitting(false);
     }
