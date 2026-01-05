@@ -109,8 +109,11 @@ export default function NovaCampanha() {
               type: campaignData.type || 'professores',
               targetTurmasIds: targetTurmasIds,
               questions: Array.isArray(campaignData.questions) && campaignData.questions.length > 0
-                ? campaignData.questions
-                : [{ text: '', type: 'scale5' }]
+                ? campaignData.questions.map(q => ({
+                    ...q,
+                    observacaoObrigatoria: q.observacaoObrigatoria ?? false
+                  }))
+                : [{ text: '', type: 'scale5', observacaoObrigatoria: false }]
             });
             setSelectedTurmasIds(new Set(targetTurmasIds));
             setSelectedUnidades(unidadesSet);
@@ -201,7 +204,7 @@ export default function NovaCampanha() {
   const handleAddQuestion = () => {
     setFormData(prev => ({
       ...prev,
-      questions: [...prev.questions, { text: '', type: 'scale5', professor_id: '' }]
+      questions: [...prev.questions, { text: '', type: 'scale5', professor_id: '', observacaoObrigatoria: false }]
     }));
   };
 
@@ -535,6 +538,25 @@ export default function NovaCampanha() {
                     <option value="text">Texto Aberto (Comentário)</option>
                   </select>
                 </div>
+
+                {question.type === 'scale5' && (
+                  <div className="mt-3">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={question.observacaoObrigatoria || false}
+                        onChange={(e) => handleQuestionChange(index, 'observacaoObrigatoria', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Campo de observação obrigatório
+                      </span>
+                    </label>
+                    <p className="ml-6 text-xs text-gray-500 mt-1">
+                      Se marcado, o responsável deverá preencher uma observação junto com a nota
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -9,13 +9,13 @@ import { supabase } from '../../supabase/supabaseConfig';
 // Simple star input for 1-5 ratings
 const StarRating = ({ value = 0, onChange }) => {
   return (
-    <div className="flex gap-2" role="radiogroup">
+    <div className="flex gap-3 sm:gap-4 justify-center py-2" role="radiogroup">
       {[1, 2, 3, 4, 5].map((score) => (
         <button
           key={score}
           type="button"
           onClick={() => onChange(score)}
-          className={`text-2xl leading-none transition-colors ${score <= value ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`}
+          className={`text-xl sm:text-2xl md:text-3xl leading-none transition-colors p-1 touch-manipulation ${score <= value ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`}
           aria-label={`${score} estrelas`}
         >
           ★
@@ -206,10 +206,34 @@ function PublicPesquisa() {
       setError(null);
       if (Array.isArray(campaign.questions)) {
         for (let i = 0; i < campaign.questions.length; i++) {
-          if (!answers[i]) {
+          const question = campaign.questions[i];
+          const answer = answers[i];
+          
+          // Verificar se há resposta
+          if (!answer) {
             setError(`Responda a pergunta ${i + 1}`);
             setSubmitting(false);
             return;
+          }
+          
+          // Se for pergunta de escala, verificar se tem nota
+          if (question.type === 'scale5') {
+            const rating = typeof answer === 'object' ? answer.rating : answer;
+            if (!rating || rating === '0') {
+              setError(`Selecione uma nota para a pergunta ${i + 1}`);
+              setSubmitting(false);
+              return;
+            }
+            
+            // Se observação for obrigatória, verificar se foi preenchida
+            if (question.observacaoObrigatoria) {
+              const observation = typeof answer === 'object' ? answer.observation : '';
+              if (!observation || observation.trim() === '') {
+                setError(`O campo de observação da pergunta ${i + 1} é obrigatório`);
+                setSubmitting(false);
+                return;
+              }
+            }
           }
         }
       }
@@ -403,13 +427,39 @@ function PublicPesquisa() {
                         {index + 1}. {questionText}
                       </label>
                       {question.type === 'scale5' ? (
-                        <StarRating
-                          value={parseInt(answers[index]) || 0}
-                          onChange={(value) => setAnswers(prev => ({
-                            ...prev,
-                            [index]: String(value)
-                          }))}
-                        />
+                        <div className="space-y-3">
+                          <StarRating
+                            value={parseInt(answers[index]?.rating || answers[index]) || 0}
+                            onChange={(value) => setAnswers(prev => ({
+                              ...prev,
+                              [index]: typeof prev[index] === 'object' 
+                                ? { ...prev[index], rating: String(value) }
+                                : { rating: String(value), observation: '' }
+                            }))}
+                          />
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Observação {question.observacaoObrigatoria ? '(obrigatória)' : '(opcional)'}
+                              {question.observacaoObrigatoria && <span className="text-red-500 ml-1">*</span>}
+                            </label>
+                            <textarea
+                              value={answers[index]?.observation || ''}
+                              onChange={(e) => setAnswers(prev => ({
+                                ...prev,
+                                [index]: typeof prev[index] === 'object'
+                                  ? { ...prev[index], observation: e.target.value }
+                                  : { rating: '', observation: e.target.value }
+                              }))}
+                              placeholder={question.observacaoObrigatoria ? "Deixe sua observação (obrigatório)..." : "Deixe sua observação (opcional)..."}
+                              rows={2}
+                              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                                question.observacaoObrigatoria 
+                                  ? 'border-blue-300 focus:ring-blue-500' 
+                                  : 'border-gray-300 focus:ring-blue-400'
+                              }`}
+                            />
+                          </div>
+                        </div>
                       ) : (
                         <textarea
                           value={answers[index] || ''}
