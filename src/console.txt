@@ -1,0 +1,1335 @@
+express-utils.js:461 AVISO
+express-utils.js:461 O uso deste console pode permitir que invasores falsifiquem sua identidade para roubar informações por meio de um ataque chamado Self-XSS.Não insira nem cole códigos que você não conheça.
+react-dom_client.js?v=6de92f36:20103 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+supabaseConfig.js:21 ✅ Supabase Client inicializado: https://nrpfbsjwscgvtrrkbycm.supabase.co
+firebaseConfig.js:32 ⚠️ Firebase desativado: variáveis VITE_FIREBASE_* não configuradas.
+(anonymous) @ firebaseConfig.js:32
+SupabaseAuthContext.jsx:228 📡 Iniciando monitor de autenticação Supabase...
+SupabaseAuthContext.jsx:228 📡 Iniciando monitor de autenticação Supabase...
+SupabaseAuthContext.jsx:245 🔔 Auth state changed: SIGNED_IN 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:81 🔍 Buscando dados do usuário: 4aa14033-8508-47c8-988e-e8ec4970c05e
+TopBar.jsx:21 📋 modulosPermitidos: {}
+TopBar.jsx:21 📋 modulosPermitidos: {}
+SupabaseAuthContext.jsx:245 🔔 Auth state changed: SIGNED_IN 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:81 🔍 Buscando dados do usuário: 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:232 Sessão atual: 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:81 🔍 Buscando dados do usuário: 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:232 Sessão atual: 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:81 🔍 Buscando dados do usuário: 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:245 🔔 Auth state changed: INITIAL_SESSION 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:81 🔍 Buscando dados do usuário: 4aa14033-8508-47c8-988e-e8ec4970c05e
+SupabaseAuthContext.jsx:92 🎉 GESTOR ENCONTRADO! {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+Dashboard.jsx:30 Gestor: {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+Dashboard.jsx:34 Escola ID: e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d
+SupabaseAuthContext.jsx:92 🎉 GESTOR ENCONTRADO! {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+Dashboard.jsx:30 Gestor: {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+Dashboard.jsx:34 Escola ID: e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d
+pesquisasApi.js:91 Erro ao buscar matrículas: {code: '42703', details: null, hint: null, message: 'column matriculas.created_at does not exist'}
+fetchLatestMatriculas @ pesquisasApi.js:91
+await in fetchLatestMatriculas
+(anonymous) @ Dashboard.jsx:49
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11040
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11055
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11066
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13150
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:35 Erro ao buscar alunos por unidade: {code: 'PGRST200', details: "Searched for a foreign key relationship between 'a…n the schema 'public', but no matches were found.", hint: null, message: "Could not find a relationship between 'alunos' and 'unidades' in the schema cache"}
+fetchTotalAlunosPorUnidade @ pesquisasApi.js:35
+await in fetchTotalAlunosPorUnidade
+(anonymous) @ Dashboard.jsx:48
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11040
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11055
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11066
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13150
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:69 Erro ao buscar ocorrências: {code: 'PGRST205', details: null, hint: "Perhaps you meant the table 'public.campanhas'", message: "Could not find the table 'public.ocorrencias' in the schema cache"}
+fetchLatestOcorrencias @ pesquisasApi.js:69
+await in fetchLatestOcorrencias
+(anonymous) @ Dashboard.jsx:47
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11040
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11055
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11066
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13150
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:112 Erro ao buscar aulas experimentais: {code: 'PGRST205', details: null, hint: null, message: "Could not find the table 'public.aulas_experimentais' in the schema cache"}
+fetchLatestAulasExperimentais @ pesquisasApi.js:112
+await in fetchLatestAulasExperimentais
+(anonymous) @ Dashboard.jsx:50
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11040
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11055
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11066
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13150
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:14 Erro ao buscar campanhas: {code: '42703', details: null, hint: 'Perhaps you meant to reference the column "campanhas.title".', message: 'column campanhas.titulo does not exist'}
+fetchLatestCampanhas @ pesquisasApi.js:14
+await in fetchLatestCampanhas
+(anonymous) @ Dashboard.jsx:46
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11040
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11055
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11066
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13150
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+Dashboard.jsx:38 Escola Data: {id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', nome: 'Gym Kids', razao_social: 'Gym Kids', cidade: 'São José', cep: '88117020', …}
+pesquisasApi.js:128 Erro ao buscar eventos: {code: 'PGRST205', details: null, hint: "Perhaps you meant the table 'public.alunos'", message: "Could not find the table 'public.eventos' in the schema cache"}
+fetchLatestEventos @ pesquisasApi.js:128
+await in fetchLatestEventos
+(anonymous) @ Dashboard.jsx:51
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11040
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11055
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11033
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11201
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=6de92f36:11010
+commitPassiveMountOnFiber @ react-dom_client.js?v=6de92f36:11066
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13150
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+Dashboard.jsx:53 Dados carregados: {pesq: Array(0), ocorr: Array(0), alunosUnidade: Array(0), matric: Array(0), aulas: Array(0), …}
+SupabaseAuthContext.jsx:92 🎉 GESTOR ENCONTRADO! {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+pesquisasApi.js:91 Erro ao buscar matrículas: {code: '42703', details: null, hint: null, message: 'column matriculas.created_at does not exist'}
+fetchLatestMatriculas @ pesquisasApi.js:91
+await in fetchLatestMatriculas
+(anonymous) @ Dashboard.jsx:49
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11273
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=6de92f36:13339
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13312
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13347
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13157
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:35 Erro ao buscar alunos por unidade: {code: 'PGRST200', details: "Searched for a foreign key relationship between 'a…n the schema 'public', but no matches were found.", hint: null, message: "Could not find a relationship between 'alunos' and 'unidades' in the schema cache"}
+fetchTotalAlunosPorUnidade @ pesquisasApi.js:35
+await in fetchTotalAlunosPorUnidade
+(anonymous) @ Dashboard.jsx:48
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11273
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=6de92f36:13339
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13312
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13347
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13157
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:112 Erro ao buscar aulas experimentais: {code: 'PGRST205', details: null, hint: null, message: "Could not find the table 'public.aulas_experimentais' in the schema cache"}
+fetchLatestAulasExperimentais @ pesquisasApi.js:112
+await in fetchLatestAulasExperimentais
+(anonymous) @ Dashboard.jsx:50
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11273
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=6de92f36:13339
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13312
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13347
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13157
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:69 Erro ao buscar ocorrências: {code: 'PGRST205', details: null, hint: "Perhaps you meant the table 'public.campanhas'", message: "Could not find the table 'public.ocorrencias' in the schema cache"}
+fetchLatestOcorrencias @ pesquisasApi.js:69
+await in fetchLatestOcorrencias
+(anonymous) @ Dashboard.jsx:47
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11273
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=6de92f36:13339
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13312
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13347
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13157
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:14 Erro ao buscar campanhas: {code: '42703', details: null, hint: 'Perhaps you meant to reference the column "campanhas.title".', message: 'column campanhas.titulo does not exist'}
+fetchLatestCampanhas @ pesquisasApi.js:14
+await in fetchLatestCampanhas
+(anonymous) @ Dashboard.jsx:46
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11273
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=6de92f36:13339
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13312
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13347
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13157
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+pesquisasApi.js:128 Erro ao buscar eventos: {code: 'PGRST205', details: null, hint: "Perhaps you meant the table 'public.alunos'", message: "Could not find the table 'public.eventos' in the schema cache"}
+fetchLatestEventos @ pesquisasApi.js:128
+await in fetchLatestEventos
+(anonymous) @ Dashboard.jsx:51
+Promise.then
+(anonymous) @ Dashboard.jsx:29
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18567
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+commitHookEffectListMount @ react-dom_client.js?v=6de92f36:9411
+commitHookPassiveMountEffects @ react-dom_client.js?v=6de92f36:9465
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11273
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11317
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11240
+reconnectPassiveEffects @ react-dom_client.js?v=6de92f36:11265
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=6de92f36:13339
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13312
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13317
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=6de92f36:13347
+flushPassiveEffects @ react-dom_client.js?v=6de92f36:13157
+(anonymous) @ react-dom_client.js?v=6de92f36:12776
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<Dashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+PrivateRoute @ App.jsx:94
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<PrivateRoute>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+AppRoutes @ App.jsx:123
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+App @ App.jsx:169
+react_stack_bottom_frame @ react-dom_client.js?v=6de92f36:18509
+renderWithHooksAgain @ react-dom_client.js?v=6de92f36:5729
+renderWithHooks @ react-dom_client.js?v=6de92f36:5665
+updateFunctionComponent @ react-dom_client.js?v=6de92f36:7475
+beginWork @ react-dom_client.js?v=6de92f36:8525
+runWithFiberInDEV @ react-dom_client.js?v=6de92f36:997
+performUnitOfWork @ react-dom_client.js?v=6de92f36:12561
+workLoopSync @ react-dom_client.js?v=6de92f36:12424
+renderRootSync @ react-dom_client.js?v=6de92f36:12408
+performWorkOnRoot @ react-dom_client.js?v=6de92f36:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=6de92f36:13505
+performWorkUntilDeadline @ react-dom_client.js?v=6de92f36:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=6de92f36:247
+(anonymous) @ main.jsx:10
+Dashboard.jsx:53 Dados carregados: {pesq: Array(0), ocorr: Array(0), alunosUnidade: Array(0), matric: Array(0), aulas: Array(0), …}
+Dashboard.jsx:38 Escola Data: {id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', nome: 'Gym Kids', razao_social: 'Gym Kids', cidade: 'São José', cep: '88117020', …}
+SupabaseAuthContext.jsx:92 🎉 GESTOR ENCONTRADO! {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+SupabaseAuthContext.jsx:92 🎉 GESTOR ENCONTRADO! {uid: '4aa14033-8508-47c8-988e-e8ec4970c05e', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', email: 'fellipesrabelo@gmail.com', nome: 'Fellipe Rabelo', role: 'gestor', …}
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true
+TopBar.jsx:21 📋 modulosPermitidos: {gestao: true, achados: true, dashboard: true, pesquisas: true, financeiro: false}
+TopBar.jsx:34 ✓ dashboard: true → true
+TopBar.jsx:34 ✓ gestao: true → true
+TopBar.jsx:34 ✓ achados: true → true
+TopBar.jsx:34 ✓ pesquisas: true → true
+TopBar.jsx:34 ✓ config: undefined → true

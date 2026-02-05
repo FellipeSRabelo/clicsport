@@ -17,10 +17,28 @@ export async function fetchItemsByOwner(escolaId, ownerUid, ownerEmail = null) {
 export async function fetchItemsByEscola(escolaId) {
   const { data, error } = await supabase
     .from('achados_perdidos')
-    .select('*')
+    .select(`
+      *,
+      responsaveis!achados_perdidos_created_by_fkey (
+        nome_completo,
+        telefone,
+        email
+      )
+    `)
     .eq('escola_id', escolaId)
     .order('created_at', { ascending: false });
-  if (error) throw error;
+  
+  if (error) {
+    console.warn('Erro ao buscar com join de responsaveis, tentando sem join:', error);
+    // Fallback: busca sem join se der erro
+    const { data: dataSimple, error: errorSimple } = await supabase
+      .from('achados_perdidos')
+      .select('*')
+      .eq('escola_id', escolaId)
+      .order('created_at', { ascending: false });
+    if (errorSimple) throw errorSimple;
+    return dataSimple || [];
+  }
   return data || [];
 }
 

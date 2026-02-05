@@ -39,18 +39,42 @@ const PainelGestor = () => {
       if (!escolaId) return;
       try {
         const rows = await fetchItemsByEscola(escolaId);
-        const itemsData = rows.map(r => ({
-          id: r.id,
-          name: r.name || r.nome_objeto,
-          studentName: r.student_name || r.nome_aluno,
-          ownerFullName: r.owner_full_name,
-          turma: r.turma,
-          status: r.status,
-          uniqueId: r.unique_id,
-          closedAt: r.closed_at ? new Date(r.closed_at) : null,
-          notes: r.notes,
-          fotoUrl: r.foto_url,
-        }));
+        console.log('Dados recebidos:', rows);
+        const itemsData = rows.map(r => {
+          // Parse evidencia se for string JSON
+          let evidenciaObj = null;
+          try {
+            evidenciaObj = typeof r.evidencia === 'string' ? JSON.parse(r.evidencia)[0] : (r.evidencia?.[0] || null);
+          } catch (e) {
+            console.warn('Erro ao parsear evidencia:', e);
+          }
+
+          // Pega dados do responsável (pode vir do join ou não)
+          const responsavel = r.responsaveis || null;
+
+          return {
+            id: r.id,
+            name: r.titulo || evidenciaObj?.nome_objeto || r.nome_objeto || 'Sem nome',
+            studentName: evidenciaObj?.nome_aluno || r.nome_aluno || 'Sem informação',
+            ownerFullName: responsavel?.nome_completo || r.owner_full_name || 'Anônimo',
+            ownerEmail: responsavel?.email || evidenciaObj?.owner_email || r.owner_email || '',
+            ownerPhone: responsavel?.telefone || r.owner_phone || '',
+            turma: evidenciaObj?.turma || r.turma || 'Sem turma',
+            location: evidenciaObj?.local || r.local || '',
+            disappearedDate: r.data_sumico || evidenciaObj?.data_sumico || '',
+            evidence: evidenciaObj?.foto_url || r.foto_url || '',
+            status: r.status === 'aberto' ? 'active' : r.status, // Converte "aberto" para "active"
+            uniqueId: r.idx || r.unique_id,
+            closedAt: r.closed_at ? new Date(r.closed_at) : null,
+            notes: r.notes || r.descricao || '',
+            fotoUrl: evidenciaObj?.foto_url || r.foto_url || '',
+            local: evidenciaObj?.local || '',
+            dataSumico: r.data_sumico || evidenciaObj?.data_sumico,
+            descricao: r.descricao || '',
+            createdAt: r.created_at ? { toDate: () => new Date(r.created_at) } : null,
+            employeeNotes: [],
+          };
+        });
         itemsData.sort((a, b) => (b.uniqueId || 0) - (a.uniqueId || 0));
         if (mounted) {
           setAllItems(itemsData);

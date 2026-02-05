@@ -51,19 +51,26 @@ const ListaOcorrencias = () => {
       if (!currentUser || !escolaId) return;
       try {
         const rows = await fetchItemsByOwner(escolaId, currentUser.id || currentUser.uid, currentUser.email);
+        console.log('Dados recebidos ListaOcorrencias:', rows);
         // Normaliza campos - extrair dados de evidencia
         const itemsData = rows.map(r => {
-          const primeiraEvidencia = Array.isArray(r.evidencia) && r.evidencia.length > 0 ? r.evidencia[0] : {};
+          let evidenciaObj = null;
+          try {
+            evidenciaObj = typeof r.evidencia === 'string' ? JSON.parse(r.evidencia)[0] : (r.evidencia?.[0] || null);
+          } catch (e) {
+            console.warn('Erro ao parsear evidencia:', e);
+          }
+          
           return {
             id: r.id,
-            nomeObjeto: r.titulo || primeiraEvidencia.nome_objeto,
-            nomeAluno: primeiraEvidencia.nome_aluno || 'Não informado',
-            descricao: r.descricao,
-            local: primeiraEvidencia.local,
+            nomeObjeto: r.titulo || evidenciaObj?.nome_objeto || 'Sem nome',
+            nomeAluno: evidenciaObj?.nome_aluno || 'Não informado',
+            descricao: r.descricao || '',
+            local: evidenciaObj?.local || '',
             status: r.status,
             criadoEm: r.created_at ? new Date(r.created_at) : null,
-            turma: primeiraEvidencia.turma,
-            fotoUrl: primeiraEvidencia.foto_url,
+            turma: evidenciaObj?.turma || '',
+            fotoUrl: evidenciaObj?.foto_url || '',
             foundByOwner: r.found_by_owner
           };
         });
