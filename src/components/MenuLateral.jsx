@@ -35,6 +35,7 @@ const MenuLateral = ({ isCompact = false }) => {
       icon: faMoneyBill,
       roles: ['gestor'],
       key: 'financeiro',
+      alwaysShow: true, // Sempre mostra para gestor
       submenu: [
         { name: 'Mensalidades', path: '/financeiro/mensalidades' },
       ]
@@ -71,6 +72,9 @@ const MenuLateral = ({ isCompact = false }) => {
     { name: 'Relatórios', path: '/relatorios', icon: faFileAlt, roles: ['gestor'], key: 'relatorios' },
   ].filter(item => {
     if (!item || !item.roles.includes(userRole)) return false;
+    
+    // Se tem alwaysShow, sempre mostra
+    if (item.alwaysShow) return true;
     
     // Se for gestor, verifica modulosPermitidos
     if (userRole === 'gestor' && item.key) {
