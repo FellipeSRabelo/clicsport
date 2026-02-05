@@ -252,11 +252,11 @@ const Login = () => {
           
           {/* Logo mobile */}
           <div className="text-center mb-8 lg:hidden">
-            <h1 className="text-4xl font-extrabold text-clic-secondary">
-              ClicSport
-            </h1>
-            <p className="text-clic-primary font-semibold mt-1">
-              Gestão Escolar Inteligente
+            <h1 className="text-5xl italic font-black text-purple-600 tracking-tighter">
+  ClicSports
+</h1>
+            <p className="text-zinc-600 font-semibold mt-1">
+              Plataforma para Gestão Escolar
             </p>
           </div>
 
@@ -466,7 +466,7 @@ const Login = () => {
                     className={`w-full py-4 rounded-xl font-bold text-lg transition duration-300 ${
                       loading
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-clic-primary text-white hover:bg-clic-primary/90 shadow-lg hover:shadow-xl'
+                        : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl'
                     }`}
                   >
                     {loading ? 'Criando conta...' : '📧 Criar Conta com E-mail'}
