@@ -263,7 +263,7 @@ const Login = () => {
                 className={`w-full py-4 rounded-xl font-bold text-lg transition duration-300 flex items-center justify-center gap-3 shadow-lg ${
                   loading
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-clic-primary hover:shadow-xl transform hover:-translate-y-0.5'
+                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-600 hover:shadow-xl transform hover:-translate-y-0.5'
                 }`}
               >
                 <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -286,9 +286,9 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowEmailForm(true)}
-                className="w-full py-4 rounded-xl font-bold text-lg transition duration-300 bg-clic-primary text-white hover:bg-clic-primary/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="w-full py-4 rounded-xl font-bold text-lg transition duration-300 bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                📧 Entrar com E-mail
+                Entrar com E-mail
               </button>
 
               {/* Link para cadastro */}
