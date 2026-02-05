@@ -111,6 +111,25 @@ export const SupabaseAuthProvider = ({ children }) => {
       return null;
     }
     try {
+      // Primeiro verifica se já existe
+      const { data: existing } = await supabase
+        .from('responsaveis')
+        .select('*')
+        .eq('uid', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        // Já existe, apenas retorna
+        const { data: existingWithEscola } = await supabase
+          .from('responsaveis')
+          .select('*, escolas(*)')
+          .eq('uid', user.id)
+          .maybeSingle();
+        console.log('✅ Responsável já existente:', existingWithEscola);
+        return existingWithEscola;
+      }
+
+      // Não existe, cria novo
       const payload = {
         uid: user.id,
         escola_id: pendingEscolaId,
@@ -118,14 +137,15 @@ export const SupabaseAuthProvider = ({ children }) => {
         nome_completo: user.user_metadata?.full_name || user.email,
         ativo: true,
       };
+      
       const { data, error } = await supabase
         .from('responsaveis')
-        .upsert(payload, { onConflict: 'uid' }) // Evita duplicatas
+        .insert(payload)
         .select('*, escolas(*)')
         .maybeSingle();
+        
       if (error) throw error;
-      console.log('✅ Responsável criado/atualizado via pendingEscolaId', data);
-      // NÃO limpa aqui, vai limpar depois de confirmar sucesso
+      console.log('✅ Responsável criado via pendingEscolaId', data);
       return data;
     } catch (e) {
       console.error('❌ Erro ao criar responsável automático:', e);
