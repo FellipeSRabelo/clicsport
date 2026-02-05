@@ -41,6 +41,66 @@ export const SupabaseAuthProvider = ({ children }) => {
     }
   };
 
+  // Login com Email/Senha
+  const loginWithEmail = async (email, password) => {
+    try {
+      // PRIMEIRO: Verifica se o usuário existe em alguma tabela (gestor/professor/responsavel)
+      const { data: gestorExists } = await supabase
+        .from('gestores')
+        .select('uid')
+        .eq('email', email)
+        .maybeSingle();
+
+      const { data: professorExists } = await supabase
+        .from('professores')
+        .select('uid')
+        .eq('email', email)
+        .maybeSingle();
+
+      const { data: responsavelExists } = await supabase
+        .from('responsaveis')
+        .select('uid')
+        .eq('email', email)
+        .maybeSingle();
+
+      // Se não existe em nenhuma tabela, bloqueia o login
+      if (!gestorExists && !professorExists && !responsavelExists) {
+        throw new Error('Usuário não encontrado. Por favor, crie uma conta primeiro.');
+      }
+
+      // AGORA SIM: Faz o login no Supabase Auth
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('❌ Erro no login com email:', error);
+      throw error;
+    }
+  };
+
+  // Cadastro com Email/Senha
+  const signUpWithEmail = async (email, password, metadata = {}) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('❌ Erro no cadastro com email:', error);
+      throw error;
+    }
+  };
+
   // Buscar dados do usuário após autenticação
   const ensureResponsavel = async (user) => {
     // Se há pendingEscolaId no localStorage, cria ou atualiza o responsável
@@ -189,8 +249,8 @@ export const SupabaseAuthProvider = ({ children }) => {
         }
       }
 
-      // 5) Tenta via pendingEscolaId (fluxo de cadastro)
-      console.log('⚠️ Usuário não cadastrado em gestores, professores ou responsáveis');
+      // 5) Tenta via pendingEscolaId (fluxo de cadastro com Google OAuth)
+      console.log('⚠️ Verificando pendingEscolaId...');
       const newResp = await ensureResponsavel(user);
       if (newResp) {
         setEscolaId(newResp.escola_id);
@@ -205,13 +265,15 @@ export const SupabaseAuthProvider = ({ children }) => {
         }
         return { found: true, role: 'responsavel', data: newResp };
       }
-      setUserRole('responsavel');
-      setModulosAtivos({ achados: true, pesquisas: true });
-      return { found: false, role: 'responsavel' };
+
+      // 6) USUÁRIO NÃO ENCONTRADO - Desloga automaticamente
+      console.error('❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...');
+      await supabase.auth.signOut();
+      throw new Error('Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.');
 
     } catch (error) {
       console.error('❌ Erro ao buscar dados:', error);
-      return { found: false, role: null };
+      throw error;
     }
   };
 
@@ -233,7 +295,13 @@ export const SupabaseAuthProvider = ({ children }) => {
       setCurrentUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserData(session.user);
+        fetchUserData(session.user).catch(err => {
+          console.error('Erro ao buscar dados do usuário:', err);
+          // Se usuário não cadastrado, limpa tudo
+          setCurrentUser(null);
+          setEscolaId(null);
+          setUserRole(null);
+        });
       }
       
       setLoading(false);
@@ -248,7 +316,13 @@ export const SupabaseAuthProvider = ({ children }) => {
 
         if (session?.user) {
           // Não bloquear o loading no fetch; executa em background
-          fetchUserData(session.user);
+          fetchUserData(session.user).catch(err => {
+            console.error('Erro ao buscar dados do usuário:', err);
+            // Se usuário não cadastrado, limpa tudo
+            setCurrentUser(null);
+            setEscolaId(null);
+            setUserRole(null);
+          });
         } else {
           setEscolaId(null);
           setUserRole(null);
@@ -285,6 +359,8 @@ export const SupabaseAuthProvider = ({ children }) => {
     escolaNome,
     escolaLoading,
     loginWithGoogle,
+    loginWithEmail,
+    signUpWithEmail,
     logout,
     loading,
     supabase, // Expõe o client para uso direto em componentes
