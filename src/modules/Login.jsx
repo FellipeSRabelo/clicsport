@@ -148,7 +148,19 @@ const Login = () => {
         full_name: nomeCompleto
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        // Erros comuns do Supabase Auth
+        if (authError.message.includes('already registered') || 
+            authError.message.includes('already been registered') ||
+            authError.message.includes('User already registered')) {
+          throw new Error('Este email já está cadastrado. Use a opção de login ou tente outro email.');
+        }
+        throw authError;
+      }
+
+      if (!authData || !authData.user) {
+        throw new Error('Erro ao criar conta. Tente novamente ou use outro email.');
+      }
 
       // Cria registro na tabela responsaveis
       const { error: respError } = await supabase
@@ -161,7 +173,11 @@ const Login = () => {
           ativo: true
         });
 
-      if (respError) throw respError;
+      if (respError) {
+        // Se falhar ao criar responsavel, limpa o usuário do auth
+        console.error('Erro ao criar responsável, limpando auth:', respError);
+        throw new Error('Erro ao finalizar cadastro. Tente novamente.');
+      }
 
       // Limpa localStorage
       localStorage.removeItem('pendingEscolaId');
@@ -172,7 +188,21 @@ const Login = () => {
 
     } catch (e) {
       console.error('Erro no cadastro com email:', e);
-      setError(e.message || 'Erro ao criar conta. Tente novamente.');
+      
+      // Mensagens de erro mais amigáveis
+      let errorMessage = 'Erro ao criar conta. Tente novamente.';
+      
+      if (e.message.includes('já está cadastrado') || e.message.includes('already registered')) {
+        errorMessage = 'Este email já está cadastrado. Faça login ou use outro email.';
+      } else if (e.message.includes('invalid email')) {
+        errorMessage = 'Email inválido. Verifique e tente novamente.';
+      } else if (e.message.includes('password')) {
+        errorMessage = 'Senha inválida. Use no mínimo 6 caracteres.';
+      } else if (e.message) {
+        errorMessage = e.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
