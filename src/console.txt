@@ -1,51 +1,110 @@
-index-B7mUfAms.js:53 ✅ Supabase Client inicializado: https://nrpfbsjwscgvtrrkbycm.supabase.co
-index-B7mUfAms.js:689 ⚠️ Firebase desativado: variáveis VITE_FIREBASE_* não configuradas.
-(anonymous) @ index-B7mUfAms.js:689
-index-B7mUfAms.js:53 📡 Iniciando monitor de autenticação Supabase...
-index-B7mUfAms.js:53 🔔 Auth state changed: SIGNED_IN dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 🔍 Buscando dados do usuário: dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:609 📋 modulosPermitidos: Object
-index-B7mUfAms.js:53 🔔 Auth state changed: SIGNED_IN dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 🔍 Buscando dados do usuário: dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 Sessão atual: dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 🔍 Buscando dados do usuário: dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 🔔 Auth state changed: INITIAL_SESSION dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 🔍 Buscando dados do usuário: dd12e1cb-9dc2-42c4-a673-2f918ba8d211
-index-B7mUfAms.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
-index-B7mUfAms.js:53 ⚠️ Verificando pendingEscolaId...
-index-B7mUfAms.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
-index-B7mUfAms.js:53 ✅ Responsável criado/atualizado via pendingEscolaId Object
-index-B7mUfAms.js:609 📋 modulosPermitidos: Object
-index-B7mUfAms.js:53 ⚠️ Verificando pendingEscolaId...
-index-B7mUfAms.js:53 ❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...
-C @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
-index-B7mUfAms.js:53 🔔 Auth state changed: SIGNED_OUT undefined
-index-B7mUfAms.js:53 ❌ Erro ao buscar dados: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
-    at C (index-B7mUfAms.js:53:46902)
-C @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 Erro ao buscar dados do usuário: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
-    at C (index-B7mUfAms.js:53:46902)
-(anonymous) @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
-index-B7mUfAms.js:53 ⚠️ Verificando pendingEscolaId...
-index-B7mUfAms.js:53 ❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...
-C @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 🔔 Auth state changed: SIGNED_OUT undefined
-index-B7mUfAms.js:53 ❌ Erro ao buscar dados: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
-    at C (index-B7mUfAms.js:53:46902)
-C @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 Erro ao buscar dados do usuário: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
-    at C (index-B7mUfAms.js:53:46902)
-(anonymous) @ index-B7mUfAms.js:53
-index-B7mUfAms.js:710 Dados recebidos ListaOcorrencias: Array(0)
-index-B7mUfAms.js:53 ⚠️ Verificando pendingEscolaId...
-index-B7mUfAms.js:53 ❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...
-C @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 🔔 Auth state changed: SIGNED_OUT undefined
-index-B7mUfAms.js:53 ❌ Erro ao buscar dados: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
-    at C (index-B7mUfAms.js:53:46902)
-C @ index-B7mUfAms.js:53
-index-B7mUfAms.js:53 Erro ao buscar dados do usuário: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
-    at C (index-B7mUfAms.js:53:46902)
-(anonymous) @ index-B7mUfAms.js:53
+index-DB_Oenbb.js:53 ✅ Supabase Client inicializado: https://nrpfbsjwscgvtrrkbycm.supabase.co
+index-DB_Oenbb.js:689 ⚠️ Firebase desativado: variáveis VITE_FIREBASE_* não configuradas.
+(anonymous) @ index-DB_Oenbb.js:689
+index-DB_Oenbb.js:53 📡 Iniciando monitor de autenticação Supabase...
+index-DB_Oenbb.js:53 🔔 Auth state changed: SIGNED_IN 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 🔍 Buscando dados do usuário: 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:609 📋 modulosPermitidos: {}
+index-DB_Oenbb.js:53 🔔 Auth state changed: SIGNED_IN 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 🔍 Buscando dados do usuário: 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 Sessão atual: 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 🔍 Buscando dados do usuário: 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 🔔 Auth state changed: INITIAL_SESSION 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 🔍 Buscando dados do usuário: 85256455-b7ed-48c6-a286-5af8f57a00de
+index-DB_Oenbb.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
+index-DB_Oenbb.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
+index-DB_Oenbb.js:53 ⚠️ Verificando pendingEscolaId...
+index-DB_Oenbb.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
+index-DB_Oenbb.js:53 ⚠️ Verificando pendingEscolaId...
+index-DB_Oenbb.js:53 ✅ Responsável criado/atualizado via pendingEscolaId {id: '68f45c0b-3142-4540-ae46-1bc8450e5a4b', uid: '85256455-b7ed-48c6-a286-5af8f57a00de', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', nome_completo: 'Fellipe Rabelo', telefone: null, …}
+index-DB_Oenbb.js:609 📋 modulosPermitidos: {}
+index-DB_Oenbb.js:53 ⚠️ Responsável não cadastrado, buscando via matrículas...
+index-DB_Oenbb.js:53 ⚠️ Verificando pendingEscolaId...
+index-DB_Oenbb.js:53 ❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...
+k @ index-DB_Oenbb.js:53
+await in k
+(anonymous) @ index-DB_Oenbb.js:53
+Promise.then
+(anonymous) @ index-DB_Oenbb.js:53
+wd @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+es @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+es @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+sw @ index-DB_Oenbb.js:8
+(anonymous) @ index-DB_Oenbb.js:8
+L @ index-DB_Oenbb.js:1
+index-DB_Oenbb.js:53 ✅ Responsável criado/atualizado via pendingEscolaId {id: 'd302b247-50bc-4117-9120-b6a418772ca4', uid: '85256455-b7ed-48c6-a286-5af8f57a00de', escola_id: 'e7b6c8d4-5f3a-4b2c-9d1e-6a7f8c9e0b1d', nome_completo: 'Fellipe Rabelo', telefone: null, …}
+index-DB_Oenbb.js:609 📋 modulosPermitidos: {}
+index-DB_Oenbb.js:53 ⚠️ Verificando pendingEscolaId...
+index-DB_Oenbb.js:53 ❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...
+k @ index-DB_Oenbb.js:53
+await in k
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+_useSession @ index-DB_Oenbb.js:53
+await in _useSession
+_emitInitialSession @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:37
+index-DB_Oenbb.js:53 🔔 Auth state changed: SIGNED_OUT undefined
+index-DB_Oenbb.js:53 🔔 Auth state changed: SIGNED_OUT undefined
+index-DB_Oenbb.js:53 ❌ Erro ao buscar dados: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
+    at k (index-DB_Oenbb.js:53:46902)
+k @ index-DB_Oenbb.js:53
+await in k
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+_useSession @ index-DB_Oenbb.js:53
+await in _useSession
+_emitInitialSession @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:37
+index-DB_Oenbb.js:53 Erro ao buscar dados do usuário: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
+    at k (index-DB_Oenbb.js:53:46902)
+(anonymous) @ index-DB_Oenbb.js:53
+Promise.catch
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+_useSession @ index-DB_Oenbb.js:53
+await in _useSession
+_emitInitialSession @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:53
+(anonymous) @ index-DB_Oenbb.js:37
+index-DB_Oenbb.js:53 ❌ Erro ao buscar dados: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
+    at k (index-DB_Oenbb.js:53:46902)
+k @ index-DB_Oenbb.js:53
+await in k
+(anonymous) @ index-DB_Oenbb.js:53
+Promise.then
+(anonymous) @ index-DB_Oenbb.js:53
+wd @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+es @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+es @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+sw @ index-DB_Oenbb.js:8
+(anonymous) @ index-DB_Oenbb.js:8
+L @ index-DB_Oenbb.js:1
+index-DB_Oenbb.js:53 Erro ao buscar dados do usuário: Error: Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.
+    at k (index-DB_Oenbb.js:53:46902)
+(anonymous) @ index-DB_Oenbb.js:53
+Promise.catch
+(anonymous) @ index-DB_Oenbb.js:53
+Promise.then
+(anonymous) @ index-DB_Oenbb.js:53
+wd @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+es @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+es @ index-DB_Oenbb.js:8
+F_ @ index-DB_Oenbb.js:8
+sw @ index-DB_Oenbb.js:8
+(anonymous) @ index-DB_Oenbb.js:8
+L @ index-DB_Oenbb.js:1
+clicsport.agenciabuffalo.com.br/:1 Mixed Content: The page at 'https://clicsport.agenciabuffalo.com.br/' was loaded over HTTPS, but requested an insecure element 'http://agenciabuffalo.com.br/wp-content/uploads/2026/02/tela_login2.jpg'. This request was automatically upgraded to HTTPS, For more information see https://blog.chromium.org/2019/10/no-more-mixed-messages-about-https.html

@@ -18,6 +18,7 @@ export const SupabaseAuthProvider = ({ children }) => {
   const [papelAchados, setPapelAchados] = useState(null);
   const [escolaNome, setEscolaNome] = useState('');
   const [escolaLoading, setEscolaLoading] = useState(false);
+  const [isProcessingAuth, setIsProcessingAuth] = useState(false); // Flag para evitar race condition
 
   // Login com Google
   const loginWithGoogle = async (redirectPath = '/app') => {
@@ -107,8 +108,6 @@ export const SupabaseAuthProvider = ({ children }) => {
     const rawEscolaId = localStorage.getItem('pendingEscolaId');
     const pendingEscolaId = rawEscolaId?.trim();
     if (!pendingEscolaId || pendingEscolaId === 'undefined' || pendingEscolaId === 'null') {
-      localStorage.removeItem('pendingEscolaId');
-      localStorage.removeItem('pendingEscolaNome');
       return null;
     }
     try {
@@ -121,13 +120,12 @@ export const SupabaseAuthProvider = ({ children }) => {
       };
       const { data, error } = await supabase
         .from('responsaveis')
-        .upsert(payload)
+        .upsert(payload, { onConflict: 'uid' }) // Evita duplicatas
         .select('*, escolas(*)')
         .maybeSingle();
       if (error) throw error;
       console.log('✅ Responsável criado/atualizado via pendingEscolaId', data);
-      localStorage.removeItem('pendingEscolaId');
-      localStorage.removeItem('pendingEscolaNome');
+      // NÃO limpa aqui, vai limpar depois de confirmar sucesso
       return data;
     } catch (e) {
       console.error('❌ Erro ao criar responsável automático:', e);
@@ -137,6 +135,14 @@ export const SupabaseAuthProvider = ({ children }) => {
 
   const fetchUserData = async (user) => {
     if (!user) return { found: false, role: null };
+    
+    // Evita execuções paralelas
+    if (isProcessingAuth) {
+      console.log('⏳ Já processando autenticação, aguardando...');
+      return { found: false, role: null };
+    }
+    
+    setIsProcessingAuth(true);
     const userId = user.id;
     console.log('🔍 Buscando dados do usuário:', userId);
 
@@ -160,6 +166,7 @@ export const SupabaseAuthProvider = ({ children }) => {
           setModulosAtivos(gestorData.escolas.modulos_ativos || {});
         }
 
+        setIsProcessingAuth(false);
         return { found: true, role: 'gestor', data: gestorData };
       }
 
@@ -180,6 +187,7 @@ export const SupabaseAuthProvider = ({ children }) => {
           setModulosAtivos(profData.escolas.modulos_ativos || {});
         }
 
+        setIsProcessingAuth(false);
         return { found: true, role: 'professor', data: profData };
       }
 
@@ -205,6 +213,7 @@ export const SupabaseAuthProvider = ({ children }) => {
           setModulosAtivos({ achados: true, pesquisas: true });
         }
 
+        setIsProcessingAuth(false);
         return { found: true, role: 'responsavel', data: respData };
       }
 
@@ -245,6 +254,7 @@ export const SupabaseAuthProvider = ({ children }) => {
           } else {
             setModulosAtivos({ achados: true, pesquisas: true });
           }
+          setIsProcessingAuth(false);
           return { found: true, role: 'responsavel', data: newResp };
         }
       }
@@ -253,6 +263,10 @@ export const SupabaseAuthProvider = ({ children }) => {
       console.log('⚠️ Verificando pendingEscolaId...');
       const newResp = await ensureResponsavel(user);
       if (newResp) {
+        // SUCESSO! Limpa o localStorage agora
+        localStorage.removeItem('pendingEscolaId');
+        localStorage.removeItem('pendingEscolaNome');
+        
         setEscolaId(newResp.escola_id);
         setUserRole('responsavel');
         setPapelAchados('responsavel');
@@ -263,16 +277,19 @@ export const SupabaseAuthProvider = ({ children }) => {
         } else {
           setModulosAtivos({ achados: true, pesquisas: true });
         }
+        setIsProcessingAuth(false); // Libera flag
         return { found: true, role: 'responsavel', data: newResp };
       }
 
       // 6) USUÁRIO NÃO ENCONTRADO - Desloga automaticamente
       console.error('❌ USUÁRIO NÃO CADASTRADO NO SISTEMA - Fazendo logout...');
+      setIsProcessingAuth(false); // Libera flag
       await supabase.auth.signOut();
       throw new Error('Usuário não cadastrado no sistema. Por favor, crie uma conta primeiro.');
 
     } catch (error) {
       console.error('❌ Erro ao buscar dados:', error);
+      setIsProcessingAuth(false); // Libera flag mesmo em erro
       throw error;
     }
   };
