@@ -26,8 +26,8 @@ const MenuLateral = ({ isCompact = false }) => {
         { name: 'Modalidades', path: '/gestao/modalidades' },
         { name: 'Turmas', path: '/gestao/turmas' },
         { name: 'Professores', path: '/gestao/professores' },
-        { name: 'Alunos', path: '/gestao' },
-        { name: 'Matrículas', path: '/gestao' },
+        { name: 'Alunos', path: '/gestao/alunos' },
+        { name: 'Matrículas', path: '/gestao/matriculas' },
       ]
     },
     {
@@ -35,10 +35,9 @@ const MenuLateral = ({ isCompact = false }) => {
       icon: faMoneyBill,
       roles: ['gestor'],
       key: 'financeiro',
-      alwaysShow: true, // Sempre mostra para gestor
-      submenu: [
-        { name: 'Mensalidades', path: '/financeiro/mensalidades' },
-      ]
+      path: '/gestao/financeiro', // Adicionado path direto
+      alwaysShow: true,
+      submenu: []
     },
     (modulosAtivos.achados !== false) && { name: 'Achados e Perdidos', path: '/achados', icon: faSearch, roles: ['gestor', 'aluno', 'responsavel'], key: 'achados' },
     modulosAtivos.pesquisas && {

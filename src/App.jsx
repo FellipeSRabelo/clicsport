@@ -13,16 +13,20 @@ import NotFound from './components/NotFound';
 import Dashboard from './modules/Dashboard';
 import Gestao from './modules/gestao/Gestao';
 import Configuracoes from './modules/gestao/Configuracoes';
+import GestaoEscola from './modules/gestao/GestaoEscola';
 import Unidades from './modules/gestao/Unidades';
 import Modalidades from './modules/gestao/Modalidades';
 import Turmas from './modules/gestao/Turmas';
+import GestaoTurmas from './modules/gestao/GestaoTurmas';
 import Professores from './modules/gestao/Professores';
+import GestaoProfessores from './modules/gestao/GestaoProfessores';
+import GestaoAlunosTable from './modules/gestao/GestaoAlunosTable';
+import GestaoMatriculas from './modules/gestao/GestaoMatriculas';
 import Achados from './modules/achados/Achados';
 import CadastroResponsavelOAuth from './modules/achados/CadastroResponsavelOAuth';
 import Pesquisas from './modules/pesquisas/Pesquisas';
 import PublicPesquisa from './modules/pesquisas/PublicPesquisa';
-import Financeiro from './modules/financeiro/Financeiro';
-import Mensalidades from './modules/financeiro/Mensalidades';
+import Financeiro from './modules/gestao/Financeiro';
 import AulaExperimental from './modules/aula-experimental/AulaExperimental';
 import Eventos from './modules/eventos/Eventos';
 import NovoEvento from './modules/eventos/NovoEvento';
@@ -130,15 +134,17 @@ const AppRoutes = () => {
 
       {/* Módulo de Gestão (SÓ GESTOR - Sempre acessível se logado como gestor) */}
       <Route path="/gestao" element={<PrivateRoute element={Gestao} role="gestor" />} />
-      <Route path="/gestao/configuracoes" element={<PrivateRoute element={Configuracoes} role="gestor" />} />
+      <Route path="/gestao/configuracoes" element={<PrivateRoute element={GestaoEscola} role="gestor" />} />
+      <Route path="/gestao/escola" element={<PrivateRoute element={GestaoEscola} role="gestor" />} />
       <Route path="/gestao/unidades" element={<PrivateRoute element={Unidades} role="gestor" />} />
       <Route path="/gestao/modalidades" element={<PrivateRoute element={Modalidades} role="gestor" />} />
-      <Route path="/gestao/turmas" element={<PrivateRoute element={Turmas} role="gestor" />} />
-      <Route path="/gestao/professores" element={<PrivateRoute element={Professores} role="gestor" />} />
+      <Route path="/gestao/turmas" element={<PrivateRoute element={GestaoTurmas} role="gestor" />} />
+      <Route path="/gestao/professores" element={<PrivateRoute element={GestaoProfessores} role="gestor" />} />
+      <Route path="/gestao/alunos" element={<PrivateRoute element={GestaoAlunosTable} role="gestor" />} />
+      <Route path="/gestao/matriculas" element={<PrivateRoute element={GestaoMatriculas} role="gestor" />} />
 
       {/* Módulo de Financeiro */}
-      <Route path="/financeiro" element={<PrivateRoute element={Financeiro} role="gestor" />} />
-      <Route path="/financeiro/mensalidades" element={<PrivateRoute element={Mensalidades} role="gestor" />} />
+      <Route path="/gestao/financeiro" element={<PrivateRoute element={Financeiro} role="gestor" />} />
 
       {/* Módulo de Aula Experimental */}
       <Route path="/aula-experimental" element={<PrivateRoute element={AulaExperimental} />} />
